@@ -2,9 +2,9 @@ package station.model;
 
 public abstract class Compte {
     
-    private Integer id;
-    private String login;
-    private String password;
+    protected  Integer id;
+    protected  String login;
+    protected  String password;
     
     public Compte(Integer id, String login, String password) {
         this.id = id;
