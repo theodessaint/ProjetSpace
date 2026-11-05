@@ -1,23 +1,17 @@
+package station.model;
+
 import station.model.Module;
 
 public class ModuleDansMaGame extends Module {
-    private Integer id;
+
     private int ModuleMax;
 
     public ModuleDansMaGame () {}
 
-    public ModuleDansMaGame (Integer id, int ModuleMax) {
+    public ModuleDansMaGame(Integer id, String nom, int astroModuleMax, int moduleMax) {
         super(id, nom, astroModuleMax);
-        this.id = id;
-        this.ModuleMax = ModuleMax;
-    }
-
-    public Integer getId() {
-            return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+        
+        this.ModuleMax = moduleMax;
     }
 
     public int getModuleMax(){
@@ -28,8 +22,11 @@ public class ModuleDansMaGame extends Module {
         this.ModuleMax = ModuleMax;
     }
 
+    @Override
     public String toString() {
-		return "Module [id=" + id + ", ModuleMax=" + ModuleMax +  "]";
-	}
-
+        return "ModuleDansMaGame [id=" + id + ", nom=" + nom + ", ModuleMax=" + ModuleMax + ", astroModuleMax="
+                + astroModuleMax + ", getId()=" + getId() + ", getModuleMax()=" + getModuleMax() + ", getNom()="
+                + getNom() + ", getastroModuleMax()=" + getastroModuleMax() + ", toString()=" + super.toString()
+                + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + "]";
+    }
 }

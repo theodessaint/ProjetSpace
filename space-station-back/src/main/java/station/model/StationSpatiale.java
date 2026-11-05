@@ -19,6 +19,8 @@ public class StationSpatiale {
     
     private List<Astronaute> astronautes;
     
+    private List<Ressource> ressources;
+    
     private List<ModuleDansMaGame> modules;
     
     public StationSpatiale() {}
@@ -90,6 +92,16 @@ public class StationSpatiale {
             this.modules = modules;
         }
         
+        public List<Ressource> getRessources() {
+            return ressources;
+        }
+        
+        
+        public void setRessources(List<Ressource> ressources) {
+            this.ressources = ressources;
+        }
+        
+        
         public void executerCycle() {
             
             // DEROULEMENT DU CYCLE
@@ -157,10 +169,10 @@ public class StationSpatiale {
             
             
         }
-
+        
         public void afficherEtat(){}
-
+        
         public Ressource ajouterRessource(){}
-
+        
         public ModuleDansMaGame ajouterModule(){}
-}
+    }

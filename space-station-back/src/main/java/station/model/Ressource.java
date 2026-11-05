@@ -1,3 +1,5 @@
+package station.model;
+
 public class Ressource {
 
     // Ressources du jeu :
