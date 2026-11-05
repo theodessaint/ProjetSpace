@@ -2,9 +2,9 @@ package station.model;
 
 public abstract class Module {
 
-    private Integer id;
-    private String nom;
-    private int astroModuleMax;
+    protected  Integer id;
+    protected  String nom;
+    protected  int astroModuleMax;
 
     public Module () {}
 

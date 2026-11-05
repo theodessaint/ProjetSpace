@@ -1,3 +1,7 @@
+package station.model;
+
+import java.util.List;
+
 public class Bonus {
 
     private Role role;             // C'est notre enum Role
@@ -16,10 +20,10 @@ public class Bonus {
 
     // Liste des bonus du jeu (un par rôle), à ajuster
     public static final List<Bonus> BONUS = List.of(
-        new Bonus(Role.AGRICULTEUR, Ressource.NOURRITURE, 1.15), // +15 % nourriture
-        new Bonus(Role.MECANICIEN,  Ressource.ENERGIE,    1.10), // +10 % énergie
-        new Bonus(Role.CHERCHEUR,   Ressource.ENERGIE,    0.90), // -10 % conso d'énergie
-        new Bonus(Role.PLOMBIER,    Ressource.EAU,    0.90), // -10 % conso d'eau
-        new Bonus(Role.MEDECIN,     Ressource.EAU,        0.85)  // -15 % conso d'eau
+        new Bonus(Role.Agriculteur, Ressource.NOURRITURE, 1.15), // +15 % nourriture
+        new Bonus(Role.Mecanicien,  Ressource.ENERGIE,    1.10), // +10 % énergie
+        new Bonus(Role.Chercheur,   Ressource.ENERGIE,    0.90), // -10 % conso d'énergie
+        new Bonus(Role.Plombier,    Ressource.EAU,    0.90), // -10 % conso d'eau
+        new Bonus(Role.Medecin,     Ressource.EAU,        0.85)  // -15 % conso d'eau
     );
 }

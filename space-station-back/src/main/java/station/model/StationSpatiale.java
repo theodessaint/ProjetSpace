@@ -1,5 +1,6 @@
 package station.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ public class StationSpatiale {
     private Joueur joueur;
     
     private List<Astronaute> astronautes;
+    
+    private List<Ressource> ressources;
     
     private List<ModuleDansMaGame> modules;
     
@@ -90,6 +93,16 @@ public class StationSpatiale {
             this.modules = modules;
         }
         
+        public List<Ressource> getRessources() {
+            return ressources;
+        }
+        
+        
+        public void setRessources(List<Ressource> ressources) {
+            this.ressources = ressources;
+        }
+        
+        
         public void executerCycle() {
             
             // DEROULEMENT DU CYCLE
@@ -108,20 +121,22 @@ public class StationSpatiale {
             
             // CONSOMMATION DES RESSOURCES ET EVALUATION DES SEUILS
             
-            List<Ressource> ressourcesCritique;
-            List<Ressource> ressourcesDanger;
+            List<Ressource> ressourcesCritique = new ArrayList<Ressource>();
+            List<Ressource> ressourcesDanger = new ArrayList<Ressource>();
             
-            for (Ressource ressource : ressources) {
-                
+            for (Ressource ressource : this.getStats().keySet()) {
+                double quantite = this.getStats().get(ressource);
                 
                 // Calcul de consommation de chaque ressource
+
+                // CODE
                 
                 // Ajout des objets "Ressource" à des listes => si besoin de récupérer d'autres attributs que le nom.
                 
-                if (ressource.get() <= ressource.getCritique()) {
+                if (quantite <= ressource.getCritique()) {
                     ressourcesCritique.add(ressource);
                     
-                } else if (ressource.get() <= ressource.getDanger() && ressource.get() > ressource.getCritique) {
+                } else if (quantite <= ressource.getDanger() && quantite > ressource.getCritique()) {
                     ressourcesDanger.add(ressource);
                 }
                 
@@ -148,7 +163,7 @@ public class StationSpatiale {
                 }
                 
                 if (ressourcesDanger.size() > 0) {
-                    System.out.println("Attention ! Vous avez " ressourcesDanger.size() + " incohérences de ressources.");
+                    System.out.println("Attention ! Vous avez " + ressourcesDanger.size() + " incohérences de ressources.");
                     
                 }
                 
@@ -157,10 +172,14 @@ public class StationSpatiale {
             
             
         }
-
+        
         public void afficherEtat(){}
-
-        public Ressource ajouterRessource(){}
-
-        public ModuleDansMaGame ajouterModule(){}
-}
+        
+        public void ajouterRessource(Ressource ressource){
+            ressources.add(ressource);
+        }
+        
+        public void ajouterModule(ModuleDansMaGame module){
+            modules.add(module);
+        }
+    }
