@@ -1,3 +1,5 @@
+package station.model;
+
 import station.model.Module;
 
 public class ModuleDansMaGame extends Module {
@@ -6,7 +8,7 @@ public class ModuleDansMaGame extends Module {
 
     public ModuleDansMaGame () {}
 
-    public ModuleDansMaGame (Integer id, int ModuleMax) {
+    public ModuleDansMaGame (Integer id, String nom, int astroModuleMax, int ModuleMax) {
         super(id, nom, astroModuleMax);
         this.id = id;
         this.ModuleMax = ModuleMax;
