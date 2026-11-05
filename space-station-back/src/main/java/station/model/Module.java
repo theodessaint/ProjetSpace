@@ -1,4 +1,4 @@
-
+package station.model;
 
 public abstract class Module {
 
