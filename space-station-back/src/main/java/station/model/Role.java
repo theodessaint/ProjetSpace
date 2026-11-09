@@ -4,5 +4,6 @@ public enum Role {
     Chercheur,
     Agriculteur,
     Mecanicien,
-    Medecin;
+    Medecin,
+    Plombier;
 }
