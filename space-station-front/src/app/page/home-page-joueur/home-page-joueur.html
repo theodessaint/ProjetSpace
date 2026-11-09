@@ -1,1 +1,111 @@
-<p>home-page-joueur works!</p>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+    <link rel="stylesheet" href="AccueilSpaceFront.css">
+  <title>Station Spatiale - Accueil</title>
+</head>
+<body>
+  <div class="stars"></div>
+  <img class="astronaute" id="astronaute" src="Assets/Images/Jastronaute.png" width="200">/img>
+  <div class="twinkling"></div>
+  <header class="haut"> 
+    <span class="haut-compte">Commandant connecté</span><!-- span permettra de remplacer vaec le back 
+    document.querySelector(".haut").textContent = "Commandant " + nomUtilisateur + " connecté"; -->
+    <a class="haut-lien" href="#" id="btnDeconnexion">Se déconnecter</a> <!-- a (anchor)= lien  -->
+  </header>
+
+  <main class="accueil">
+    <h1 class="titre">Station<br>Spatiale</h1>
+    <p class="accroche">Garder votre équipage en vie… <br> pensez-vous en être capable ?</p>
+
+    <nav class="menu" aria-label="Menu principal"> <!-- Sert a désignier un menu, c plus clair pour nous (nav=navigation) -->
+      <button class="btn btn-principal" id="btnNouvelle">Créer une partie</button>
+      <button class="btn" id="btnReprendre">Reprendre ma partie</button>
+      <button class="btn" id="btnRegles">Règles du jeu</button>
+
+
+      <!-- Boutons difficultés -->
+
+      <fieldset class="difficulte">  <!-- Regrouper les boutons entre eux (pls controles interactifs entre eux)-->
+        <legend>Difficulté</legend> <!-- Comme ca juste au dessus on a difficulté pour tous les boutons -->
+        <div class="btndiff">
+          <input type="radio" name="difficulte" id="d-facile" value="facile"> <!-- radio = un seul bouton peut être sélectionné à la fois-->
+          <label for="d-facile">Facile</label> 
+          <!-- J'affiche le texte du choix et ça permert de sélectionner le bouton radio associé grâce à son for, qui correspond à l'id de l'input.-->
+          <input type="radio" name="difficulte" id="d-normal" value="normal" checked> <!-- Celui-là est sélectionné de base -->
+          <label for="d-normal">Normal</label>
+          <input type="radio" name="difficulte" id="d-difficile" value="difficile">
+          <label for="d-difficile">Difficile</label>
+        </div>
+        <p class="aide" id="aideDifficulte"></p>
+      </fieldset>
+    </nav>
+  </main>
+
+  <!-- Fenêtre des règles -->
+  <dialog id="JustificationRegles" class="regles">
+    <h2>Règles du jeu</h2> <!--Faudra modif les règles plus tard -->
+    <ul>
+      <li><strong>Victoire</strong> : tenir le nombre de cycles demandé sans perdre.</li>
+      <li><strong>Défaite</strong> : une ressource vitale tombe à zéro, ou trois seuils critiques en même temps.</li>
+      <li>Une journée = un <strong>cycle</strong>. Au début de chaque cycle, vous affectez vos astronautes aux modules.</li>
+      <li>Les modules peuvent produire et consommer de l'énergie ; les astronautes consomment oxygène, eau et nourriture.</li>
+      <li>Sous <strong>30 %</strong> d'une ressource : seuil « danger ». Sous <strong>10 %</strong> : seuil « critique ».</li>
+      <li>Possibilité de regarder l'état du vaisseau à la fin de chaque cycle.</li>
+      <li>Vous pouvez ajouter des modules à chaque cycle, en échange de ressources.</li>
+    </ul>
+    <form method="dialog"><button class="btn btn-principal">J'ai compris</button></form>
+  </dialog>
+
+
+                                       <!-- Du JSS -->             
+          
+
+
+  <script>
+    /* ---------- Menu ---------- */
+    const aides = {
+      facile:    'Ressources de départ généreuses / Les ressources sont consommées plus lentement et leurs créations sont augmentées.',
+      normal:    'Ressources de départ standard / Les ressources sont consommées et produites de manière équilibrée.',
+      difficile: 'Ressources de départ limitées / Les ressources sont consommées plus vite et leurs créations est ralenties.'
+    };
+
+    const aide = document.getElementById('aideDifficulte');   /* J'affiche le texte quand je clique dessus */
+    const radios = document.querySelectorAll('input[name="difficulte"]');
+    const maj = () => { aide.textContent = aides[document.querySelector('input[name="difficulte"]:checked').value]; };
+    radios.forEach(r => r.addEventListener('change', maj)); maj();
+
+    document.getElementById('btnRegles').addEventListener('click', () => document.getElementById('JustificationRegles').showModal());
+
+    // À brancher sur le back (Spring / Angular) plus tard
+    document.getElementById('btnNouvelle').addEventListener('click', () => {
+      const diff = document.querySelector('input[name="difficulte"]:checked').value;
+      console.log('Créer une partie, difficulté :', diff);
+      // window.location.href = 'partie.html?difficulte=' + diff;
+    });
+    document.getElementById('btnReprendre').addEventListener('click', () => console.log('Reprendre la partie'));
+
+
+
+//Astronautes qui se balade
+
+
+    const astro = document.getElementById('astronaute');
+
+function deplacer() {
+  const x = Math.random() * (window.innerWidth - 200); //150 px taille de l'astronaute
+  const y = Math.random() * (window.innerHeight - 200);
+  const angle = Math.random() * 60 - 30;   // inclinaison entre -30° et +30°
+
+  astro.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+}
+
+deplacer();
+setInterval(deplacer, 10000);   // nouvelle destination toutes les 10 s
+
+
+
+  </script>
+</body>
+</html>
