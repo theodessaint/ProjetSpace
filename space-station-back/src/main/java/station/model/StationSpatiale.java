@@ -134,7 +134,7 @@ public class StationSpatiale {
                 if (quantite <= ressource.getCritique()) {
                     ressourcesCritique.add(ressource);
                     
-                } else if (quantite <= ressource.getDanger() && quantite > ressource.getCritique()) {
+                } else if (quantite <= ressource.getDanger()) {
                     ressourcesDanger.add(ressource);
                 }
                 
