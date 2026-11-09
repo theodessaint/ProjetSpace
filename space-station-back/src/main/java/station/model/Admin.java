@@ -9,4 +9,6 @@ public class Admin extends Compte {
     public Admin() {
     }
     
+    //1 compte admin (id=0)
+
 }

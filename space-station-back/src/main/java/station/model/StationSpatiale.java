@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.relation.RelationSupport;
-
 public class StationSpatiale {
     
     private Integer id;
@@ -136,7 +134,7 @@ public class StationSpatiale {
                 if (quantite <= ressource.getCritique()) {
                     ressourcesCritique.add(ressource);
                     
-                } else if (quantite <= ressource.getDanger() && quantite > ressource.getCritique()) {
+                } else if (quantite <= ressource.getDanger()) {
                     ressourcesDanger.add(ressource);
                 }
                 
