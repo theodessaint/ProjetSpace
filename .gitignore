@@ -5,3 +5,5 @@
 .settings/
 target/
 .metadata
+application-dev.properties
+secrets/
