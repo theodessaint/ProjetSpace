@@ -1,6 +1,6 @@
-package station.model;
+package station.enumerator;
 
-public enum Role {
+public enum RoleEnum {
     Chercheur,
     Agriculteur,
     Mecanicien,

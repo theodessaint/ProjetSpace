@@ -1,12 +1,15 @@
 package station.model;
 
+import station.enumerator.GenreEnum;
+import station.enumerator.RoleEnum;
+
 public abstract class Astronaute {
     protected Integer id;
     protected String nom;
-    protected Genre genre;
-    protected Role role;
+    protected GenreEnum genre;
+    protected RoleEnum role;
 
-    protected Astronaute(Integer id, String nom, Genre genre, Role role){
+    protected Astronaute(Integer id, String nom, GenreEnum genre, RoleEnum role){
         this.id=id;
         this.nom=nom;
         this.genre=genre;
@@ -29,19 +32,19 @@ public abstract class Astronaute {
         this.nom = nom;
     }
 
-    public Genre getGenre() {
+    public GenreEnum getGenre() {
         return genre;
     }
 
-    public void setGenre(Genre genre) {
+    public void setGenre(GenreEnum genre) {
         this.genre = genre;
     }
 
-    public Role getRole() {
+    public RoleEnum getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(RoleEnum role) {
         this.role = role;
     }
 
