@@ -1,16 +1,15 @@
 package station.model;
 
-import javax.management.relation.Role;
-
 import station.enumerator.GenreEnum;
+import station.enumerator.RoleEnum;
 
 public abstract class Astronaute {
     protected Integer id;
     protected String nom;
     protected GenreEnum genre;
-    protected Role role;
+    protected RoleEnum role;
 
-    protected Astronaute(Integer id, String nom, GenreEnum genre, Role role){
+    protected Astronaute(Integer id, String nom, GenreEnum genre, RoleEnum role){
         this.id=id;
         this.nom=nom;
         this.genre=genre;
@@ -41,11 +40,11 @@ public abstract class Astronaute {
         this.genre = genre;
     }
 
-    public Role getRole() {
+    public RoleEnum getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(RoleEnum role) {
         this.role = role;
     }
 
