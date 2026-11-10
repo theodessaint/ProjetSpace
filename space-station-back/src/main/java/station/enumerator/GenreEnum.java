@@ -1,6 +1,6 @@
-package station.model;
+package station.enumerator;
 
-public enum Genre {
+public enum GenreEnum {
     Femme,
     Homme,
     NB;
