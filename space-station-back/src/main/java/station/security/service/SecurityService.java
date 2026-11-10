@@ -11,7 +11,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -58,7 +57,7 @@ public class SecurityService {
             // Récupération des autorisations de l'utilisateur
             String scope = authentication.getAuthorities()
             .stream()
-            .map(GrantedAuthority::getAuthority)
+            .map(a -> a.getAuthority())
             .collect(Collectors.joining(" "))
             ;
             

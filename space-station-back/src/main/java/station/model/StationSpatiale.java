@@ -140,7 +140,7 @@ public class StationSpatiale {
                 
                 if (ressourcesCritique.size() > 0) {
                     List<String> nomsResCrit = ressourcesCritique.stream()
-                    .map(Ressource::getNom)
+                    .map(r -> r.getNom())
                     .toList();
                     
                     switch (ressourcesCritique.size()) {
