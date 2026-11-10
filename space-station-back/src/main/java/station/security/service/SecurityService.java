@@ -69,7 +69,7 @@ public class SecurityService {
             .subject(request.username())
             .issuedAt(now)
             .expiresAt(now.plus(1, ChronoUnit.HOURS))
-            .claim("scope", scope)
+            .claim("scope", scope) // défini par le rôle attribué lors de la connexion (voir JpaUserDetailsService)
             .build()
             ;
             
