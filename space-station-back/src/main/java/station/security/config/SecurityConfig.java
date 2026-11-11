@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -69,10 +70,11 @@ public class SecurityConfig {
         
         // Règles des autorisations
         http.authorizeHttpRequests(authorization -> {
-            authorization.requestMatchers("/auth", "/joueur/inscription").permitAll();
-            authorization.requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN");
-            authorization.requestMatchers("/admin").hasRole("ADMIN");
-            authorization.anyRequest().authenticated();
+            // authorization.requestMatchers("/auth", "/joueur/inscription").permitAll();
+            // authorization.requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN");
+            // authorization.requestMatchers("/admin").hasRole("ADMIN");
+            // authorization.anyRequest().authenticated();
+            authorization.anyRequest().permitAll();
         });
         
         return http.build();
@@ -117,7 +119,8 @@ public class SecurityConfig {
     
     @Bean
     PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        // return new BCryptPasswordEncoder();
+        return NoOpPasswordEncoder.getInstance();
     }
     
 }
