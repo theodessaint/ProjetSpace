@@ -16,23 +16,21 @@ public class StationSpatiale {
     
     private Joueur joueur;
     
-    private List<Astronaute> astronautes;
+    private List<Astronaute> astronautes = new ArrayList<Astronaute>();
     
-    private List<Ressource> ressources;
+    private List<Ressource> ressources = new ArrayList<Ressource>();
     
-    private List<ModuleDansMaGame> modules;
+    private List<Module> modules = new ArrayList<Module>();
     
     public StationSpatiale() {}
     
     
-    public StationSpatiale(Integer id, String nom, Map<Ressource, Double> stats, int cycle, Joueur joueur,
-        List<ModuleDansMaGame> modules) {
+    public StationSpatiale(Integer id, String nom, Map<Ressource, Double> stats, int cycle, Joueur joueur) {
             this.id = id;
             this.nom = nom;
             this.stats = stats;
             this.cycle = cycle;
             this.joueur = joueur;
-            this.modules = modules;
         }   
         
         public Integer getId() {
@@ -83,11 +81,11 @@ public class StationSpatiale {
             this.astronautes = astronautes;
         }
         
-        public List<ModuleDansMaGame> getModules() {
+        public List<Module> getModules() {
             return modules;
         }
         
-        public void setModules(List<ModuleDansMaGame> modules) {
+        public void setModules(List<Module> modules) {
             this.modules = modules;
         }
         
@@ -177,7 +175,8 @@ public class StationSpatiale {
             ressources.add(ressource);
         }
         
-        public void ajouterModule(ModuleDansMaGame module){
+        public void ajouterModule(Module module){
+            module.setStation(this);
             modules.add(module);
         }
     }
