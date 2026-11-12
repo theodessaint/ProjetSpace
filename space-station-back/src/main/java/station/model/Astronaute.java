@@ -4,12 +4,12 @@ import station.enumerator.GenreEnum;
 import station.enumerator.RoleEnum;
 
 public abstract class Astronaute {
-    protected Integer id;
-    protected String nom;
-    protected GenreEnum genre;
-    protected RoleEnum role;
+    private Integer id;
+    private String nom;
+    private GenreEnum genre;
+    private RoleEnum role;
 
-    protected Astronaute(Integer id, String nom, GenreEnum genre, RoleEnum role){
+    public Astronaute(Integer id, String nom, GenreEnum genre, RoleEnum role){
         this.id=id;
         this.nom=nom;
         this.genre=genre;
