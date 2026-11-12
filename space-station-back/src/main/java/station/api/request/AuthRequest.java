@@ -1,4 +1,4 @@
-package station.dto.request;
+package station.api.request;
 
 import jakarta.validation.constraints.NotBlank;
 

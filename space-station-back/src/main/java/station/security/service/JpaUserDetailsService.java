@@ -6,14 +6,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import station.dao.IDAOCompte;
+import station.repo.CompteRepository;
 import station.model.Admin;
 
 @Service 
 public class JpaUserDetailsService implements UserDetailsService {
-    private final IDAOCompte daoCompte;
+    private final CompteRepository daoCompte;
 
-    public JpaUserDetailsService(IDAOCompte daoCompte) {
+    public JpaUserDetailsService(CompteRepository daoCompte) {
         this.daoCompte = daoCompte;
     }
 

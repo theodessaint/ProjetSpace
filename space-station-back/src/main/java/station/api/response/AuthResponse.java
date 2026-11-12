@@ -1,3 +1,3 @@
-package station.dto.response;
+package station.api.response;
 
 public record AuthResponse(boolean success, String token) {}

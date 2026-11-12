@@ -18,8 +18,8 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 
-import station.dto.request.AuthRequest;
-import station.dto.response.AuthResponse;
+import station.api.request.AuthRequest;
+import station.api.response.AuthResponse;
 
 public class SecurityService {
     private final static Logger log = LoggerFactory.getLogger(SecurityService.class);
