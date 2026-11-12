@@ -5,5 +5,5 @@ public enum ModuleEnum {
     Dortoir,
     SalleDesMachines,
     RecyclageEauEtOxygene,
-    CentreDeCommandemant;
+    CentreDeCommandement;
 }
