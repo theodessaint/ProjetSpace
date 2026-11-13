@@ -42,27 +42,29 @@ public class Position {
 
     }
 
-    @Override 
-    public boolean equals(Object o) { // Permet de savoir si l'objet reçu est la même case que la position
-
-        if (this == o) return true; // Comparaison a soi-même
-        if (!(o instanceof Position)) return false; // Exclu les objets de type non Position
-
-        Position autre = (Position) o; // Permet de traiter l'objet telle qu'une position pour accéder au x et y
-        return x == autre.x && y == autre.y; // Même case si x et y sont les mêmes
-
-    }
-
-    @Override 
-    public int hashCode() { // Transforme la position en un nombre qui sera toujours le même pour une même combinaison de coordonnées
-
-        return Objects.hash(x, y);
-
-    }
+	@Override
+	public int hashCode() { // Transforme la position en un nombre qui sera toujours le même pour une même combinaison de coordonnées
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + x;
+		result = prime * result + y;
+		return result;
+	}
 
 	@Override
-	public String toString() {
-		return "Position [x=" + x + ", y=" + y + "]";
+	public boolean equals(Object obj) { // Permet de savoir si l'objet reçu est la même case que la position
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Position other = (Position) obj;
+		if (x != other.x)
+			return false;
+		if (y != other.y)
+			return false;
+		return true;
 	}
 
 }
