@@ -1,19 +1,37 @@
 package station.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import station.enumerator.GenreEnum;
 import station.enumerator.RoleEnum;
 
-public abstract class Astronaute {
+@Entity
+public class Astronaute {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String nom;
+
+    @Enumerated(EnumType.STRING)
     private GenreEnum genre;
+
+    @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
-    public Astronaute(Integer id, String nom, GenreEnum genre, RoleEnum role){
-        this.id=id;
-        this.nom=nom;
-        this.genre=genre;
-        this.role=role;
+    public Astronaute() {
+    }
+
+    public Astronaute(Integer id, String nom, GenreEnum genre, RoleEnum role) {
+        this.id = id;
+        this.nom = nom;
+        this.genre = genre;
+        this.role = role;
     }
 
     public Integer getId() {
@@ -50,7 +68,6 @@ public abstract class Astronaute {
 
     @Override
     public String toString() {
-        return "Astronaute [id=" + id + ", nom=" + nom + ", genre=" + genre + ", role=" + role;
+        return "Astronaute [id=" + id + ", nom=" + nom + ", genre=" + genre + ", role=" + role + "]";
     }
-    
 }
