@@ -24,14 +24,12 @@ public class Astronaute {
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
-    public Astronaute() {
-    }
-
-    public Astronaute(Integer id, String nom, GenreEnum genre, RoleEnum role) {
-        this.id = id;
-        this.nom = nom;
-        this.genre = genre;
-        this.role = role;
+    public Astronaute(){}
+    public Astronaute(Integer id, String nom, GenreEnum genre, RoleEnum role){
+        this.id=id;
+        this.nom=nom;
+        this.genre=genre;
+        this.role=role;
     }
 
     public Integer getId() {
