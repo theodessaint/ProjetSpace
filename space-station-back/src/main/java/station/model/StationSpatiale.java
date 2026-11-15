@@ -4,8 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+
+@Entity 
 public class StationSpatiale {
     
+    @OneToOne
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
     private String nom;
@@ -14,12 +26,16 @@ public class StationSpatiale {
     
     private int cycle;
     
+    @Embedded 
     private Joueur joueur;
     
+    @OneToMany
     private List<Astronaute> astronautes = new ArrayList<Astronaute>();
     
+    @OneToMany
     private List<Ressource> ressources = new ArrayList<Ressource>();
     
+    @OneToMany(mappedBy = "station")
     private List<Module> modules = new ArrayList<Module>();
     
     public StationSpatiale() {}

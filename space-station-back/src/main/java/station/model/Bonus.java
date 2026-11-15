@@ -2,12 +2,21 @@ package station.model;
 
 import java.util.List;
 
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import station.enumerator.RoleEnum;
 
+@Entity 
 public class Bonus {
 
-    private RoleEnum role;             // C'est notre enum Role
+    @Enumerated(EnumType.STRING)
+    private RoleEnum role; // C'est notre enum Role
+
+    @Embedded
     private Ressource ressource;   // ressource impactée
+
     private double multiplicateur; // 1.15 = +15 %, 0.90 = -10 %
 
  public Bonus(RoleEnum role, Ressource ressource, double multiplicateur) {

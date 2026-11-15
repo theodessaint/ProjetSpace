@@ -1,6 +1,12 @@
 package station.model;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 
+@Entity 
+@DiscriminatorValue ("Production")
 public class ModuleProd extends Module {
 
     @Column(nullable = false)
@@ -29,11 +35,5 @@ public class ModuleProd extends Module {
         + getNbAstroModuleMax() + ", nbModuleMax=" + getNbModuleMax() + ", debloque=" + isDebloque() + ", position=" 
         + getPosition() + "]";
     }
-    
-    
-
-
-
-
 
 }

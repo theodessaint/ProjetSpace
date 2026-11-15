@@ -1,10 +1,18 @@
 package station.model;
 
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import station.enumerator.ModuleEnum;
 
+@Entity 
 public class Emplacement { // Pour attribuer l'emplacement des modules directement dans la grille de manière fixe
 
+@Enumerated(EnumType.STRING)
 private final ModuleEnum type;
+
+@Embedded 
 private final Position position;
 
 public Emplacement(ModuleEnum type, Position position) {

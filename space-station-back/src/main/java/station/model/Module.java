@@ -7,11 +7,14 @@ import org.hibernate.annotations.ManyToAny;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -20,8 +23,10 @@ import jakarta.persistence.UniqueConstraint;
 
 @Entity 
 @Table(uniqueConstraints = 
-    @UniqueConstraint(columnNames = {"station_id", "x","y"})
+@UniqueConstraint(columnNames = {"station_id", "x","y"})
 )
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn (name="TYPE_MODULE")
 public class Module {
 
     @Id 
@@ -47,10 +52,10 @@ public class Module {
     @JoinColumn(name = "station_id", nullable = false)
     private StationSpatiale station;
 
-    // @XtoY
+    @OneToMany(mappedBy = "module")
     private List<ModuleProd> prodModules = new ArrayList<ModuleProd>();
 
-    // @XtoY
+    @OneToMany(mappedBy = "module")
     private List<ModuleConso> consoModules = new ArrayList<ModuleConso>();
 
     public Module () {}
