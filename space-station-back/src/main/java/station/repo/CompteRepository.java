@@ -7,6 +7,6 @@ import station.model.Compte;
 
 public interface CompteRepository extends JpaRepository<Compte, Integer>{
    
-    public Optional<Compte> findByUsername(String username);
+    public Optional<Compte> findById(Integer id);
 
 }

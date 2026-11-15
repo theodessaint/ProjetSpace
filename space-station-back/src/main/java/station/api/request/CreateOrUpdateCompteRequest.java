@@ -4,11 +4,22 @@ import jakarta.validation.constraints.NotBlank;
 
 public class CreateOrUpdateCompteRequest {
 
+    @NotBlank 
+    private Integer id;
+
     @NotBlank
     private String login;
 
     @NotBlank 
     private String password;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getLogin() {
         return login;

@@ -1,7 +1,13 @@
 package station.model;
 
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import station.enumerator.RessourceEnum;
 
+@Entity 
+@Embeddable
 public class Ressource {
 
     // Ressources du jeu :
@@ -10,7 +16,10 @@ public class Ressource {
     public static final Ressource OXYGENE    = new Ressource(RessourceEnum.OXYGENE,    100, 40, 20);
     public static final Ressource ENERGIE    = new Ressource(RessourceEnum.ENERGIE,    100, 25, 10);
 
+    @Enumerated(EnumType.STRING)
     private RessourceEnum type;
+
+    
     private double start;     // niveau de départ d'une partie (à définir)
     private double danger;    // en dessous de ce seuil : alerte "danger"
     private double critique;  // en dessous de ce seuil : alerte "critique"
