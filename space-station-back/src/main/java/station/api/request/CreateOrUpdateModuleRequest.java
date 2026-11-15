@@ -4,6 +4,9 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import station.model.ModuleConso;
+import station.model.ModuleProd;
+import station.model.Position;
 import station.model.StationSpatiale;
 
 public class CreateOrUpdateModuleRequest {
@@ -84,15 +87,15 @@ public class CreateOrUpdateModuleRequest {
         return prodModules;
     }
 
-    public void setProdModules(List<moduleProd> prodModules) {
+    public void setProdModules(List<ModuleProd> prodModules) {
         this.prodModules = prodModules;
     }
 
-    public List<moduleConso> getConsoModules() {
+    public List<ModuleConso> getConsoModules() {
         return consoModules;
     }
 
-    public void setConsoModules(List<moduleConso> consoModules) {
+    public void setConsoModules(List<ModuleConso> consoModules) {
         this.consoModules = consoModules;
     }
     

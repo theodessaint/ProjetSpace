@@ -6,9 +6,9 @@ public class ModuleConso extends Module {
     @Column(nullable = false)
     private int nbConsoModules;
 
-    public ModuleProd () {}
+    public ModuleConso () {}
 
-    public ModuleProd (Integer id, String nom, int nbAstroModuleMax, int nbModuleMax, boolean debloque, Position position,
+    public ModuleConso (Integer id, String nom, int nbAstroModuleMax, int nbModuleMax, boolean debloque, Position position,
             StationSpatiale station, int nbConsoModules) {
         super (id, nom, nbAstroModuleMax, nbModuleMax, debloque, position, station);
 
@@ -29,3 +29,4 @@ public class ModuleConso extends Module {
         + getNbAstroModuleMax() + ", nbModuleMax=" + getNbModuleMax() + ", debloque=" + isDebloque() + ", position=" 
         + getPosition() + "]";
     }
+}
