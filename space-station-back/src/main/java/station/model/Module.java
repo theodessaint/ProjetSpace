@@ -48,10 +48,10 @@ public class Module {
     private StationSpatiale station;
 
     // @XtoY
-    private List<moduleProd> prodModules = new ArrayList<moduleProd>();
+    private List<ModuleProd> prodModules = new ArrayList<ModuleProd>();
 
     // @XtoY
-    private List<moduleConso> consoModules = new ArrayList<moduleConso>();
+    private List<ModuleConso> consoModules = new ArrayList<ModuleConso>();
 
     public Module () {}
 
@@ -122,19 +122,19 @@ public class Module {
         this.station = station;
     }
 
-    public List<moduleProd> getProdModules() {
+    public List<ModuleProd> getProdModules() {
         return prodModules;
     }
 
-    public void setProdModules(List<moduleProd> prodModules) {
+    public void setProdModules(List<ModuleProd> prodModules) {
         this.prodModules = prodModules;
     }
 
-    public List<moduleConso> getConsoModules() {
+    public List<ModuleConso> getConsoModules() {
         return consoModules;
     }
 
-    public void setConsoModules(List<moduleConso> consoModules) {
+    public void setConsoModules(List<ModuleConso> consoModules) {
         this.consoModules = consoModules;
     }
 

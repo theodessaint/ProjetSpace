@@ -27,10 +27,10 @@ public class CreateOrUpdateModuleRequest {
     private StationSpatiale station;
 
     @NotNull
-    private List<moduleProd> prodModules;
+    private List<ModuleProd> prodModules;
 
     @NotNull
-    private List<moduleConso> consoModules
+    private List<ModuleConso> consoModules;
 
     public String getNom() {
         return nom;
@@ -80,7 +80,7 @@ public class CreateOrUpdateModuleRequest {
         this.station = station;
     }
 
-    public List<moduleProd> getProdModules() {
+    public List<ModuleProd> getProdModules() {
         return prodModules;
     }
 
