@@ -1,5 +1,5 @@
 package station.api.response;
 
-public record EntityCreatedResponse(String id) {
+public record EntityCreatedResponse(Integer id) {
 
 }

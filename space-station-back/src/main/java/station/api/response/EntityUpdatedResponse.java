@@ -1,5 +1,5 @@
 package station.api.response;
 
-public record EntityUpdatedResponse(String id, boolean success) {
+public record EntityUpdatedResponse(Integer id, boolean success) {
 
 }
