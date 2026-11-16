@@ -8,7 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import station.enumerator.RoleEnum;
+import station.enumerator.RessourceEnum;
 
 @Entity 
 public class ModuleConso {
@@ -18,7 +18,7 @@ public class ModuleConso {
     private Integer id;
 
     @Embedded
-    private RoleEnum roleEnum;
+    private RessourceEnum ressource;
 
     @Column(nullable = false)
     private Integer value;
@@ -29,9 +29,9 @@ public class ModuleConso {
 
     public ModuleConso () {}
 
-    public ModuleConso(Integer id, RoleEnum roleEnum, Integer value, Module module) {
+    public ModuleConso(Integer id, RessourceEnum ressource, Integer value, Module module) {
         this.id = id;
-        this.roleEnum = roleEnum;
+        this.ressource = ressource;
         this.value = value;
         this.module = module;
     }
@@ -44,12 +44,12 @@ public class ModuleConso {
         this.id = id;
     }
 
-    public RoleEnum getRoleEnum() {
-        return roleEnum;
+    public RessourceEnum getRessourceEnum() {
+        return ressource;
     }
 
-    public void setRoleEnum(RoleEnum roleEnum) {
-        this.roleEnum = roleEnum;
+    public void setRessourceEnum(RessourceEnum ressource) {
+        this.ressource = ressource;
     }
 
     public Integer getValue() {
@@ -69,7 +69,7 @@ public class ModuleConso {
     }
 
     public String toString() {
-        return "ModuleConso [id=" + id + ", roleEnum=" + roleEnum + ", value=" + value + ", module=" + module + "]";
+        return "ModuleConso [id=" + id + ", ressourceEnum=" + ressource + ", value=" + value + ", module=" + module + "]";
     }
 
 }
