@@ -7,7 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import station.model.Module;
 import station.model.Position;
+import station.enumerator.ModuleEnum;
+import station.exception.PositionNotFoundException;
 import station.model.Emplacement;
 import station.model.Grille;
 import station.model.StationSpatiale;
@@ -57,8 +60,21 @@ public class StationSpatialeService {
             Position position = emplacement.getPosition();
 
             if(!Grille.contient(position)){
-
+                throw new PositionNotFoundException();
             }
+
+            Module module = new Module();
+
+            module.setNom(emplacement.getType().name());
+
+            module.setPosition(new Position(position.getX(), position.getX()));
+            module.setDebloque(emplacement.getType() == ModuleEnum.CentreDeCommandement || emplacement.getType() == ModuleEnum.Dortoir);
+
+            station.ajouterModule(module);
+
+            modules.add(module);
         }
+
+        this.moduleRepository.saveAll(modules);
     }
 }
