@@ -40,32 +40,22 @@ public class AstronauteService {
     }
 
     public Astronaute save(CreateOrUpdateAstronauteRequest request) {
-        log.debug("Création d'un astronaute ...");
-
         Astronaute astronaute = this.save(new Astronaute(), request);
-
         log.debug("Astronaute {} ajouté !", astronaute.getId());
 
         return astronaute;
     }
 
     public Astronaute save(Integer id, CreateOrUpdateAstronauteRequest request) {
-        log.debug("Modification de l'astronaute {} ...", id);
-
         Astronaute astronaute = this.findById(id);
-
         astronaute = this.save(astronaute, request);
-
         log.debug("Astronaute {} modifié !", id);
 
         return astronaute;
     }
 
     public void deleteById(Integer id) {
-        log.debug("Suppression de l'astronaute {} ...", id);
-
         this.repository.deleteById(id);
-
         log.debug("Astronaute {} supprimé !", id);
     }
 
