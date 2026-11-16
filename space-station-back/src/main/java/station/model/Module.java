@@ -3,18 +3,12 @@ package station.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.ManyToAny;
-
-import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -25,8 +19,6 @@ import jakarta.persistence.UniqueConstraint;
 @Table(uniqueConstraints = 
 @UniqueConstraint(columnNames = {"station_id", "x","y"})
 )
-@Inheritance(strategy=InheritanceType.JOINED)
-@DiscriminatorColumn (name="TYPE_MODULE")
 public class Module {
 
     @Id 

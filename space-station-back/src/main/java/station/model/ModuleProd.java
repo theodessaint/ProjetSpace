@@ -1,10 +1,13 @@
 package station.model;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import station.enumerator.RoleEnum;
 
 @Entity 
@@ -20,7 +23,8 @@ public class ModuleProd {
     @Column(nullable = false)
     private Integer value;
 
-    @Column(nullable = false)
+    @ManyToOne 
+    @JoinColumn(name = "module_id")
     private Module module;
 
     public ModuleProd() {}
