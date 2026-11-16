@@ -17,7 +17,7 @@ private final boolean ouvertAuDepart; // Modules débloqués de base au lancemen
 @Embedded 
 private final Position position;
 
-public Emplacement(ModuleEnum type, boolean ouvertAuDepart, Position position) {
+public Emplacement(ModuleEnum type, Position position, boolean ouvertAuDepart) {
     this.type = type;
     this.position = position;
     this.ouvertAuDepart = ouvertAuDepart;
