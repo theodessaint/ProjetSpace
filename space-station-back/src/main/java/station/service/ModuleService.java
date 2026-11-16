@@ -12,7 +12,7 @@ import station.repo.ModuleRepository;
 @Service
 public class ModuleService {
     
-    private static final int cyclesAvantDeblocageModule = 5;
+    private static final int cyclesAvantDeblocageModule = 5; // Combien de cycles avant de débloquer un nouveau module
     private final ModuleRepository repository;
 
     public ModuleService(ModuleRepository repository) {

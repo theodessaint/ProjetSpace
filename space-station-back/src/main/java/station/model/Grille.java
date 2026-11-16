@@ -11,7 +11,7 @@ public class Grille {
 
     public static final List<Emplacement> PLAN = List.of( // Attribution des emplacements et types de modules
         
-        new Emplacement(ModuleEnum.Dortoir, new Position(3,0), true),
+        new Emplacement(ModuleEnum.Dortoir, new Position(3,0), true), // ajout de true ou false pour les 5 modules qui sont automatiquement débloqués au lancement de CHAQUE partie
         new Emplacement(ModuleEnum.CentreDeCommandement, new Position(3,1), true),
 
         new Emplacement(ModuleEnum.RecyclageEauEtOxygene, new Position(0, 1), true),

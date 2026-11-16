@@ -53,22 +53,22 @@ public class StationSpatialeService {
         this.repository.deleteById(id);
     }
 
-    public void creerModules(StationSpatiale station) {
+    public void creerModules(StationSpatiale station) { // créer un module par position pour UNE station précise
         List<Module> modules = new ArrayList<>();
 
         for(Emplacement emplacement : Grille.PLAN) {
             Position position = emplacement.getPosition();
 
             if(!Grille.contient(position)){
-                throw new PositionNotFoundException();
+                throw new PositionNotFoundException(); // Erreur si la position n'est pas contenue dans la grille
             }
 
             Module module = new Module();
 
-            module.setNom(emplacement.getType().name());
+            module.setNom(emplacement.getType().name()); // Attribue le type selon le nom ("Serre") dans l'enum
 
-            module.setPosition(new Position(position.getX(), position.getX()));
-            module.setDebloque(emplacement.isOuvertAuDepart());
+            module.setPosition(new Position(position.getX(), position.getX())); // On récupère la position et on l'attribue au module
+            module.setDebloque(emplacement.isOuvertAuDepart()); // 
 
             station.ajouterModule(module);
 
