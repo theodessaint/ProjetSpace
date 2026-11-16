@@ -11,15 +11,15 @@ import station.model.Admin;
 
 @Service 
 public class JpaUserDetailsService implements UserDetailsService {
-    private final CompteRepository daoCompte;
+    private final CompteRepository repository;
 
-    public JpaUserDetailsService(CompteRepository daoCompte) {
-        this.daoCompte = daoCompte;
+    public JpaUserDetailsService(CompteRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return this.daoCompte
+        return this.repository
             // Recherche de l'utilisateur par son username
             .findByUsername(username)
 
