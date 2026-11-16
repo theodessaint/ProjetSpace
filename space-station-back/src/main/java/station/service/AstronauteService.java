@@ -9,16 +9,21 @@ import org.springframework.stereotype.Service;
 import station.api.request.CreateOrUpdateAstronauteRequest;
 import station.enumerator.RoleEnum;
 import station.exception.AstronauteNotFoundException;
+import station.exception.StationSpatialeNotFoundException;
 import station.model.Astronaute;
+import station.model.StationSpatiale;
 import station.repo.AstronauteRepository;
+import station.repo.StationSpatialeRepository;
 
 @Service
 public class AstronauteService {
     private static final Logger log = LoggerFactory.getLogger(AstronauteService.class);
     private final AstronauteRepository repository;
+    private final StationSpatialeRepository stationRepository;
     
-    public AstronauteService(AstronauteRepository repository) {
+    public AstronauteService(AstronauteRepository repository, StationSpatialeRepository stationRepository) {
         this.repository = repository;
+        this.stationRepository = stationRepository;
     }
     
     public List<Astronaute> findAll() {
@@ -68,6 +73,15 @@ public class AstronauteService {
         astronaute.setNom(request.getNom());
         astronaute.setGenre(request.getGenre());
         astronaute.setRole(request.getRole());
+
+        StationSpatiale station = stationRepository.findById(request.getStationId())
+        .orElseThrow(
+            () -> {
+                log.warn("Station spatiale introuvable : id={}", request.getStationId());
+                return new StationSpatialeNotFoundException();
+            }
+        );
+        astronaute.setStation(station);
         
         return this.repository.save(astronaute);
     }

@@ -6,24 +6,30 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import station.enumerator.GenreEnum;
 import station.enumerator.RoleEnum;
 
 @Entity
 public class Astronaute {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+    
     private String nom;
-
+    
     @Enumerated(EnumType.STRING)
     private GenreEnum genre;
-
+    
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
-
+    
+    @ManyToOne
+    @JoinColumn(name = "station_id", nullable = false)
+    private StationSpatiale station;
+    
     public Astronaute(){}
     public Astronaute(Integer id, String nom, GenreEnum genre, RoleEnum role){
         this.id=id;
@@ -31,39 +37,44 @@ public class Astronaute {
         this.genre=genre;
         this.role=role;
     }
-
+    
     public Integer getId() {
         return id;
     }
-
+    
     public void setId(Integer id) {
         this.id = id;
     }
-
+    
     public String getNom() {
         return nom;
     }
-
+    
     public void setNom(String nom) {
         this.nom = nom;
     }
-
+    
     public GenreEnum getGenre() {
         return genre;
     }
-
+    
     public void setGenre(GenreEnum genre) {
         this.genre = genre;
     }
-
+    
     public RoleEnum getRole() {
         return role;
     }
-
+    
     public void setRole(RoleEnum role) {
         this.role = role;
     }
-
+    public StationSpatiale getStation() {
+        return station;
+    }
+    public void setStation(StationSpatiale station) {
+        this.station = station;
+    }
     @Override
     public String toString() {
         return "Astronaute [id=" + id + ", nom=" + nom + ", genre=" + genre + ", role=" + role + "]";
