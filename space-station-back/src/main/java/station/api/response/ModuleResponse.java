@@ -13,17 +13,17 @@ public class ModuleResponse {
     private Integer stationId;
     
     
-    public static ModuleResponse convert(Module Module) {
+    public static ModuleResponse convert(Module module) {
         ModuleResponse response = new ModuleResponse();
         
-        response.id = Module.getId();
-        response.nom = Module.getNom();
-        response.nbAstroModuleMax = Module.getNbAstroModuleMax();
-        response.nbModuleMax = Module.getNbModuleMax();
-        response.debloque = Module.isDebloque();
-        response.positionX = Module.getPosition().getX();
-        response.positionY = Module.getPosition().getY();
-        response.stationId = Module.getStation().getId();
+        response.id = module.getId();
+        response.nom = module.getNom();
+        response.nbAstroModuleMax = module.getNbAstroModuleMax();
+        response.nbModuleMax = module.getNbModuleMax();
+        response.debloque = module.isDebloque();
+        response.positionX = module.getPosition().getX();
+        response.positionY = module.getPosition().getY();
+        response.stationId = module.getStation().getId();
         
         return response;
     }

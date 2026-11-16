@@ -10,13 +10,13 @@ public class BonusResponse {
     private Double multiplicateur;
 
     
-    public static BonusResponse convert(Bonus Bonus) {
+    public static BonusResponse convert(Bonus bonus) {
         BonusResponse response = new BonusResponse();
         
-        response.id = Bonus.getId();
-        response.role = Bonus.getRole();
-        response.ressourceId = Bonus.getRessource().getId();
-        response.multiplicateur = Bonus.getMultiplicateur();
+        response.id = bonus.getId();
+        response.role = bonus.getRole();
+        response.ressourceId = bonus.getRessource().getId();
+        response.multiplicateur = bonus.getMultiplicateur();
         
         return response;
     }
