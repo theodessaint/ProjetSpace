@@ -1,7 +1,6 @@
 package station.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import station.api.request.CreateOrUpdateBonusRequest;
-import station.enumerator.RessourceEnum;
 import station.exception.BonusNotFoundException;
 import station.model.Bonus;
 import station.model.Ressource;
@@ -34,8 +32,12 @@ public class BonusService {
     public Bonus findById(Integer id) {
         log.debug("Recherche du bonus {} ...", id);
         
-        return this.repository.findById(id)
-        .orElseThrow(BonusNotFoundException::new);
+        return this.repository.findById(id).orElseThrow(
+            () -> {
+                log.warn("Bonus introuvable : id={}", id);
+                return new BonusNotFoundException();
+            }
+        );
     }
     
     public Bonus save(CreateOrUpdateBonusRequest request) {
