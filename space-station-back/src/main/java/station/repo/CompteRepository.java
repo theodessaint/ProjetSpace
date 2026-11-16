@@ -9,4 +9,6 @@ public interface CompteRepository extends JpaRepository<Compte, Integer>{
    
     public Optional<Compte> findById(Integer id);
 
+    public Optional<Compte> findByUsername(String username);
+
 }
