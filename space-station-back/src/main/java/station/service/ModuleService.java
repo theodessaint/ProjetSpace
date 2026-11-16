@@ -28,6 +28,10 @@ public class ModuleService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module introuvable"));
     }
 
+    public List<Module> findByStationId(Integer stationId){ // Affiche la liste des modules d'une partie
+        return this.repository.findByStationId(stationId);
+    }
+
     public Module save(Module module) {
         module.setId(null);
         return this.repository.save(module);
