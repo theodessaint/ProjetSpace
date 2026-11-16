@@ -1,5 +1,13 @@
 package station.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 import jakarta.persistence.EntityNotFoundException;
 
-public class BonusNotFoundException extends EntityNotFoundException {}
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class BonusNotFoundException extends EntityNotFoundException {
+    public BonusNotFoundException() {
+        super("Bonus introuvable");
+    }
+}
