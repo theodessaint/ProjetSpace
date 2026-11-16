@@ -7,10 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import station.model.Module;
+import station.model.StationSpatiale;
 import station.repo.ModuleRepository;
 
 @Service
 public class ModuleService {
+    
+    private static final int cyclesAvantDeblocageModule = 5; // Combien de cycles avant de débloquer un nouveau module (a voir comment la rendre dynamique selon la difficulté ?)
     private final ModuleRepository repository;
 
     public ModuleService(ModuleRepository repository) {
@@ -24,6 +27,10 @@ public class ModuleService {
     public Module findById(Integer id) {
         return this.repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module introuvable"));
+    }
+
+    public List<Module> findByStationId(Integer stationId){ // Affiche la liste des modules d'une partie
+        return this.repository.findByStationId(stationId);
     }
 
     public Module save(Module module) {
@@ -40,4 +47,37 @@ public class ModuleService {
     public void deleteById(Integer id) {
         this.repository.deleteById(id);
     }
+
+    public Module debloqueModule(Integer id) { // Permet de debloquer un module
+        
+        Module module = this.findById(id);
+
+        if(module.isDebloque()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,  "Ce module est déjà débloqué"); // Si le module est déjà débloqué on recoit une erreur
+        }
+
+        StationSpatiale station = module.getStation(); // Vérifie le cycle pour savoir si c'est déblocable
+        if(station.getCycle() % cyclesAvantDeblocageModule !=0) { // Il faut que ce soit modulo de 5 dans notre cas
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pas possible de débloquer un module sur ce cycle");
+        }
+
+        List<Module> modulesDeLaStation = this.repository.findByStationId(station.getId()); // On récupère tous les modules contenus dans la partie
+
+        boolean aUnVoisinDebloque = false;
+
+        for(Module autre : modulesDeLaStation) {
+            if(autre.isDebloque() && autre.getPosition().estVoisineDe(module.getPosition())) { // Vérifie si le module est débloqué et est voisin de celui qu'on veut débloquer
+                aUnVoisinDebloque = true;
+                break; // S'arrête dès que ca trouve un voisin débloqué
+            }
+        }
+
+        if(!aUnVoisinDebloque) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pas possible de débloquer un module car aucun module voisin n'est débloqué");
+        }
+
+        module.setDebloque(true);
+        return this.repository.save(module);
+    }
+
 }
