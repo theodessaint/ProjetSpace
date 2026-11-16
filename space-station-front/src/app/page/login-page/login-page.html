@@ -1,1 +1,41 @@
-<p>login-page works!</p>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+    <link rel="stylesheet" href="AccueilSpaceFront.css">
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="twinkling"></div>
+<main class="accueil">
+  <h1 class="titre">Station<br>Spatiale</h1>
+  <p class="accroche">Identifiez-vous pour<br>rejoindre l'équipage</p>
+
+  <form class="carte" [formGroup]="userForm" (ngSubmit)="connecter()">
+
+    @if (loginError()) {
+      <div class="alerte" role="alert">Nom d'utilisateur ou mot de passe incorrect</div>
+    }
+
+    <div class="champ">
+      <label for="username">Nom d'utilisateur</label>
+      <input id="username" type="text" autocomplete="username" [formControl]="usernameCtrl">
+      @if (usernameCtrl.touched && usernameCtrl.hasError('required')) {
+        <small class="erreur">Le nom d'utilisateur est obligatoire</small>
+      }
+    </div>
+
+    <div class="champ">
+      <label for="password">Mot de passe</label>
+      <input id="password" type="password" autocomplete="current-password" [formControl]="passwordCtrl">
+      @if (passwordCtrl.touched && passwordCtrl.errors) {
+        <small class="erreur">
+          {{ passwordCtrl.hasError('required') ? passwordErrorMessages.required : passwordErrorMessages.minlength }}
+        </small>
+      }
+    </div>
+
+    <button type="submit" class="btn btn-principal" [disabled]="userForm.invalid">Se connecter</button>
+    <a class="btn" routerLink="/inscription">S'inscrire</a>
+  </form>
+</main>

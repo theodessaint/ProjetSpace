@@ -106,40 +106,6 @@ body {
   box-shadow: 0 0 22px rgba(255, 180, 84, 0.35);
 }
 .btn-principal:hover { background: #ffc473; border-color: #ffc473; box-shadow: 0 0 30px rgba(255, 180, 84, 0.55); }
- 
-/* Difficulté */
-.difficulte { margin: 0.4rem 0 0; padding: 0; border: 0; }
-.difficulte legend { padding: 0; margin-bottom: 0.5rem; font-size: 0.9rem; color: #b9c4ee; }
- 
-.btndiff { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--trait); border-radius: 8px; overflow: hidden; }
-.btndiff input { position: absolute; opacity: 0; pointer-events: none; }
-.btndiff label {
-  padding: 0.55rem 0.2rem;
-  font-size: 0.92rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.btndiff label:hover { background: rgba(160, 190, 255, 0.12); }
-.btndiff input:checked + label { background: var(--glace); color: #04202a; font-weight: 500; }
- 
-.aide { min-height: 2.6em; margin: 0.6rem 0 0; font-size: 0.85rem; color: #98a6d6; }
- 
-/* Fenêtre des règles du jeu  */
-
-.regles {
-  width: min(92vw, 34rem);
-  padding: 1.6rem;
-  color: var(--etoile);
-  background: var(--nuit);
-  border: 1px solid var(--trait);
-  border-radius: 14px;
-}
-.regles::backdrop { background: rgba(2, 4, 16, 0.75); }
-.regles h2 { margin: 0 0 1rem; font-family: "Chakra Petch", sans-serif; }
-.regles ul { margin: 0 0 1.4rem; padding-left: 1.2rem; line-height: 1.55; }
-.regles li { margin-bottom: 0.5rem; }
-.regles form { text-align: right; }
-
 
 /* Background étoilé trouvé sur codeopen.io :  https://codepen.io/NazarAzhar/pen/zqXMqP*/
 
