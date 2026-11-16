@@ -68,7 +68,7 @@ public class StationSpatialeService {
             module.setNom(emplacement.getType().name());
 
             module.setPosition(new Position(position.getX(), position.getX()));
-            module.setDebloque(emplacement.getType() == ModuleEnum.CentreDeCommandement || emplacement.getType() == ModuleEnum.Dortoir);
+            module.setDebloque(emplacement.isOuvertAuDepart());
 
             station.ajouterModule(module);
 
