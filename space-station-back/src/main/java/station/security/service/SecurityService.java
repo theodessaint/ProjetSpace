@@ -17,86 +17,87 @@ import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.stereotype.Service;
 
 import station.api.request.AuthRequest;
 import station.api.response.AuthResponse;
 
+@Service
 public class SecurityService {
     private final static Logger log = LoggerFactory.getLogger(SecurityService.class);
-    
+
     private final AuthenticationManager authenticationManager;
     private final JwtEncoder jwtEncoder;
-    
-    @Value("{${spring.application.name}")
+
+    @Value("{${spring.application.name}}")
     private String appName;
-    
+
     public SecurityService(AuthenticationManager authenticationManager, JwtEncoder jwtEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtEncoder = jwtEncoder;
     }
-    
+
     public AuthResponse auth(AuthRequest request) {
         try {
             log.debug("Tentative d'authentification ...");
-            
+
             // Vérification des identifiants de connexion
             Authentication authentication = this.authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    request.username(), 
-                    request.password()
-                )
-            );
-            
+                    new UsernamePasswordAuthenticationToken(
+                            request.username(),
+                            request.password()));
+
             // Enregistrement de l'authentification
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            
+
             log.debug("Authentification validée !");
-            
+
             Instant now = Instant.now();
-            
+
             // Récupération des autorisations de l'utilisateur
             String scope = authentication.getAuthorities()
-            .stream()
-            .map(a -> a.getAuthority())
-            .collect(Collectors.joining(" "))
-            ;
-            
+                    .stream()
+                    .map(a -> a.getAuthority())
+                    .collect(Collectors.joining(" "));
+            // Rôle renvoyé au front : "ADMIN" ou "JOUEUR", sans le préfixe ROLE_
+            String role = authentication.getAuthorities()
+                    .stream()
+                    .map(a -> a.getAuthority().replace("ROLE_", ""))
+                    .findFirst()
+                    .orElse("");
             // Création du jeton JWT
             // 1. Payload - Contenu du jeton JWT
             JwtClaimsSet payload = JwtClaimsSet.builder()
-            .issuer(appName)
-            .subject(request.username())
-            .issuedAt(now)
-            .expiresAt(now.plus(1, ChronoUnit.HOURS))
-            .claim("scope", scope) // défini par le rôle attribué lors de la connexion (voir JpaUserDetailsService)
-            .build()
-            ;
-            
+                    .issuer(appName)
+                    .subject(request.username())
+                    .issuedAt(now)
+                    .expiresAt(now.plus(1, ChronoUnit.HOURS))
+                    .claim("scope", scope) // défini par le rôle attribué lors de la connexion (voir
+                                           // JpaUserDetailsService)
+                    .build();
+
             // 2. Header - En-tête du jeton JWT
             JwsHeader header = JwsHeader
-            .with(MacAlgorithm.HS256)
-            .build()
-            ;
-            
+                    .with(MacAlgorithm.HS256)
+                    .build();
+
             // 3. Génération du jeton JWT avec le JwtEncoder
             String token = this.jwtEncoder
-            .encode(JwtEncoderParameters.from(header, payload))
-            .getTokenValue()
-            ;
-            
-            return new AuthResponse(true, token);
-            
-            
+                    .encode(JwtEncoderParameters.from(header, payload))
+                    .getTokenValue();
+
+            return new AuthResponse(true, token, role);
+
         }
-        
+
         catch (BadCredentialsException ex) {
             log.error("Impossible de s'authentifier : mauvais identifiants.");
         }
-        
+
         catch (Exception ex) {
             log.error("Impossible de s'authentifier : erreur ({}).", ex.getClass().getSimpleName());
         }
-        
-        return new AuthResponse(false, "");
+
+        return new AuthResponse(false, "", "");
     }
 }

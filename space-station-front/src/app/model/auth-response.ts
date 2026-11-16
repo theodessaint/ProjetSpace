@@ -1,1 +1,5 @@
-export interface AuthResponse {}
+export interface AuthResponse {
+  success: boolean;
+  token: string;
+  role: string;
+}
