@@ -7,14 +7,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import station.model.StationSpatiale;
+import station.repo.ModuleRepository;
 import station.repo.StationSpatialeRepository;
 
 @Service
 public class StationSpatialeService {
     private final StationSpatialeRepository repository;
+    private final ModuleRepository moduleRepository;
 
-    public StationSpatialeService(StationSpatialeRepository repository) {
+    public StationSpatialeService(StationSpatialeRepository repository, ModuleRepository moduleRepository) {
         this.repository = repository;
+        this.moduleRepository = moduleRepository;
     }
 
     public List<StationSpatiale> findAll() {
@@ -28,7 +31,9 @@ public class StationSpatialeService {
 
     public StationSpatiale save(StationSpatiale station) {
         station.setId(null);
-        return this.repository.save(station);
+        StationSpatiale stationCree = this.repository.save(station);
+        this.creerModules(stationCree);
+        return stationCree;
     }
 
     public StationSpatiale save(Integer id, StationSpatiale station) {
