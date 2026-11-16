@@ -12,25 +12,19 @@ public class Emplacement { // Pour attribuer l'emplacement des modules directeme
 @Enumerated(EnumType.STRING)
 private final ModuleEnum type;
 
+private final boolean ouvertAuDepart; // Modules débloqués de base au lancement de la partie
+
 @Embedded 
 private final Position position;
 
-public Emplacement(ModuleEnum type, Position position) {
+public Emplacement(ModuleEnum type, boolean ouvertAuDepart, Position position) {
     this.type = type;
+    this.ouvertAuDepart = ouvertAuDepart;
     this.position = position;
 }
 
-public ModuleEnum getType() {
-    return type;
-}
-
-public Position getPosition() {
-    return position;
-}
-
-@Override
-public String toString() {
-    return "Emplacement [type=" + type + ", position=" + position + "]";
+public boolean isOuvertAuDepart() {
+    return ouvertAuDepart;
 }
 
 }
