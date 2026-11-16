@@ -9,7 +9,7 @@ public class Grille {
     private static final int nb_Colonnes = 7; // A modifier si on change la taille du jeu mais faudra tout modifier derrière x)
     private static final int nb_Lignes = 5;
 
-    private static final List<Emplacement> PLAN = List.of( // Attribution des emplacements et types de modules
+    public static final List<Emplacement> PLAN = List.of( // Attribution des emplacements et types de modules
         
         new Emplacement(ModuleEnum.Dortoir, new Position(3,0)),
         new Emplacement(ModuleEnum.CentreDeCommandement, new Position(3,1)),

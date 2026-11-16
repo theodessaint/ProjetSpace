@@ -1,11 +1,15 @@
 package station.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import station.model.Position;
+import station.model.Emplacement;
+import station.model.Grille;
 import station.model.StationSpatiale;
 import station.repo.ModuleRepository;
 import station.repo.StationSpatialeRepository;
@@ -44,5 +48,17 @@ public class StationSpatialeService {
 
     public void deleteById(Integer id) {
         this.repository.deleteById(id);
+    }
+
+    public void creerModules(StationSpatiale station) {
+        List<Module> modules = new ArrayList<>();
+
+        for(Emplacement emplacement : Grille.PLAN) {
+            Position position = emplacement.getPosition();
+
+            if(!Grille.contient(position)){
+
+            }
+        }
     }
 }
