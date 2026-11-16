@@ -1,39 +1,71 @@
 package station.model;
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import station.enumerator.RoleEnum;
 
 @Entity 
-@DiscriminatorValue ("Production")
-public class ModuleProd extends Module {
+public class ModuleProd {
+    
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Embedded
+    private RoleEnum roleEnum;
 
     @Column(nullable = false)
-    private int nbProdModules;
+    private Integer value;
 
-    public ModuleProd () {}
+    @Column(nullable = false)
+    private Module module;
 
-    public ModuleProd (Integer id, String nom, int nbAstroModuleMax, int nbModuleMax, boolean debloque, Position position,
-            StationSpatiale station, int nbProdModules) {
-        super (id, nom, nbAstroModuleMax, nbModuleMax, debloque, position, station);
+    public ModuleProd() {}
 
-        this.nbProdModules = nbProdModules;
+    public ModuleProd(Integer id, RoleEnum roleEnum, Integer value, Module module) {
+        this.id = id;
+        this.roleEnum = roleEnum;
+        this.value = value;
+        this.module = module;
     }
 
-    public int getNbProdModules() {
-        return nbProdModules;
+    public Integer getId() {
+        return id;
     }
 
-    public void setNbProdModules(int prodModules) {
-        this.nbProdModules = nbProdModules;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    @Override
+    public RoleEnum getRoleEnum() {
+        return roleEnum;
+    }
+
+    public void setRoleEnum(RoleEnum roleEnum) {
+        this.roleEnum = roleEnum;
+    }
+
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
+
+    public Module getModule() {
+        return module;
+    }
+
+    public void setModule(Module module) {
+        this.module = module;
+    }
+
     public String toString() {
-        return "ModuleProd [prodModules=" + nbProdModules + "id=" + getId() + ", nom=" + getNom() + ", nbAstroModuleMax=" 
-        + getNbAstroModuleMax() + ", nbModuleMax=" + getNbModuleMax() + ", debloque=" + isDebloque() + ", position=" 
-        + getPosition() + "]";
+        return "ModuleProd [id=" + id + ", roleEnum=" + roleEnum + ", value=" + value + ", module=" + module + "]";
     }
 
 }

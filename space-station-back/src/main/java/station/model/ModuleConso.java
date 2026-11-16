@@ -1,36 +1,71 @@
 package station.model;
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import station.enumerator.RoleEnum;
 
 @Entity 
-@DiscriminatorValue ("Consommation")
-public class ModuleConso extends Module {
+public class ModuleConso {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Embedded
+    private RoleEnum roleEnum;
 
     @Column(nullable = false)
-    private int nbConsoModules;
+    private Integer value;
+
+    @Column(nullable = false)
+    private Module module;
 
     public ModuleConso () {}
 
-    public ModuleConso (Integer id, String nom, int nbAstroModuleMax, int nbModuleMax, boolean debloque, Position position,
-            StationSpatiale station, int nbConsoModules) {
-        super (id, nom, nbAstroModuleMax, nbModuleMax, debloque, position, station);
-
-        this.nbConsoModules = nbConsoModules;
+    public ModuleConso(Integer id, RoleEnum roleEnum, Integer value, Module module) {
+        this.id = id;
+        this.roleEnum = roleEnum;
+        this.value = value;
+        this.module = module;
     }
 
-    public int getNbConsoModules() {
-        return nbConsoModules;
+    public Integer getId() {
+        return id;
     }
 
-    public void setNbConsoModules(int prodModules) {
-        this.nbConsoModules = nbConsoModules;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    @Override
+    public RoleEnum getRoleEnum() {
+        return roleEnum;
+    }
+
+    public void setRoleEnum(RoleEnum roleEnum) {
+        this.roleEnum = roleEnum;
+    }
+
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
+
+    public Module getModule() {
+        return module;
+    }
+
+    public void setModule(Module module) {
+        this.module = module;
+    }
+
     public String toString() {
-        return "ModuleConso [consoModules=" + nbConsoModules + "id=" + getId() + ", nom=" + getNom() + ", nbAstroModuleMax=" 
-        + getNbAstroModuleMax() + ", nbModuleMax=" + getNbModuleMax() + ", debloque=" + isDebloque() + ", position=" 
-        + getPosition() + "]";
+        return "ModuleConso [id=" + id + ", roleEnum=" + roleEnum + ", value=" + value + ", module=" + module + "]";
     }
+
 }
