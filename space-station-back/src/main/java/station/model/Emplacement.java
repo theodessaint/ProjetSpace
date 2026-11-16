@@ -19,12 +19,19 @@ private final Position position;
 
 public Emplacement(ModuleEnum type, boolean ouvertAuDepart, Position position) {
     this.type = type;
-    this.ouvertAuDepart = ouvertAuDepart;
     this.position = position;
+    this.ouvertAuDepart = ouvertAuDepart;
+}
+
+public ModuleEnum getType() {
+	return type;
 }
 
 public boolean isOuvertAuDepart() {
-    return ouvertAuDepart;
+	return ouvertAuDepart;
 }
 
+public Position getPosition() {
+	return position;
+}
 }
