@@ -4,32 +4,46 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity 
 public class StationSpatiale {
     
-    @OneToOne
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
+    @Column(nullable = false)
     private String nom;
     
+    @ElementCollection
+    @CollectionTable (
+        name = "station_stats",
+        joinColumns = @JoinColumn(name = "station_id")
+    )
+    @MapKeyJoinColumn(name = "ressource_id")
+    @Column(name = "quantite")
     private Map<Ressource, Double> stats;
     
+    @PositiveOrZero
+    @Column(nullable = false)
     private int cycle;
     
     @Embedded 
     private Joueur joueur;
     
-    @OneToMany
+    @OneToMany(mappedBy = "station")
     private List<Astronaute> astronautes = new ArrayList<Astronaute>();
     
     @OneToMany
@@ -42,157 +56,157 @@ public class StationSpatiale {
     
     
     public StationSpatiale(Integer id, String nom, Map<Ressource, Double> stats, int cycle, Joueur joueur) {
-            this.id = id;
-            this.nom = nom;
-            this.stats = stats;
-            this.cycle = cycle;
-            this.joueur = joueur;
-        }   
-        
-        public Integer getId() {
-            return id;
-        }
-        
-        public void setId(Integer id) {
-            this.id = id;
-        }
-        
-        public String getNom() {
-            return nom;
-        }
-        
-        public void setNom(String nom) {
-            this.nom = nom;
-        }
-        
-        public Map<Ressource, Double> getStats() {
-            return stats;
-        }
-        
-        public void setStats(Map<Ressource, Double> stats) {
-            this.stats = stats;
-        }
-        
-        public int getCycle() {
-            return cycle;
-        }
-        
-        public void setCycle(int cycle) {
-            this.cycle = cycle;
-        }
-        
-        public Joueur getJoueur() {
-            return joueur;
-        }
-        
-        public void setJoueur(Joueur joueur) {
-            this.joueur = joueur;
-        }
-        
-        public List<Astronaute> getAstronautes() {
-            return astronautes;
-        }
-        
-        public void setAstronautes(List<Astronaute> astronautes) {
-            this.astronautes = astronautes;
-        }
-        
-        public List<Module> getModules() {
-            return modules;
-        }
-        
-        public void setModules(List<Module> modules) {
-            this.modules = modules;
-        }
-        
-        public List<Ressource> getRessources() {
-            return ressources;
-        }
-        
-        
-        public void setRessources(List<Ressource> ressources) {
-            this.ressources = ressources;
-        }
-        
-        
-        public void executerCycle() {
-            
-            // DEROULEMENT DU CYCLE
-            
-            if (this.cycle == 0) {
-                // Découverte du jeu, constitution de l'équipage
-                // Appel d'une fonction spécifique ?
-            } else {
-                // Réorganisation de l'équipage
-                
-                // Ajout de modules
-                
-                // Affectation des astronautes aux modules
-            }
-            
-            
-            // CONSOMMATION DES RESSOURCES ET EVALUATION DES SEUILS
-            
-            List<Ressource> ressourcesCritique = new ArrayList<Ressource>();
-            List<Ressource> ressourcesDanger = new ArrayList<Ressource>();
-            
-            for (Ressource ressource : this.getStats().keySet()) {
-                double quantite = this.getStats().get(ressource);
-                
-                // Calcul de consommation de chaque ressource
-
-                // CODE
-                
-                // Ajout des objets "Ressource" à des listes => si besoin de récupérer d'autres attributs que le nom.
-                
-                if (quantite <= ressource.getCritique()) {
-                    ressourcesCritique.add(ressource);
-                    
-                } else if (quantite <= ressource.getDanger()) {
-                    ressourcesDanger.add(ressource);
-                }
-                
-                if (ressourcesCritique.size() > 0) {
-                    List<String> nomsResCrit = ressourcesCritique.stream()
-                    .map(r -> r.getNom())
-                    .toList();
-                    
-                    switch (ressourcesCritique.size()) {
-                        case 1:
-                        System.out.println(nomsResCrit.getFirst() + " : seuil critique détecté !");
-                        break;
-                        
-                        case 2:
-                        System.out.println("Seuils critiques détectés pour les ressources " + nomsResCrit.toString().replaceAll("[\\[\\]]", "") +"\nÉvacuation recommandée !");
-                        break;
-                        
-                        default:
-                        System.out.println("Seuils critiques détectés pour les ressources " + nomsResCrit.toString().replaceAll("[\\[\\]]", "") +"\nÉvacuation immédiate !");
-                        
-                        //GAME OVER ?
-                        break;
-                    }
-                }
-                
-                if (ressourcesDanger.size() > 0) {
-                    System.out.println("Attention ! Vous avez " + ressourcesDanger.size() + " incohérences de ressources.");
-                    
-                }
-                
-                
-            }
-            
-            
-        }
-        
-        public void afficherEtat(){}
-        
-        public void ajouterRessource(Ressource ressource){
-            ressources.add(ressource);
-        }
-        
-        public void ajouterModule(Module module){
-            module.setStation(this);
-            modules.add(module);
-        }
+        this.id = id;
+        this.nom = nom;
+        this.stats = stats;
+        this.cycle = cycle;
+        this.joueur = joueur;
+    }   
+    
+    public Integer getId() {
+        return id;
     }
+    
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
+    public String getNom() {
+        return nom;
+    }
+    
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+    
+    public Map<Ressource, Double> getStats() {
+        return stats;
+    }
+    
+    public void setStats(Map<Ressource, Double> stats) {
+        this.stats = stats;
+    }
+    
+    public int getCycle() {
+        return cycle;
+    }
+    
+    public void setCycle(int cycle) {
+        this.cycle = cycle;
+    }
+    
+    public Joueur getJoueur() {
+        return joueur;
+    }
+    
+    public void setJoueur(Joueur joueur) {
+        this.joueur = joueur;
+    }
+    
+    public List<Astronaute> getAstronautes() {
+        return astronautes;
+    }
+    
+    public void setAstronautes(List<Astronaute> astronautes) {
+        this.astronautes = astronautes;
+    }
+    
+    public List<Module> getModules() {
+        return modules;
+    }
+    
+    public void setModules(List<Module> modules) {
+        this.modules = modules;
+    }
+    
+    public List<Ressource> getRessources() {
+        return ressources;
+    }
+    
+    
+    public void setRessources(List<Ressource> ressources) {
+        this.ressources = ressources;
+    }
+    
+    
+    public void executerCycle() {
+        
+        // DEROULEMENT DU CYCLE
+        
+        if (this.cycle == 0) {
+            // Découverte du jeu, constitution de l'équipage
+            // Appel d'une fonction spécifique ?
+        } else {
+            // Réorganisation de l'équipage
+            
+            // Ajout de modules
+            
+            // Affectation des astronautes aux modules
+        }
+        
+        
+        // CONSOMMATION DES RESSOURCES ET EVALUATION DES SEUILS
+        
+        List<Ressource> ressourcesCritique = new ArrayList<Ressource>();
+        List<Ressource> ressourcesDanger = new ArrayList<Ressource>();
+        
+        for (Ressource ressource : this.getStats().keySet()) {
+            double quantite = this.getStats().get(ressource);
+            
+            // Calcul de consommation de chaque ressource
+            
+            // CODE
+            
+            // Ajout des objets "Ressource" à des listes => si besoin de récupérer d'autres attributs que le nom.
+            
+            if (quantite <= ressource.getCritique()) {
+                ressourcesCritique.add(ressource);
+                
+            } else if (quantite <= ressource.getDanger()) {
+                ressourcesDanger.add(ressource);
+            }
+            
+            if (ressourcesCritique.size() > 0) {
+                List<String> nomsResCrit = ressourcesCritique.stream()
+                .map(r -> r.getNom())
+                .toList();
+                
+                switch (ressourcesCritique.size()) {
+                    case 1:
+                    System.out.println(nomsResCrit.getFirst() + " : seuil critique détecté !");
+                    break;
+                    
+                    case 2:
+                    System.out.println("Seuils critiques détectés pour les ressources " + nomsResCrit.toString().replaceAll("[\\[\\]]", "") +"\nÉvacuation recommandée !");
+                    break;
+                    
+                    default:
+                    System.out.println("Seuils critiques détectés pour les ressources " + nomsResCrit.toString().replaceAll("[\\[\\]]", "") +"\nÉvacuation immédiate !");
+                    
+                    //GAME OVER ?
+                    break;
+                }
+            }
+            
+            if (ressourcesDanger.size() > 0) {
+                System.out.println("Attention ! Vous avez " + ressourcesDanger.size() + " incohérences de ressources.");
+                
+            }
+            
+            
+        }
+        
+        
+    }
+    
+    public void afficherEtat(){}
+    
+    public void ajouterRessource(Ressource ressource){
+        ressources.add(ressource);
+    }
+    
+    public void ajouterModule(Module module){
+        module.setStation(this);
+        modules.add(module);
+    }
+}
