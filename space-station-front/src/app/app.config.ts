@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { UrlInterceptor } from './interceptor/url-interceptor';
+import { apiUrlInterceptor } from './interceptor/url-interceptor';
 import { jwtHeaderInterceptor } from './interceptor/jwt-header-interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -11,7 +11,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([ UrlInterceptor, jwtHeaderInterceptor ])
+      withInterceptors([ apiUrlInterceptor, jwtHeaderInterceptor ])
     )
   ]
 };

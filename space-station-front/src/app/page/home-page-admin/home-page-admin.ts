@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ViewEncapsulation } from '@angular/core';
+import { AuthService } from '../../service/auth-service';
 
 @Component({
   selector: 'app-home-page-admin',
@@ -11,9 +11,12 @@ import { ViewEncapsulation } from '@angular/core';
 })
 export class HomePageAdmin implements AfterViewInit, OnDestroy {
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   @ViewChild('astronaute') astro!: ElementRef<HTMLImageElement>;
   private timer?: ReturnType<typeof setInterval>;
+
+  username = this.authService.username;
 
   ngAfterViewInit(): void {
     this.deplacer();
@@ -37,7 +40,7 @@ export class HomePageAdmin implements AfterViewInit, OnDestroy {
 
   deconnexion(event: Event): void {
     event.preventDefault();
-    // à brancher sur l'authentification
+    this.authService.resetAuth();
     this.router.navigate(['/login']);
   }
 }

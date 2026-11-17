@@ -45,6 +45,7 @@ export class LoginPage implements OnInit {
 
         this.authService.token = resp.token;
         this.authService.role = resp.role;
+        this.authService.username = this.usernameCtrl.value;
         this.router.navigate([ resp.role === 'ADMIN' ? '/home-admin' : '/home-joueur' ]);
       },
       error: () => this.loginError.set(true)
