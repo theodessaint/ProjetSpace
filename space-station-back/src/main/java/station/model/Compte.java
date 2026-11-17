@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity 
@@ -23,11 +22,9 @@ public class Compte implements Serializable { //    Pas de abstract pour qu'un C
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected  Integer id;
 
-    @OneToOne 
     @Column(nullable = false)
     protected  String login;
 
-    @OneToOne 
     @Column(nullable = false)
     protected  String password;
     

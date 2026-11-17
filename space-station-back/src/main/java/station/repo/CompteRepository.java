@@ -11,10 +11,12 @@ public interface CompteRepository extends JpaRepository<Compte, Integer>{
    
     public Optional<Compte> findById(Integer id);
 
-    public Optional<Compte> findByUsername(String username);
-    
-    public List<Compte> findAllJoueur();
+    public Optional<Compte> findByLogin(String username);
 
-    public List<Compte> findAllAdmin();
+    // findByRole ?
+    
+   // public List<Compte> findAllJoueur();
+
+  //  public List<Compte> findAllAdmin();
 
 }
