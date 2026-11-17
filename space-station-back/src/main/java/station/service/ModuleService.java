@@ -2,22 +2,31 @@ package station.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import station.api.request.CreateOrUpdateModuleRequest;
+import station.exception.StationSpatialeNotFoundException;
 import station.model.Module;
+import station.model.Position;
 import station.model.StationSpatiale;
 import station.repo.ModuleRepository;
+import station.repo.StationSpatialeRepository;
 
 @Service
 public class ModuleService {
     
     private static final int cyclesAvantDeblocageModule = 5; // Combien de cycles avant de débloquer un nouveau module (a voir comment la rendre dynamique selon la difficulté ?)
+    private static final Logger log = LoggerFactory.getLogger(ModuleService.class);
     private final ModuleRepository repository;
+    private final StationSpatialeRepository stationRepository;
 
-    public ModuleService(ModuleRepository repository) {
+    public ModuleService(ModuleRepository repository, StationSpatialeRepository stationRepository) {
         this.repository = repository;
+        this.stationRepository = stationRepository;
     }
 
     public List<Module> findAll() {
@@ -69,16 +78,6 @@ public class ModuleService {
         module.setStation(station);
         
         return this.repository.save(module);
-    }
-
-    public Module save(Integer id, Module module) {
-        this.findById(id);
-        module.setId(id);
-        return this.repository.save(module);
-    }
-
-    public void deleteById(Integer id) {
-        this.repository.deleteById(id);
     }
 
     public Module debloqueModule(Integer id) { // Permet de debloquer un module
