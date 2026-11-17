@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import station.model.Ressource;
+import jakarta.validation.Valid;
+import station.api.request.CreateOrUpdateRessourceRequest;
+import station.api.response.EntityCreatedResponse;
+import station.api.response.EntityUpdatedResponse;
+import station.api.response.RessourceResponse;
 import station.service.RessourceService;
 
 @RestController
@@ -26,24 +30,25 @@ public class RessourceApiController {
     }
 
     @GetMapping
-    public List<Ressource> findAll() {
-        return this.service.findAll();
+    public List<RessourceResponse> findAll() {
+        return this.service.findAll().stream().map(RessourceResponse::convert).toList();
     }
 
     @GetMapping("/{id}")
-    public Ressource findById(@PathVariable Integer id) {
-        return this.service.findById(id);
+    public RessourceResponse findById(@PathVariable Integer id) {
+        return RessourceResponse.convert(this.service.findById(id));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Ressource create(@RequestBody Ressource ressource) {
-        return this.service.save(ressource);
+    public EntityCreatedResponse create(@Valid @RequestBody CreateOrUpdateRessourceRequest request){
+        return new EntityCreatedResponse(this.service.save(request).getId());
     }
 
     @PutMapping("/{id}")
-    public Ressource update(@PathVariable Integer id, @RequestBody Ressource ressource) {
-        return this.service.save(id, ressource);
+    public EntityUpdatedResponse update(@PathVariable Integer id, @Valid @RequestBody CreateOrUpdateRessourceRequest request) {
+        this.service.save(id, request);
+        return new EntityUpdatedResponse(id, true);
     }
 
     @DeleteMapping("/{id}")
