@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-    <link rel="stylesheet" href="AccueilSpaceFront.css">
-  <title>Station Spatiale - Accueil</title>
-</head>
-<body>
-  <div class="stars"></div>
-  <img class="astronaute" id="astronaute" src="Assets/Images/Jastronaute.png" width="200">/img>
-  <div class="twinkling"></div>
-  <header class="haut">
+<div class="stars"></div>
+<img #astronaute class="astronaute" id="astronaute" src="Assets/Images/Jastronaute.png" width="200">
+<div class="twinkling"></div>
+<header class="haut">
   <span class="haut-compte">Joueur {{ username }} connecté</span>
   <a class="haut-lien" href="#" (click)="deconnexion($event)">Se déconnecter</a>
 </header>
@@ -26,16 +18,16 @@
     <fieldset class="difficulte">
       <legend>Difficulté</legend>
       <div class="btndiff">
-        <input type="radio" name="difficulte" id="d-facile" value="facile"
-               [checked]="difficulte === 'facile'" (change)="difficulte = 'facile'">
+        <input type="radio" name="difficulte" id="d-facile" value="facile" [checked]="difficulte === 'facile'"
+          (change)="difficulte = 'facile'">
         <label for="d-facile">Facile</label>
 
-        <input type="radio" name="difficulte" id="d-normal" value="normal"
-               [checked]="difficulte === 'normal'" (change)="difficulte = 'normal'">
+        <input type="radio" name="difficulte" id="d-normal" value="normal" [checked]="difficulte === 'normal'"
+          (change)="difficulte = 'normal'">
         <label for="d-normal">Normal</label>
 
-        <input type="radio" name="difficulte" id="d-difficile" value="difficile"
-               [checked]="difficulte === 'difficile'" (change)="difficulte = 'difficile'">
+        <input type="radio" name="difficulte" id="d-difficile" value="difficile" [checked]="difficulte === 'difficile'"
+          (change)="difficulte = 'difficile'">
         <label for="d-difficile">Difficile</label>
       </div>
       <p class="aide">{{ aides[difficulte] }}</p>
@@ -49,9 +41,12 @@
   <ul>
     <li><strong>Victoire</strong> : tenir le nombre de cycles demandé sans perdre.</li>
     <li><strong>Défaite</strong> : une ressource vitale tombe à zéro, ou trois seuils critiques en même temps.</li>
-    <li>Une journée = un <strong>cycle</strong>. Au début de chaque cycle, vous affectez vos astronautes aux modules.</li>
-    <li>Les modules peuvent produire et consommer de l'énergie ; les astronautes consomment oxygène, eau et nourriture.</li>
-    <li>Sous <strong>30 %</strong> d'une ressource : seuil « danger ». Sous <strong>10 %</strong> : seuil « critique ».</li>
+    <li>Une journée = un <strong>cycle</strong>. Au début de chaque cycle, vous affectez vos astronautes aux modules.
+    </li>
+    <li>Les modules peuvent produire et consommer de l'énergie ; les astronautes consomment oxygène, eau et nourriture.
+    </li>
+    <li>Sous <strong>30 %</strong> d'une ressource : seuil « danger ». Sous <strong>10 %</strong> : seuil « critique ».
+    </li>
     <li>Possibilité de regarder l'état du vaisseau à la fin de chaque cycle.</li>
     <li>Vous pouvez ajouter des modules à chaque cycle, en échange de ressources.</li>
   </ul>

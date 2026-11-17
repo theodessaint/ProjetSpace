@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ViewEncapsulation } from '@angular/core';
+import { AuthService } from '../../service/auth-service';
 
 @Component({
   imports: [],
@@ -11,10 +11,13 @@ import { ViewEncapsulation } from '@angular/core';
 })
 export class HomePageJoueur implements AfterViewInit, OnDestroy {
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   @ViewChild('astronaute') astro!: ElementRef<HTMLImageElement>;
   @ViewChild('regles') regles!: ElementRef<HTMLDialogElement>;
   private timer?: ReturnType<typeof setInterval>;
+
+  username = this.authService.username;
 
   difficulte = 'normal';
   aides: Record<string, string> = {
@@ -53,7 +56,7 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
 
   deconnexion(event: Event): void {
     event.preventDefault();
-    // à brancher sur l'authentification
+    this.authService.resetAuth();
     this.router.navigate(['/login']);
   }
 }
