@@ -46,9 +46,6 @@ public class StationSpatiale {
     @OneToMany(mappedBy = "station")
     private List<Astronaute> astronautes = new ArrayList<Astronaute>();
     
-    @OneToMany
-    private List<Ressource> ressources = new ArrayList<Ressource>();
-    
     @OneToMany(mappedBy = "station")
     private List<Module> modules = new ArrayList<Module>();
     
@@ -117,15 +114,6 @@ public class StationSpatiale {
     
     public void setModules(List<Module> modules) {
         this.modules = modules;
-    }
-    
-    public List<Ressource> getRessources() {
-        return ressources;
-    }
-    
-    
-    public void setRessources(List<Ressource> ressources) {
-        this.ressources = ressources;
     }
     
     
@@ -200,10 +188,6 @@ public class StationSpatiale {
     }
     
     public void afficherEtat(){}
-    
-    public void ajouterRessource(Ressource ressource){
-        ressources.add(ressource);
-    }
     
     public void ajouterModule(Module module){
         module.setStation(this);
