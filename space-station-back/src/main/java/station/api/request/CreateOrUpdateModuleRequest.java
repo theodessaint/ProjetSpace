@@ -1,13 +1,7 @@
 package station.api.request;
 
-import java.util.List;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import station.model.ModuleConso;
-import station.model.ModuleProd;
-import station.model.Position;
-import station.model.StationSpatiale;
 
 public class CreateOrUpdateModuleRequest {
 
@@ -24,16 +18,13 @@ public class CreateOrUpdateModuleRequest {
     private boolean debloque;
 
     @NotNull
-    private Position position;
+    private Integer positionX;
 
     @NotNull
-    private StationSpatiale station;
+    private Integer positionY;
 
     @NotNull
-    private List<ModuleProd> prodModules;
-
-    @NotNull
-    private List<ModuleConso> consoModules;
+    private Integer stationId;
 
     public String getNom() {
         return nom;
@@ -67,36 +58,27 @@ public class CreateOrUpdateModuleRequest {
         this.debloque = debloque;
     }
 
-    public Position getPosition() {
-        return position;
+    public Integer getPositionX() {
+        return positionX;
     }
 
-    public void setPosition(Position position) {
-        this.position = position;
+    public void setPositionX(Integer positionX) {
+        this.positionX = positionX;
     }
 
-    public StationSpatiale getStation() {
-        return station;
+    public Integer getPositionY() {
+        return positionY;
     }
 
-    public void setStation(StationSpatiale station) {
-        this.station = station;
+    public void setPositionY(Integer positionY) {
+        this.positionY = positionY;
     }
 
-    public List<ModuleProd> getProdModules() {
-        return prodModules;
+    public Integer getStationId() {
+        return stationId;
     }
 
-    public void setProdModules(List<ModuleProd> prodModules) {
-        this.prodModules = prodModules;
+    public void setStationId(Integer stationId) {
+        this.stationId = stationId;
     }
-
-    public List<ModuleConso> getConsoModules() {
-        return consoModules;
-    }
-
-    public void setConsoModules(List<ModuleConso> consoModules) {
-        this.consoModules = consoModules;
-    }
-    
 }

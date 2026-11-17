@@ -16,6 +16,9 @@ public class CreateOrUpdateAstronauteRequest {
     @NotNull 
     private RoleEnum role;
 
+    @NotNull
+    private Integer stationId;
+
     public String getNom() {
         return nom;
     }
@@ -38,6 +41,14 @@ public class CreateOrUpdateAstronauteRequest {
 
     public void setRole(RoleEnum role) {
         this.role = role;
+    }
+
+    public Integer getStationId() {
+        return stationId;
+    }
+
+    public void setStationId(Integer stationId) {
+        this.stationId = stationId;
     }
 
 }

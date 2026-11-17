@@ -1,40 +1,38 @@
 package station.model;
+
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import station.enumerator.ModuleEnum;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import station.enumerator.RessourceEnum;
 
 @Entity 
-@DiscriminatorValue ("Production")
 public class ModuleProd {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    private final RessourceEnum type;
+    @Embedded
+    private RessourceEnum ressource;
 
     @Column(nullable = false)
-    private int valeur;
+    private Integer value;
 
-    @Embedded
+    @ManyToOne
+    @JoinColumn(name = "module_id")
     private Module module;
 
-    public ModuleProd (Integer id, RessourceEnum type, int valeur, Module module) {
-        
+    public ModuleProd () {}
+
+    public ModuleProd(Integer id, RessourceEnum ressource, Integer value, Module module) {
         this.id = id;
-        this.type = type;
-        this.valeur = valeur;
+        this.ressource = ressource;
+        this.value = value;
         this.module = module;
     }
 
@@ -46,16 +44,20 @@ public class ModuleProd {
         this.id = id;
     }
 
-    public RessourceEnum getType() {
-        return type;
+    public RessourceEnum getRessourceEnum() {
+        return ressource;
     }
 
-    public int getValeur() {
-        return valeur;
+    public void setRessourceEnum(RessourceEnum ressource) {
+        this.ressource = ressource;
     }
 
-    public void setValeur(int valeur) {
-        this.valeur = valeur;
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
     }
 
     public Module getModule() {
@@ -66,9 +68,8 @@ public class ModuleProd {
         this.module = module;
     }
 
-    @Override
     public String toString() {
-        return "ModuleProd [id=" + id + ", type=" + type + ", valeur=" + valeur + ", module=" + module + "]";
+        return "ModuleProd [id=" + id + ", ressourceEnum=" + ressource + ", value=" + value + ", module=" + module + "]";
     }
     
     

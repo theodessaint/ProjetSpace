@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import station.model.Module;
+import jakarta.validation.Valid;
+import station.api.request.CreateOrUpdateModuleRequest;
+import station.api.response.EntityCreatedResponse;
+import station.api.response.EntityUpdatedResponse;
+import station.api.response.ModuleResponse;
 import station.service.ModuleService;
 
 @RestController
@@ -26,24 +30,25 @@ public class ModuleApiController {
     }
 
     @GetMapping
-    public List<Module> findAll() {
-        return this.service.findAll();
+    public List<ModuleResponse> findAll() {
+        return this.service.findAll().stream().map(ModuleResponse::convert).toList();
     }
 
     @GetMapping("/{id}")
-    public Module findById(@PathVariable Integer id) {
-        return this.service.findById(id);
+    public ModuleResponse findById(@PathVariable Integer id) {
+        return ModuleResponse.convert(this.service.findById(id));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Module create(@RequestBody Module module) {
-        return this.service.save(module);
+    public EntityCreatedResponse create(@Valid @RequestBody CreateOrUpdateModuleRequest request) {
+        return new EntityCreatedResponse(this.service.save(request).getId());
     }
 
     @PutMapping("/{id}")
-    public Module update(@PathVariable Integer id, @RequestBody Module module) {
-        return this.service.save(id, module);
+    public EntityUpdatedResponse update(@PathVariable Integer id, @Valid @RequestBody CreateOrUpdateModuleRequest request) {
+        this.service.save(id, request);
+        return new EntityUpdatedResponse(id, true);
     }
 
     @DeleteMapping("/{id}")

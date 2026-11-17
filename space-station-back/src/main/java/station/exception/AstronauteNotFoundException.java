@@ -1,5 +1,13 @@
 package station.exception;
 
-public class AstronauteNotFoundException extends RuntimeException {
-  
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+import jakarta.persistence.EntityNotFoundException;
+
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class AstronauteNotFoundException extends EntityNotFoundException {
+    public AstronauteNotFoundException() {
+        super("Astronaute introuvable");
+    }
 }

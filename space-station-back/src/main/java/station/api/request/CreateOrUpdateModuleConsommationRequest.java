@@ -1,25 +1,24 @@
 package station.api.request;
 
 import jakarta.validation.constraints.NotNull;
-import station.enumerator.RessourceEnum;
 
 public class CreateOrUpdateModuleConsommationRequest {
 
-    @NotNull 
-    private RessourceEnum ressource;
+    @NotNull
+    private Integer ressourceId;
 
     @NotNull 
     private Double valeur;
 
     @NotNull 
-    private Module module;
+    private Integer moduleId;
 
-    public RessourceEnum getRessource() {
-        return ressource;
+    public Integer getRessourceId() {
+        return ressourceId;
     }
 
-    public void setRessource(RessourceEnum ressource) {
-        this.ressource = ressource;
+    public void setRessourceId(Integer ressourceId) {
+        this.ressourceId = ressourceId;
     }
 
     public Double getValeur() {
@@ -30,12 +29,12 @@ public class CreateOrUpdateModuleConsommationRequest {
         this.valeur = valeur;
     }
 
-    public Module getModule() {
-        return module;
+    public Integer getModuleId() {
+        return moduleId;
     }
 
-    public void setModule(Module module) {
-        this.module = module;
+    public void setModuleId(Integer moduleId) {
+        this.moduleId = moduleId;
     }
-
+   
 }

@@ -11,4 +11,8 @@ public interface AstronauteRepository extends JpaRepository<Astronaute, Integer>
 
     List<Astronaute> findByRole(RoleEnum role);
 
+    List<Astronaute> findByStationId(Integer stationId);
+
+    List<Astronaute> findByStationIdAndRole(Integer stationId, RoleEnum role);
+
 }

@@ -1,13 +1,11 @@
 package station.api.request;
 
 import jakarta.validation.constraints.NotNull;
-import station.enumerator.RessourceEnum;
-import station.model.Ressource;
 
 public class CreateOrUpdateRessourceRequest {
 
     @NotNull
-    private RessourceEnum ressource;
+    private Integer ressourceTypeId;
 
     @NotNull
     private Double start;
@@ -18,12 +16,12 @@ public class CreateOrUpdateRessourceRequest {
     @NotNull
     private Double critique;
 
-    public RessourceEnum getRessource() {
-        return ressource;
+    public Integer getRessourceTypeId() {
+        return ressourceTypeId;
     }
 
-    public void setRessource(RessourceEnum ressource) {
-        this.ressource = ressource;
+    public void setRessourceTypeId(Integer ressourceTypeId) {
+        this.ressourceTypeId = ressourceTypeId;
     }
 
     public Double getStart() {
@@ -49,5 +47,6 @@ public class CreateOrUpdateRessourceRequest {
     public void setCritique(Double critique) {
         this.critique = critique;
     }
+  
 
 }

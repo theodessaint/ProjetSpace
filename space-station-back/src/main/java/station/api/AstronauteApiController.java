@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import station.api.request.CreateOrUpdateAstronauteRequest;
 import station.api.response.AstronauteResponse;
+import station.api.response.EntityCreatedResponse;
+import station.api.response.EntityUpdatedResponse;
 import station.enumerator.RoleEnum;
 import station.service.AstronauteService;
 
@@ -30,7 +32,7 @@ public class AstronauteApiController {
     }
 
     @GetMapping
-    public List<AstronauteResponse> findAll(@RequestParam(required = false) RoleEnum role) {
+    public List<AstronauteResponse> findAll(@Valid @RequestParam(required = false) RoleEnum role) {
         if (role == null) {
             return this.service.findAll().stream().map(AstronauteResponse::convert).toList();
         }
@@ -45,13 +47,14 @@ public class AstronauteApiController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AstronauteResponse create(@Valid @RequestBody CreateOrUpdateAstronauteRequest request) {
-        return AstronauteResponse.convert(this.service.save(request));
+    public EntityCreatedResponse create(@Valid @RequestBody CreateOrUpdateAstronauteRequest request) {
+        return new EntityCreatedResponse(this.service.save(request).getId());
     }
 
     @PutMapping("/{id}")
-    public AstronauteResponse update(@PathVariable Integer id, @Valid @RequestBody CreateOrUpdateAstronauteRequest request) {
-        return AstronauteResponse.convert(this.service.save(id, request));
+    public EntityUpdatedResponse update(@PathVariable Integer id, @Valid @RequestBody CreateOrUpdateAstronauteRequest request) {
+        this.service.save(id, request);
+        return new EntityUpdatedResponse(id, true);
     }
 
     @DeleteMapping("/{id}")
