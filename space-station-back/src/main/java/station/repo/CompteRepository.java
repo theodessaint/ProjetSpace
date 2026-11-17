@@ -13,8 +13,8 @@ public interface CompteRepository extends JpaRepository<Compte, Integer>{
 
     public Optional<Compte> findByLogin(String username);
     
-    public List<Compte> findAllJoueur();
+   // public List<Compte> findAllJoueur();
 
-    public List<Compte> findAllAdmin();
+  //  public List<Compte> findAllAdmin();
 
 }
