@@ -28,13 +28,46 @@ public class ModuleService {
         return this.repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module introuvable"));
     }
-
     public List<Module> findByStationId(Integer stationId){ // Affiche la liste des modules d'une partie
         return this.repository.findByStationId(stationId);
     }
-
-    public Module save(Module module) {
-        module.setId(null);
+    
+    public Module save(CreateOrUpdateModuleRequest request) {
+        Module module = this.save(new Module(), request);
+        log.debug("Module {} ajouté !", module.getId());
+        
+        return module;
+    }
+    
+    public Module save(Integer id, CreateOrUpdateModuleRequest request) {
+        Module module = this.findById(id);
+        module = this.save(module, request);
+        log.debug("Module {} modifié !", id);
+        
+        return module;
+    }
+    
+    public void deleteById(Integer id) {
+        this.repository.deleteById(id);
+        log.debug("Module {} supprimé !", id);
+    }
+    
+    private Module save(Module module, CreateOrUpdateModuleRequest request) {
+        module.setNom(request.getNom());
+        module.setNbAstroModuleMax(request.getNbAstroModuleMax());
+        module.setNbModuleMax(request.getNbModuleMax());
+        module.setDebloque(request.isDebloque());
+        module.setPosition(new Position(request.getPositionX(), request.getPositionY()));
+        
+        StationSpatiale station = stationRepository.findById(request.getStationId())
+        .orElseThrow(
+            () -> {
+                log.warn("Station spatiale introuvable : id={}", request.getStationId());
+                return new StationSpatialeNotFoundException();
+            }
+        );
+        module.setStation(station);
+        
         return this.repository.save(module);
     }
 
