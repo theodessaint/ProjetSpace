@@ -15,7 +15,7 @@ public class ModuleProd {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id_prod;
 
     @Embedded
     private RessourceEnum ressource;
@@ -24,24 +24,24 @@ public class ModuleProd {
     private Integer value;
 
     @ManyToOne
-    @JoinColumn(name = "module_prod")
+    @JoinColumn(name = "module_id")
     private Module module;
 
     public ModuleProd () {}
 
-    public ModuleProd(Integer id, RessourceEnum ressource, Integer value, Module module) {
-        this.id = id;
+    public ModuleProd(Integer id_prod, RessourceEnum ressource, Integer value, Module module) {
+        this.id_prod = id_prod;
         this.ressource = ressource;
         this.value = value;
         this.module = module;
     }
 
     public Integer getId() {
-        return id;
+        return id_prod;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setId(Integer id_prod) {
+        this.id_prod = id_prod;
     }
 
     public RessourceEnum getRessourceEnum() {
@@ -69,7 +69,7 @@ public class ModuleProd {
     }
 
     public String toString() {
-        return "ModuleProd [id=" + id + ", ressourceEnum=" + ressource + ", value=" + value + ", module=" + module + "]";
+        return "ModuleProd [id=" + id_prod + ", ressourceEnum=" + ressource + ", value=" + value + ", module=" + module + "]";
     }
     
     

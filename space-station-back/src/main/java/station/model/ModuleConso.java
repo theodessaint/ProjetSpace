@@ -15,7 +15,7 @@ public class ModuleConso {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id_conso;
 
     @Embedded
     private RessourceEnum ressource;
@@ -27,19 +27,19 @@ public class ModuleConso {
     @JoinColumn(name = "module_conso")
     private Module module;
 
-    public ModuleConso(Integer id, RessourceEnum ressource, Integer value, Module module) {
-        this.id = id;
+    public ModuleConso(Integer id_conso, RessourceEnum ressource, Integer value, Module module) {
+        this.id_conso = id_conso;
         this.ressource = ressource;
         this.value = value;
         this.module = module;
     }
 
     public Integer getId() {
-        return id;
+        return id_conso;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setId(Integer id_conso) {
+        this.id_conso = id_conso;
     }
 
     public RessourceEnum getRessourceEnum() {
@@ -67,7 +67,7 @@ public class ModuleConso {
     }
 
     public String toString() {
-        return "ModuleConso [id=" + id + ", ressourceEnum=" + ressource + ", value=" + value + ", module=" + module + "]";
+        return "ModuleConso [id=" + id_conso + ", ressourceEnum=" + ressource + ", value=" + value + ", module=" + module + "]";
     }
 
 }
