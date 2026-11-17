@@ -24,7 +24,7 @@ public class ModuleConso {
     private Integer value;
 
     @ManyToOne
-    @JoinColumn(name = "module_id")
+    @JoinColumn(name = "module_conso")
     private Module module;
 
     public ModuleConso(Integer id, RessourceEnum ressource, Integer value, Module module) {

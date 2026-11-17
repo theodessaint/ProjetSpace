@@ -24,7 +24,7 @@ public class ModuleProd {
     private Integer value;
 
     @ManyToOne
-    @JoinColumn(name = "module_id")
+    @JoinColumn(name = "module_prod")
     private Module module;
 
     public ModuleProd () {}
