@@ -71,5 +71,7 @@ public class ModuleProd {
     public String toString() {
         return "ModuleProd [id=" + id + ", ressourceEnum=" + ressource + ", value=" + value + ", module=" + module + "]";
     }
+    
+    
 
 }

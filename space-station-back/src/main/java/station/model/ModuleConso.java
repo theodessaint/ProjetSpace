@@ -27,8 +27,6 @@ public class ModuleConso {
     @JoinColumn(name = "module_id")
     private Module module;
 
-    public ModuleConso () {}
-
     public ModuleConso(Integer id, RessourceEnum ressource, Integer value, Module module) {
         this.id = id;
         this.ressource = ressource;
