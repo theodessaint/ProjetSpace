@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 public class CreateOrUpdateRessourceRequest {
 
     @NotNull
-    private Integer ressourceId;
+    private Integer ressourceTypeId;
 
     @NotNull
     private Double start;
@@ -16,12 +16,12 @@ public class CreateOrUpdateRessourceRequest {
     @NotNull
     private Double critique;
 
-    public Integer getRessourceId() {
-        return ressourceId;
+    public Integer getRessourceTypeId() {
+        return ressourceTypeId;
     }
 
-    public void setRessourceId(Integer ressourceId) {
-        this.ressourceId = ressourceId;
+    public void setRessourceTypeId(Integer ressourceTypeId) {
+        this.ressourceTypeId = ressourceTypeId;
     }
 
     public Double getStart() {
@@ -47,7 +47,6 @@ public class CreateOrUpdateRessourceRequest {
     public void setCritique(Double critique) {
         this.critique = critique;
     }
-
-   
+  
 
 }
