@@ -3,6 +3,8 @@ package station.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,9 +17,9 @@ public class ModuleProd {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_prod;
+    private Integer id;
 
-    @Embedded
+    @Enumerated(EnumType.STRING) 
     private RessourceEnum ressource;
 
     @Column(nullable = false)
@@ -29,19 +31,19 @@ public class ModuleProd {
 
     public ModuleProd () {}
 
-    public ModuleProd(Integer id_prod, RessourceEnum ressource, Integer value, Module module) {
-        this.id_prod = id_prod;
+    public ModuleProd(Integer id, RessourceEnum ressource, Integer value, Module module) {
+        this.id = id;
         this.ressource = ressource;
         this.value = value;
         this.module = module;
     }
 
     public Integer getId() {
-        return id_prod;
+        return id;
     }
 
-    public void setId(Integer id_prod) {
-        this.id_prod = id_prod;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public RessourceEnum getRessourceEnum() {
@@ -69,7 +71,7 @@ public class ModuleProd {
     }
 
     public String toString() {
-        return "ModuleProd [id=" + id_prod + ", ressourceEnum=" + ressource + ", value=" + value + ", module=" + module + "]";
+        return "ModuleProd [id=" + id + ", ressourceEnum=" + ressource + ", value=" + value + ", module=" + module + "]";
     }
     
     
