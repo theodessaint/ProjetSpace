@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity 
 @Table (name="compte")
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn (name="TYPE_COMPTE")
 public class Compte implements Serializable { //    Pas de abstract pour qu'un Compte puisse etre save dans la classe CompteService
     

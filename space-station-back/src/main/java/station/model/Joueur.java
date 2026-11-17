@@ -3,6 +3,7 @@ package station.model;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
+@Entity
 @DiscriminatorValue("Joueur")
 public class Joueur extends Compte {
 
