@@ -50,6 +50,9 @@ public class Module {
     @OneToMany(mappedBy = "module")
     private List<ModuleConso> consoModules = new ArrayList<ModuleConso>();
 
+    @OneToMany(mappedBy = "module")
+    private List<Astronaute> astronautes = new ArrayList<Astronaute>();
+
     public Module () {}
 
     public Module(Integer id, String nom, int nbAstroModuleMax, int nbModuleMax, boolean debloque, Position position,
@@ -133,6 +136,14 @@ public class Module {
 
     public void setConsoModules(List<ModuleConso> consoModules) {
         this.consoModules = consoModules;
+    }
+
+    public List<Astronaute> getAstronautes() {
+        return astronautes;
+    }
+
+    public void setAstronautes(List<Astronaute> astronautes) {
+        this.astronautes = astronautes;
     }
 
     @Override

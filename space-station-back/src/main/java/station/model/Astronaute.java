@@ -25,6 +25,10 @@ public class Astronaute {
     
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
+
+    @ManyToOne
+    @JoinColumn(name="module_id")
+    private Module module;
     
     @ManyToOne
     @JoinColumn(name = "station_id", nullable = false)
@@ -75,8 +79,17 @@ public class Astronaute {
     public void setStation(StationSpatiale station) {
         this.station = station;
     }
+
+    public Module getModule() {
+        return module;
+    }
+    public void setModule(Module module) {
+        this.module = module;
+    }
+    
     @Override
     public String toString() {
         return "Astronaute [id=" + id + ", nom=" + nom + ", genre=" + genre + ", role=" + role + "]";
     }
+    
 }
