@@ -10,6 +10,7 @@ public class AstronauteResponse {
     private String nom;
     private GenreEnum genre;
     private RoleEnum role;
+    private Integer moduleId;
     private Integer stationId;
 
     public static AstronauteResponse convert(Astronaute astronaute) {
@@ -19,6 +20,7 @@ public class AstronauteResponse {
         response.nom = astronaute.getNom();
         response.genre = astronaute.getGenre();
         response.role = astronaute.getRole();
+        response.moduleId = astronaute.getModule().getId();
         response.stationId = astronaute.getStation().getId();
 
         return response;
@@ -38,6 +40,10 @@ public class AstronauteResponse {
 
     public RoleEnum getRole() {
         return role;
+    }
+
+    public Integer getModuleId() {
+        return moduleId;
     }
 
     public Integer getStationId() {

@@ -9,20 +9,30 @@ import org.springframework.stereotype.Service;
 import station.api.request.CreateOrUpdateAstronauteRequest;
 import station.enumerator.RoleEnum;
 import station.exception.AstronauteNotFoundException;
+import station.exception.ModuleNotFoundException;
 import station.exception.StationSpatialeNotFoundException;
 import station.model.Astronaute;
+import station.model.Module;
 import station.model.StationSpatiale;
 import station.repo.AstronauteRepository;
+import station.repo.ModuleRepository;
 import station.repo.StationSpatialeRepository;
 
 @Service
 public class AstronauteService {
     private static final Logger log = LoggerFactory.getLogger(AstronauteService.class);
     private final AstronauteRepository repository;
+
+    private final ModuleRepository moduleRepository;
     private final StationSpatialeRepository stationRepository;
     
-    public AstronauteService(AstronauteRepository repository, StationSpatialeRepository stationRepository) {
+    public AstronauteService(
+        AstronauteRepository repository, 
+        ModuleRepository moduleRepository,
+        StationSpatialeRepository stationRepository
+    ) {
         this.repository = repository;
+        this.moduleRepository = moduleRepository;
         this.stationRepository = stationRepository;
     }
     
@@ -73,6 +83,15 @@ public class AstronauteService {
         astronaute.setNom(request.getNom());
         astronaute.setGenre(request.getGenre());
         astronaute.setRole(request.getRole());
+
+       Module module = moduleRepository.findById(request.getModuleId())
+        .orElseThrow(
+            () -> {
+                log.warn("Module introuvable : id={}", request.getModuleId());
+                return new ModuleNotFoundException();
+            }
+        );
+        astronaute.setModule(module);
 
         StationSpatiale station = stationRepository.findById(request.getStationId())
         .orElseThrow(
