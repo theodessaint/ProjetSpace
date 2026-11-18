@@ -20,13 +20,12 @@ export class LoginPage implements OnInit {
   protected passwordCtrl!: FormControl;
 
   protected passwordErrorMessages = {
-    required: 'Le mot de passe est obligatoire',
-    minlength: 'Le mot de passe doit faire 6 caractères minimum'
+    required: 'Le mot de passe est obligatoire'
   };
 
   ngOnInit(): void {
     this.usernameCtrl = this.formBuilder.control('', Validators.required);
-    this.passwordCtrl = this.formBuilder.control('', [ Validators.required, Validators.minLength(6) ]);
+    this.passwordCtrl = this.formBuilder.control('', Validators.required );
 
     this.userForm = this.formBuilder.group({
       username: this.usernameCtrl,

@@ -23,7 +23,7 @@
       <input id="password" type="password" autocomplete="current-password" [formControl]="passwordCtrl">
       @if (passwordCtrl.touched && passwordCtrl.errors) {
       <small class="erreur">
-        {{ passwordCtrl.hasError('required') ? passwordErrorMessages.required : passwordErrorMessages.minlength }}
+        {{ passwordCtrl.hasError('required') ? passwordErrorMessages.required : '' }}
       </small>
       }
     </div>
