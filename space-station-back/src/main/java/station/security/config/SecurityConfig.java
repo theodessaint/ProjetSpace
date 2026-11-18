@@ -70,9 +70,17 @@ public class SecurityConfig {
         
         // Règles des autorisations
         http.authorizeHttpRequests(authorization -> {
-            // authorization.requestMatchers("/auth", "/joueur/inscription").permitAll();
-            // authorization.requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN");
-            // authorization.requestMatchers("/admin").hasRole("ADMIN");
+
+            // Routes publiques
+            // authorization.requestMatchers(HttpMethod.POST,"/compte/auth", "/compte/inscription").permitAll();
+            
+            // Routes réservées aux admins
+            // authorization.requestMatchers(HttpMethod.GET, "/compte").hasRole("ADMIN");
+            // authorization.requestMatchers(HttpMethod.PUT, "/compte").hasRole("ADMIN");
+            // authorization.requestMatchers(HttpMethod.POST, "/compte").hasRole("ADMIN");
+            // authorization.requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN");
+            // authorization.requestMatchers("/home-admin").hasRole("ADMIN");
+            
             // authorization.anyRequest().authenticated();
             authorization.anyRequest().permitAll();
         });

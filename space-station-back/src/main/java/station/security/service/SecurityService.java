@@ -19,7 +19,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import station.api.request.AuthRequest;
+import station.api.request.AuthOrSubscriptionRequest;
 import station.api.response.AuthResponse;
 
 @Service
@@ -37,7 +37,7 @@ public class SecurityService {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public AuthResponse auth(AuthRequest request) {
+    public AuthResponse auth(AuthOrSubscriptionRequest request) {
         try {
             log.debug("Tentative d'authentification ...");
 
