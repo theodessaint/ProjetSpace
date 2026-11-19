@@ -84,7 +84,7 @@ public class CompteApiController {
         
         
         @GetMapping("/{username}")
-        public CompteResponse findByUsername(@RequestParam String username) {
+        public CompteResponse findByUsername(@PathVariable String username) {
             return CompteResponse.convert(this.service.findByUsername(username));
         }
         

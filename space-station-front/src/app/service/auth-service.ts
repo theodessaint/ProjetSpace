@@ -41,7 +41,7 @@ export class AuthService {
   }
 
   public auth(authRequest: AuthRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/auth', authRequest);
+    return this.http.post<AuthResponse>('/compte/auth', authRequest);
   }
 
   public isLogged() {
