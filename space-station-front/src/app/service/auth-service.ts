@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthRequest } from '../model/auth-request';
 import { AuthResponse } from '../model/auth-response';
+import { AuthEntityCreatedResponse } from '../model/auth-entity-created-response';
 
 @Injectable({
   providedIn: 'root',
@@ -39,9 +40,14 @@ export class AuthService {
     this._username = value;
     sessionStorage.setItem("username", value);
   }
-
+  //Connexion
   public auth(authRequest: AuthRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>('/compte/auth', authRequest);
+  }
+
+  //Inscription
+  public inscription(authRequest: AuthRequest): Observable<AuthEntityCreatedResponse> {
+    return this.http.post<AuthEntityCreatedResponse>('/compte/inscription',authRequest);
   }
 
   public isLogged() {

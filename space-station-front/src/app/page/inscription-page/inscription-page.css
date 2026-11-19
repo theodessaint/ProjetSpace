@@ -1,0 +1,150 @@
+/* Ma palette de couleur */
+:root {
+  --vide: #050816;
+  --nuit: #0c1233;
+  --etoile: #e8ecff;
+  --signal: #ffb454;
+  --glace: #6fd6ee;
+  --trait: rgba(160, 190, 255, 0.22);
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--vide);
+  color: var(--etoile);
+  font-family: system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Contenu */
+.accueil {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 6vh 1.25rem 8vh;
+}
+
+.titre {
+  font-family: "Chakra Petch", sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.8rem, 9vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+  margin: 2vh 0 1rem;
+  background: linear-gradient(180deg, #ffffff 30%, #9fb6ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 22px rgba(120, 150, 255, 0.45));
+}
+
+.accroche {
+  max-width: 34ch;
+  margin: 0 0 2rem;
+  color: #b9c4ee;
+  font-size: 1.05rem;
+}
+
+/* Carte du formulaire */
+.carte {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: min(100%, 22rem);
+  padding: 1.4rem;
+  text-align: left;
+  background: rgba(10, 16, 48, 0.62);
+  border: 1px solid var(--trait);
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
+}
+
+.champ { display: flex; flex-direction: column; gap: 0.35rem; }
+.champ label { font-size: 0.9rem; color: #b9c4ee; }
+
+.champ input {
+  font: 1rem system-ui, sans-serif;
+  color: var(--etoile);
+  background: rgba(5, 8, 22, 0.8);
+  border: 1px solid var(--trait);
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.champ input:focus {
+  outline: none;
+  border-color: var(--glace);
+  box-shadow: 0 0 12px rgba(111, 214, 238, 0.35);
+}
+
+.erreur { color: #ff8f8f; font-size: 0.8rem; }
+
+.alerte {
+  padding: 0.7rem 0.9rem;
+  font-size: 0.9rem;
+  color: #ffd0d0;
+  background: rgba(255, 90, 90, 0.12);
+  border: 1px solid rgba(255, 120, 120, 0.5);
+  border-radius: 8px;
+}
+
+/* Boutons */
+.btn {
+  display: block;
+  box-sizing: border-box;
+  text-align: center;
+  text-decoration: none;
+  font: 500 1.05rem "Chakra Petch", sans-serif;
+  letter-spacing: 0.03em;
+  color: var(--etoile);
+  background: transparent;
+  border: 1px solid var(--trait);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.btn:hover { background: rgba(160, 190, 255, 0.12); border-color: var(--glace); }
+
+.btn-principal {
+  color: #1a1100;
+  background: var(--signal);
+  border-color: var(--signal);
+  font-weight: 700;
+  box-shadow: 0 0 22px rgba(255, 180, 84, 0.35);
+}
+.btn-principal:hover { background: #ffc473; border-color: #ffc473; box-shadow: 0 0 30px rgba(255, 180, 84, 0.55); }
+.btn-principal:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+
+/* Background étoilé : https://codepen.io/NazarAzhar/pen/zqXMqP */
+.stars, .twinkling {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.stars {
+  z-index: 0;
+  background: #000 url('https://i.imgur.com/YKY28eT.png') repeat top center;
+}
+
+.twinkling {
+  z-index: 1;
+  background: transparent url('https://i.imgur.com/XYMF4ca.png') repeat top center;
+  animation: move-twink-back 200s linear infinite;
+}
+
+@keyframes move-twink-back {
+  from { background-position: 0 0; }
+  to   { background-position: -10000px 5000px; }
+}
