@@ -18,9 +18,8 @@ public class Bonus {
     public static List<Bonus> bonus = List.of(
         new Bonus(RoleEnum.Agriculteur, Ressource.NOURRITURE, 1.15),
         new Bonus(RoleEnum.Mecanicien,  Ressource.ENERGIE,    1.10),
-        new Bonus(RoleEnum.Chercheur,   Ressource.ENERGIE,    0.90),
-        new Bonus(RoleEnum.Plombier,    Ressource.EAU,        0.90),
-        new Bonus(RoleEnum.Medecin,     Ressource.EAU,        0.85)
+        new Bonus(RoleEnum.Plombier,    Ressource.EAU,        1.10),
+        new Bonus(RoleEnum.Mecanicien,  Ressource.OXYGENE,    1.10)
     );
 
     @Id
