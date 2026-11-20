@@ -55,7 +55,7 @@ public class SecurityConfig {
         
         // Désactivation de la protection CSRF uniquement pour certaines URLs
         // Cross-Site Request Forgery - attaque qui pousse un utilisateur authentifié (par cookie de session, par exemple) d'effectuer une action à son insu
-        http.csrf(csrf -> csrf.ignoringRequestMatchers("/compte/auth", "/compte/inscription"));
+        http.csrf(csrf -> csrf.ignoringRequestMatchers("/**")); // Debloque le csrf
         
         // Configuration CORS (personnalisée plus bas)
         http.cors(cors -> cors.configurationSource(corsConfigurationSource));
