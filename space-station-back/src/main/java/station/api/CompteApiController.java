@@ -22,11 +22,10 @@ import station.api.response.AuthResponse;
 import station.api.response.CompteResponse;
 import station.api.response.EntityCreatedResponse;
 import station.api.response.EntityUpdatedResponse;
-import station.model.Compte;
+import station.model.Joueur;
 import station.repo.CompteRepository;
 import station.security.service.SecurityService;
 import station.service.CompteService;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 
@@ -55,14 +54,15 @@ public class CompteApiController {
         
         @PostMapping("/inscription")
         public EntityCreatedResponse subscribe(@Valid @RequestBody AuthOrSubscriptionRequest request) {
-            Compte compte = new Compte();
+            //L'inscription crée seulement un compte Joueur()
+            Joueur joueur = new Joueur();
             
-            compte.setLogin(request.username());
-            compte.setPassword(this.passwordEncoder.encode(request.password()));
+            joueur.setLogin(request.username());
+            joueur.setPassword(this.passwordEncoder.encode(request.password()));
             
-            this.repository.save(compte);
+            this.repository.save(joueur);
             
-            return new EntityCreatedResponse(compte.getId());
+            return new EntityCreatedResponse(joueur.getId());
         }
         
         @PostMapping("/auth")
