@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.springframework.transaction.annotation.Transactional;
 import station.model.Module;
 import station.model.Position;
-import station.enumerator.ModuleEnum;
 import station.exception.PositionNotFoundException;
 import station.model.Emplacement;
 import station.model.Grille;
@@ -36,6 +36,7 @@ public class StationSpatialeService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Station introuvable"));
     }
 
+    @Transactional // Soit Station et Module sont tous les deux validés, soit rien n'est créé
     public StationSpatiale save(StationSpatiale station) {
         station.setId(null);
         StationSpatiale stationCree = this.repository.save(station);
@@ -53,7 +54,7 @@ public class StationSpatialeService {
         this.repository.deleteById(id);
     }
 
-    public void creerModules(StationSpatiale station) { // créer un module par position pour UNE station précise
+    private void creerModules(StationSpatiale station) { // créer un module par position pour UNE station précise. Changement a private car ce ne doit pas être accessible en dehors de la station
         List<Module> modules = new ArrayList<>();
 
         for(Emplacement emplacement : Grille.PLAN) {
@@ -67,7 +68,7 @@ public class StationSpatialeService {
 
             module.setNom(emplacement.getType().name()); // Attribue le type selon le nom ("Serre") dans l'enum
 
-            module.setPosition(new Position(position.getX(), position.getX())); // On récupère la position et on l'attribue au module
+            module.setPosition(new Position(position.getX(), position.getY())); // On récupère la position et on l'attribue au module
             module.setDebloque(emplacement.isOuvertAuDepart()); // 
 
             station.ajouterModule(module);
