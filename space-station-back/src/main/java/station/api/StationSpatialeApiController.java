@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+import station.api.request.CreateOrUpdateStationSpatialeRequest;
+import station.api.response.EntityCreatedResponse;
+import station.api.response.EntityUpdatedResponse;
 import station.model.StationSpatiale;
 import station.service.StationSpatialeService;
 
@@ -37,6 +41,24 @@ public class StationSpatialeApiController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    public EntityCreatedResponse create(@Valid @RequestBody CreateOrUpdateStationSpatialeRequest request) {
+        
+        return new EntityCreatedResponse(this.service.save(request).getId());
+
+    }
+    
+    @PutMapping("/{id}")
+    public EntityUpdatedResponse update(@PathVariable Integer id, @Valid @RequestBody CreateOrUpdateStationSpatialeRequest request) {
+
+        this.service.save(id, request);
+        return new EntityUpdatedResponse(id, true);
+
+    }
+
+
+/* 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public StationSpatiale create(@RequestBody StationSpatiale station) {
         return this.service.save(station);
     }
@@ -45,7 +67,7 @@ public class StationSpatialeApiController {
     public StationSpatiale update(@PathVariable Integer id, @RequestBody StationSpatiale station) {
         return this.service.save(id, station);
     }
-
+ */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Integer id) {
