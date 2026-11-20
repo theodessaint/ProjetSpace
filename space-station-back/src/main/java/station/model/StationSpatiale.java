@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -45,10 +46,10 @@ public class StationSpatiale {
     @JoinColumn (name = "joueur_id", nullable = false) 
     private Joueur joueur;
     
-    @OneToMany(mappedBy = "station")
+    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL) // Ce qui est fait a la station est aussi fait aux astronautes (Delete)
     private List<Astronaute> astronautes = new ArrayList<Astronaute>();
     
-    @OneToMany(mappedBy = "station")
+    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL) // Idem
     private List<Module> modules = new ArrayList<Module>();
     
     public StationSpatiale() {}
