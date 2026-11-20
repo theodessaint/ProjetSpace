@@ -72,17 +72,17 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorization -> {
 
             // Routes publiques
-            // authorization.requestMatchers(HttpMethod.POST,"/compte/auth", "/compte/inscription").permitAll();
+            authorization.requestMatchers(HttpMethod.POST,"/compte/auth", "/compte/inscription").permitAll();
             
             // Routes réservées aux admins
-            // authorization.requestMatchers(HttpMethod.GET, "/compte").hasRole("ADMIN");
-            // authorization.requestMatchers(HttpMethod.PUT, "/compte").hasRole("ADMIN");
-            // authorization.requestMatchers(HttpMethod.POST, "/compte").hasRole("ADMIN");
-            // authorization.requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN");
-            // authorization.requestMatchers("/home-admin").hasRole("ADMIN");
+            authorization.requestMatchers(HttpMethod.GET, "/compte").hasRole("ADMIN");
+            authorization.requestMatchers(HttpMethod.PUT, "/compte").hasRole("ADMIN");
+            authorization.requestMatchers(HttpMethod.POST, "/compte").hasRole("ADMIN");
+            authorization.requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN");
+            authorization.requestMatchers("/home-admin").hasRole("ADMIN");
             
-            // authorization.anyRequest().authenticated();
-            authorization.anyRequest().permitAll();
+            authorization.anyRequest().authenticated();
+            // authorization.anyRequest().permitAll();
         });
         
         return http.build();
@@ -127,8 +127,8 @@ public class SecurityConfig {
     
     @Bean
     PasswordEncoder passwordEncoder() {
-        // return new BCryptPasswordEncoder();
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
+        // return NoOpPasswordEncoder.getInstance();
     }
     
 }
