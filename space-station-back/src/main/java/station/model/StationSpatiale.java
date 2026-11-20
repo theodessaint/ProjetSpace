@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -13,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -40,13 +42,14 @@ public class StationSpatiale {
     @Column(nullable = false)
     private int cycle;
     
-    @Embedded 
+    @ManyToOne 
+    @JoinColumn (name = "joueur_id", nullable = false) 
     private Joueur joueur;
     
-    @OneToMany(mappedBy = "station")
+    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL) // Ce qui est fait a la station est aussi fait aux astronautes (Delete)
     private List<Astronaute> astronautes = new ArrayList<Astronaute>();
     
-    @OneToMany(mappedBy = "station")
+    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL) // Idem
     private List<Module> modules = new ArrayList<Module>();
     
     public StationSpatiale() {}

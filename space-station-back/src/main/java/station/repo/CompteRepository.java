@@ -17,6 +17,9 @@ public interface CompteRepository extends JpaRepository<Compte, Integer>{
   public Optional<Compte> findByLogin(String username);
   
   // findByRole ?
+
+  @Query ("SELECT j from Joueur j WHERE j.id = :id")
+  Optional<Joueur> findJoueurById(Integer id);
   
   @Query("SELECT j FROM Joueur j")
   List<Joueur> findAllJoueur();
