@@ -7,24 +7,37 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import station.model.Module;
 import station.model.Position;
+import station.api.request.CreateOrUpdateStationSpatialeRequest;
+import station.exception.CompteNotFoundException;
 import station.exception.PositionNotFoundException;
+import station.exception.StationSpatialeNotFoundException;
+import station.model.Compte;
 import station.model.Emplacement;
 import station.model.Grille;
+import station.model.Joueur;
 import station.model.StationSpatiale;
+import station.repo.CompteRepository;
 import station.repo.ModuleRepository;
 import station.repo.StationSpatialeRepository;
 
 @Service
 public class StationSpatialeService {
+    
+    private static final Logger log = LoggerFactory.getLogger(ModuleService.class);
     private final StationSpatialeRepository repository;
     private final ModuleRepository moduleRepository;
+    private final CompteRepository compteRepository;
 
-    public StationSpatialeService(StationSpatialeRepository repository, ModuleRepository moduleRepository) {
+
+    public StationSpatialeService(StationSpatialeRepository repository, ModuleRepository moduleRepository, CompteRepository compteRepository) {
         this.repository = repository;
         this.moduleRepository = moduleRepository;
+        this.compteRepository = compteRepository;
     }
 
     public List<StationSpatiale> findAll() {
@@ -44,11 +57,28 @@ public class StationSpatialeService {
         return stationCree;
     }
 
-    public StationSpatiale save(Integer id, StationSpatiale station) {
+
+    private StationSpatiale save(StationSpatiale station, CreateOrUpdateStationSpatialeRequest request) {
+        station.setNom(request.getNom());
+        station.setCycle(request.getCycle());
+
+        Joueur joueur = compteRepository.findJoueurById(request.getJoueurId())
+        .orElseThrow(
+            () -> {
+                log.warn("Joueur introuvable : id={}", request.getJoueurId());
+                return new CompteNotFoundException();
+            }
+        );
+        station.setJoueur(joueur);
+
+        return this.repository.save(station);
+    }
+
+    /* public StationSpatiale save(Integer id, StationSpatiale station) {
         this.findById(id);
         station.setId(id);
         return this.repository.save(station);
-    }
+    } */
 
     public void deleteById(Integer id) {
         this.repository.deleteById(id);
