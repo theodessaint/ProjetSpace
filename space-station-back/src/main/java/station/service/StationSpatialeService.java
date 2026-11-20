@@ -50,11 +50,11 @@ public class StationSpatialeService {
     }
 
     @Transactional // Soit Station et Module sont tous les deux validés, soit rien n'est créé
-    public StationSpatiale save(StationSpatiale station) {
-        station.setId(null);
-        StationSpatiale stationCree = this.repository.save(station);
-        this.creerModules(stationCree);
-        return stationCree;
+    public StationSpatiale save(CreateOrUpdateStationSpatialeRequest request) {
+        
+        StationSpatiale station = this.save(new StationSpatiale(), request);
+        this.creerModules(station);
+        return station;
     }
 
 
@@ -74,11 +74,14 @@ public class StationSpatialeService {
         return this.repository.save(station);
     }
 
-    /* public StationSpatiale save(Integer id, StationSpatiale station) {
-        this.findById(id);
-        station.setId(id);
-        return this.repository.save(station);
-    } */
+    public StationSpatiale save(Integer id, CreateOrUpdateStationSpatialeRequest request) {
+        
+        StationSpatiale station = this.findById(id);
+        station = this.save(station, request);
+        log.debug("Station {} modifié !", id);
+        
+        return station;
+    }
 
     public void deleteById(Integer id) {
         this.repository.deleteById(id);
