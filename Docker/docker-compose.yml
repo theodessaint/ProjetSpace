@@ -1,0 +1,77 @@
+name: space-station
+
+# La liste des containers à manager
+services:
+
+  # Base de données MySQL
+  mysql:
+    image: mysql:8.4.13
+    container_name: space-station-db
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: space_station
+
+    # Port où l'on pourra se connecter pour avoir la base MySQL
+    ports:
+      - "3306:3306"
+
+    #Le chemin du fichier à executer
+    volumes:
+      - space-station_data:/var/lib/mysql 
+
+    networks:
+      - space-station-network
+
+    # Mécanique que Docker va exécuter pour vérifier si le service est lancé
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+      interval: 10s
+
+  # Créer un service "springboot", qui deviendra un container Docker
+  springboot:
+    image: space-station:boot
+    build: ../space-station-back
+    container_name: space-station-back
+
+    environment:
+     - DB_URL: jdbc:mysql://mysql:3306/space_station
+     - DB_USERNAME: root
+     - DB_PASSWORD: root
+
+    ports:
+      - 8080:8080
+
+    networks:
+      - space-station-network
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+  
+
+  # Créer un service "springboot", qui deviendra un container Docker
+  angular:
+    image: space-station:angular
+    build: ../space-station-front
+    container_name: space-station-front
+
+    ports:
+      - 4200:80
+
+    networks:
+      - space-station-network
+    
+    depends_on:
+      - springboot
+
+
+# Déclaration du réseau personnalisé
+networks:
+  - space-station
+
+# Déclaration du volume MySQL
+volumes:
+  space-station_data:
