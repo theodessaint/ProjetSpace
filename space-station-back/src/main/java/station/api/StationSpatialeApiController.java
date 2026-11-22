@@ -13,39 +13,56 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+import station.api.request.CreateOrUpdateStationSpatialeRequest;
+import station.api.response.EntityCreatedResponse;
+import station.api.response.EntityUpdatedResponse;
+import station.api.response.StationSpatialeResponse;
 import station.model.StationSpatiale;
+import station.service.ModuleService;
 import station.service.StationSpatialeService;
 
 @RestController
 @RequestMapping("/station")
 public class StationSpatialeApiController {
+    
     private final StationSpatialeService service;
-
-    public StationSpatialeApiController(StationSpatialeService service) {
+    private final ModuleService moduleService;
+    
+    public StationSpatialeApiController(StationSpatialeService service, ModuleService moduleService) {
         this.service = service;
+        this.moduleService = moduleService;
     }
-
+    
     @GetMapping
-    public List<StationSpatiale> findAll() {
-        return this.service.findAll();
+    public List<StationSpatialeResponse> findAll() {
+        return this.service.findAll().stream()
+        .map(station -> StationSpatialeResponse.convert(station, this.moduleService.peutDebloquer(station)))
+        .toList();
     }
-
+    
     @GetMapping("/{id}")
-    public StationSpatiale findById(@PathVariable Integer id) {
-        return this.service.findById(id);
+    public StationSpatialeResponse findById(@PathVariable Integer id) {
+        StationSpatiale station = this.service.findById(id);
+        return StationSpatialeResponse.convert(station, this.moduleService.peutDebloquer(station));
     }
-
+    
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public StationSpatiale create(@RequestBody StationSpatiale station) {
-        return this.service.save(station);
+    public EntityCreatedResponse create(@Valid @RequestBody CreateOrUpdateStationSpatialeRequest request) {
+        
+        return new EntityCreatedResponse(this.service.save(request).getId());
+        
     }
-
+    
     @PutMapping("/{id}")
-    public StationSpatiale update(@PathVariable Integer id, @RequestBody StationSpatiale station) {
-        return this.service.save(id, station);
+    public EntityUpdatedResponse update(@PathVariable Integer id, @Valid @RequestBody CreateOrUpdateStationSpatialeRequest request) {
+        
+        this.service.save(id, request);
+        return new EntityUpdatedResponse(id, true);
+        
     }
-
+    
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Integer id) {

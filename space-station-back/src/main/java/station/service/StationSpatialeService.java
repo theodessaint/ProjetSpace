@@ -7,24 +7,37 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import station.model.Module;
 import station.model.Position;
-import station.enumerator.ModuleEnum;
+import station.api.request.CreateOrUpdateStationSpatialeRequest;
+import station.exception.CompteNotFoundException;
 import station.exception.PositionNotFoundException;
+import station.exception.StationSpatialeNotFoundException;
+import station.model.Compte;
 import station.model.Emplacement;
 import station.model.Grille;
+import station.model.Joueur;
 import station.model.StationSpatiale;
+import station.repo.CompteRepository;
 import station.repo.ModuleRepository;
 import station.repo.StationSpatialeRepository;
 
 @Service
 public class StationSpatialeService {
+    
+    private static final Logger log = LoggerFactory.getLogger(ModuleService.class);
     private final StationSpatialeRepository repository;
     private final ModuleRepository moduleRepository;
+    private final CompteRepository compteRepository;
 
-    public StationSpatialeService(StationSpatialeRepository repository, ModuleRepository moduleRepository) {
+
+    public StationSpatialeService(StationSpatialeRepository repository, ModuleRepository moduleRepository, CompteRepository compteRepository) {
         this.repository = repository;
         this.moduleRepository = moduleRepository;
+        this.compteRepository = compteRepository;
     }
 
     public List<StationSpatiale> findAll() {
@@ -36,24 +49,45 @@ public class StationSpatialeService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Station introuvable"));
     }
 
-    public StationSpatiale save(StationSpatiale station) {
-        station.setId(null);
-        StationSpatiale stationCree = this.repository.save(station);
-        this.creerModules(stationCree);
-        return stationCree;
+    @Transactional // Soit Station et Module sont tous les deux validés, soit rien n'est créé
+    public StationSpatiale save(CreateOrUpdateStationSpatialeRequest request) {
+        
+        StationSpatiale station = this.save(new StationSpatiale(), request);
+        this.creerModules(station);
+        return station;
     }
 
-    public StationSpatiale save(Integer id, StationSpatiale station) {
-        this.findById(id);
-        station.setId(id);
+
+    private StationSpatiale save(StationSpatiale station, CreateOrUpdateStationSpatialeRequest request) {
+        station.setNom(request.getNom());
+        station.setCycle(request.getCycle());
+
+        Joueur joueur = compteRepository.findJoueurById(request.getJoueurId())
+        .orElseThrow(
+            () -> {
+                log.warn("Joueur introuvable : id={}", request.getJoueurId());
+                return new CompteNotFoundException();
+            }
+        );
+        station.setJoueur(joueur);
+
         return this.repository.save(station);
+    }
+
+    public StationSpatiale save(Integer id, CreateOrUpdateStationSpatialeRequest request) {
+        
+        StationSpatiale station = this.findById(id);
+        station = this.save(station, request);
+        log.debug("Station {} modifié !", id);
+        
+        return station;
     }
 
     public void deleteById(Integer id) {
         this.repository.deleteById(id);
     }
 
-    public void creerModules(StationSpatiale station) { // créer un module par position pour UNE station précise
+    private void creerModules(StationSpatiale station) { // créer un module par position pour UNE station précise. Changement a private car ce ne doit pas être accessible en dehors de la station
         List<Module> modules = new ArrayList<>();
 
         for(Emplacement emplacement : Grille.PLAN) {
@@ -67,7 +101,7 @@ public class StationSpatialeService {
 
             module.setNom(emplacement.getType().name()); // Attribue le type selon le nom ("Serre") dans l'enum
 
-            module.setPosition(new Position(position.getX(), position.getX())); // On récupère la position et on l'attribue au module
+            module.setPosition(new Position(position.getX(), position.getY())); // On récupère la position et on l'attribue au module
             module.setDebloque(emplacement.isOuvertAuDepart()); // 
 
             station.ajouterModule(module);

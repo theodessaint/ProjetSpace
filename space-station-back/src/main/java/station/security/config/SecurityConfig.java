@@ -55,7 +55,7 @@ public class SecurityConfig {
         
         // Désactivation de la protection CSRF uniquement pour certaines URLs
         // Cross-Site Request Forgery - attaque qui pousse un utilisateur authentifié (par cookie de session, par exemple) d'effectuer une action à son insu
-        http.csrf(csrf -> csrf.ignoringRequestMatchers("/compte/auth", "/compte/inscription"));
+        http.csrf(csrf -> csrf.ignoringRequestMatchers("/**")); // Debloque le csrf
         
         // Configuration CORS (personnalisée plus bas)
         http.cors(cors -> cors.configurationSource(corsConfigurationSource));
@@ -72,17 +72,22 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorization -> {
 
             // Routes publiques
-            // authorization.requestMatchers(HttpMethod.POST,"/compte/auth", "/compte/inscription").permitAll();
+            authorization.requestMatchers(HttpMethod.POST,"/compte/auth", "/compte/inscription", "/module/*/debloquer").permitAll();
             
             // Routes réservées aux admins
-            // authorization.requestMatchers(HttpMethod.GET, "/compte").hasRole("ADMIN");
-            // authorization.requestMatchers(HttpMethod.PUT, "/compte").hasRole("ADMIN");
-            // authorization.requestMatchers(HttpMethod.POST, "/compte").hasRole("ADMIN");
-            // authorization.requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN");
-            // authorization.requestMatchers("/home-admin").hasRole("ADMIN");
+            authorization.requestMatchers(HttpMethod.GET, "/compte").hasRole("ADMIN");
+            authorization.requestMatchers(HttpMethod.PUT, "/compte").hasRole("ADMIN");
+            authorization.requestMatchers(HttpMethod.PUT, "/module/*/debloquer").authenticated(); // pour qu'admin ET joueur puissent débloquer un module
+            authorization.requestMatchers(HttpMethod.PUT, "/station/**", "/module/**").hasRole("ADMIN");
+            authorization.requestMatchers(HttpMethod.POST, "/compte").hasRole("ADMIN");
+            authorization.requestMatchers(HttpMethod.POST, "/module/**").hasRole("ADMIN");
+            authorization.requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN");
+
             
-            // authorization.anyRequest().authenticated();
-            authorization.anyRequest().permitAll();
+            authorization.requestMatchers("/home-admin").hasRole("ADMIN");
+            
+            authorization.anyRequest().authenticated();
+            // authorization.anyRequest().permitAll();
         });
         
         return http.build();
@@ -127,8 +132,8 @@ public class SecurityConfig {
     
     @Bean
     PasswordEncoder passwordEncoder() {
-        // return new BCryptPasswordEncoder();
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
+        // return NoOpPasswordEncoder.getInstance();
     }
     
 }
