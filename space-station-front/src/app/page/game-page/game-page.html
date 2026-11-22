@@ -1,1 +1,63 @@
-<p>game-page works!</p>
+<!-- -------------------- TUTO--------------------------- -->
+@if (visible()) { <!-- on fait si seulement on pas skip le tuto -->
+  <div class="tuto-fond" [class.libre]="etape().action">
+    <div class="tuto-popup">
+      <h2>{{ etape().titre }}</h2>
+      <h3>{{ etape().sousTitre }}</h3>
+      <p>{{ etape().texte }}</p>
+
+      @if (etape().liste) {<!--juste pour le pop3 car c sous forme d epoints en gros -->
+        <ul>
+          @for (ligne of etape().liste; track ligne) {
+            <li>{{ ligne }}</li>
+          }
+        </ul>
+      }
+
+      @if (etape().action) {
+        <p class="consigne">Faites cette action pour continuer.</p>
+      } @else {
+        <button class="suivant" (click)="suivant()">
+          {{ etape().bouton ?? 'Suivant' }}
+        </button>  <!-- pop-up 4 juste pour plus d'intéractivité -->
+      }
+
+      <button class="passer" (click)="passer()">Passer le tuto</button>
+    </div>
+  </div>
+}
+<!-- --------------------STATION en general -------------------------- -->
+<div class="station">
+  <button class="aide">?</button>
+
+  <div class="zone-gauche">
+    <div class="module recyclage" (click)="construireModule('recyclage')">Recyclage Eau / Air 1</div>
+    <div class="module recyclage" (click)="construireModule('recyclage')">Recyclage Eau / Air 2</div>
+    <div class="module recyclage" (click)="construireModule('recyclage')">Recyclage Eau / Air 3</div>
+  </div>
+
+  <div class="zone-centre">
+    <div class="module dortoir">Dortoir</div>
+    <div class="module commande">
+      Centre de Commandement
+      <button (click)="accueillirAstronaute()">Accueillir un astronaute</button>
+      <button (click)="cycleSuivant()">Cycle suivant</button>
+    </div>
+    <div class="module machines" (click)="construireModule('machines')">Salle des Machines 1</div>
+    <div class="module machines" (click)="construireModule('machines')">Salle des Machines 2</div>
+    <div class="module machines" (click)="construireModule('machines')">Salle des Machines 3</div>
+  </div>
+
+  <div class="zone-droite">
+    <div class="module serre" (click)="construireModule('serre')">Serre 1</div>
+    <div class="module serre" (click)="construireModule('serre')">Serre 2</div>
+    <div class="module serre" (click)="construireModule('serre')">Serre 3</div>
+  </div>
+
+  <div class="ressources">
+    <span>⚡ X,XX</span>
+    <span>💧 X,XX</span>
+    <span>🌱 X,XX</span>
+    <span>O₂ X,XX</span>
+  </div>
+</div>
