@@ -67,6 +67,21 @@ services:
     depends_on:
       - springboot
 
+  # Serveur Jenkins
+  jenkins:
+    image: jenkins/jenkins:lts-jdk21
+    container_name: space-station-jenkins
+    restart: unless-stopped
+
+    ports:
+      - "8081:8080"
+
+    volumes:
+      - jenkins_data:/var/jenkins_home
+
+    networks:
+      - space-station-network
+
 
 # Déclaration du réseau personnalisé
 networks:
@@ -75,3 +90,4 @@ networks:
 # Déclaration du volume MySQL
 volumes:
   space-station_data:
+  jenkins_data:
