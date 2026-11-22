@@ -24,33 +24,38 @@ import station.service.ModuleService;
 @RequestMapping("/module")
 public class ModuleApiController {
     private final ModuleService service;
-
+    
     public ModuleApiController(ModuleService service) {
         this.service = service;
     }
-
+    
     @GetMapping
     public List<ModuleResponse> findAll() {
         return this.service.findAll().stream().map(ModuleResponse::convert).toList();
     }
-
+    
     @GetMapping("/{id}")
     public ModuleResponse findById(@PathVariable Integer id) {
         return ModuleResponse.convert(this.service.findById(id));
     }
-
+    
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EntityCreatedResponse create(@Valid @RequestBody CreateOrUpdateModuleRequest request) {
         return new EntityCreatedResponse(this.service.save(request).getId());
     }
-
+    
     @PutMapping("/{id}")
     public EntityUpdatedResponse update(@PathVariable Integer id, @Valid @RequestBody CreateOrUpdateModuleRequest request) {
         this.service.save(id, request);
         return new EntityUpdatedResponse(id, true);
     }
-
+    
+    @PutMapping("/{id}/debloquer") // permet de debloquer un module
+    public ModuleResponse debloquer(@PathVariable Integer id) {
+        return ModuleResponse.convert(this.service.debloqueModule(id));
+    }
+    
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Integer id) {
