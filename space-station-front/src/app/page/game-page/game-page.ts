@@ -4,7 +4,7 @@ type Etape = {
   titre: string;
   sousTitre: string;
   texte: string;
-  liste?: string[]; // puces facultatives sous le texte
+  liste?: string[]; // puces pop-up 3 sous le texte
   bouton?: string; // texte du bouton (par défaut « Suivant »)
   action?: string; // si présent, le joueur doit faire cette action pour continuer
 };
