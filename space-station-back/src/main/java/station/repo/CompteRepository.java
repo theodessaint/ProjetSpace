@@ -20,6 +20,9 @@ public interface CompteRepository extends JpaRepository<Compte, Integer>{
 
   @Query ("SELECT j from Joueur j WHERE j.id = :id")
   Optional<Joueur> findJoueurById(Integer id);
+
+  @Query ("SELECT j from Joueur j WHERE j.login = :login")
+  Optional<Joueur> findJoueurByLogin(String login);
   
   @Query("SELECT j FROM Joueur j")
   List<Joueur> findAllJoueur();
