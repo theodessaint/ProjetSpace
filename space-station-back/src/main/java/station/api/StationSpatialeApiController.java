@@ -3,6 +3,7 @@ package station.api;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,9 +19,12 @@ import station.api.request.CreateOrUpdateStationSpatialeRequest;
 import station.api.response.EntityCreatedResponse;
 import station.api.response.EntityUpdatedResponse;
 import station.api.response.StationSpatialeResponse;
+import station.api.response.StationSpatialeResumeResponse;
 import station.model.StationSpatiale;
 import station.service.ModuleService;
 import station.service.StationSpatialeService;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/station")
@@ -41,10 +45,23 @@ public class StationSpatialeApiController {
         .toList();
     }
     
+    @GetMapping("/mes-parties") // Renvoie les parties du joueur connecté sous la forme d'une liste
+    public List <StationSpatialeResumeResponse>findMesParties(){
+        
+        return this.service.findByLoginJoueur(this.getLoginConnecte()).stream()
+        .map(StationSpatialeResumeResponse::convert)
+        .toList();
+
+    }
+    
     @GetMapping("/{id}")
     public StationSpatialeResponse findById(@PathVariable Integer id) {
-        StationSpatiale station = this.service.findById(id);
-        return StationSpatialeResponse.convert(station, this.moduleService.peutDebloquer(station));
+        
+        StationSpatiale station = this.service.findByIdEtJoueur(id, this.getLoginConnecte());
+
+        boolean peutDebloquer = this.moduleService.peutDebloquer(station);
+        
+        return StationSpatialeResponse.convert(station, peutDebloquer);
     }
     
     @PostMapping
@@ -67,5 +84,11 @@ public class StationSpatialeApiController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Integer id) {
         this.service.deleteById(id);
+    }
+
+    private String getLoginConnecte(){ //Permet d'authentifier le login du joueur (merci claude)
+
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+
     }
 }
