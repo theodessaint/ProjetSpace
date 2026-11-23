@@ -24,6 +24,13 @@ services:
     networks:
       - space-station-network
     
+    # Mécanique que Docker va exécuter pour vérifier si le service est lancé
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+      interval: 10s
+    
   #Service pour accéder à la BDD via un localhost
   pma:
     image: phpmyadmin
@@ -31,6 +38,9 @@ services:
 
     environment:
       PMA_HOST: mysql
+
+    ports:
+     - 81:80
 
     networks:
      - space-station-network
@@ -61,8 +71,7 @@ services:
       - space-station-network
 
     depends_on:
-      mysql:
-        condition: service_healthy
+     - mysql
   
 
   # Créer un service "springboot", qui deviendra un container Docker
