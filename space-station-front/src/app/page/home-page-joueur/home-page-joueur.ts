@@ -1,6 +1,8 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/auth-service';
+import { JoueurService } from '../../service/joueur-service';
+import { StationSpatialeResume } from '../../model/station-spatiale-resume';
 
 @Component({
   imports: [],
@@ -12,6 +14,7 @@ import { AuthService } from '../../service/auth-service';
 export class HomePageJoueur implements AfterViewInit, OnDestroy {
   private router = inject(Router);
   private authService = inject(AuthService);
+  private joueurService = inject(JoueurService);
 
   @ViewChild('astronaute') astro!: ElementRef<HTMLImageElement>;
   @ViewChild('regles') regles!: ElementRef<HTMLDialogElement>;
@@ -25,6 +28,10 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
     normal:    'Ressources de départ standard / Les ressources sont consommées et produites de manière équilibrée.',
     difficile: 'Ressources de départ limitées / Les ressources sont consommées plus vite et leurs créations sont ralenties.',
   };
+
+  parties: StationSpatialeResume[] = [];
+
+  listeAffichee = false;
 
   ngAfterViewInit(): void {
     this.deplacer();
@@ -48,11 +55,27 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
 
   nouvellePartie(): void {
     console.log('Créer une partie, difficulté :', this.difficulte);   
-      this.router.navigate(['/game']);// à brancher sur le back
+    
+    this.joueurService.creerPartie('Nouvelle partie').subscribe(reponse => {
+      console.log('Partie créée, id :', reponse.id);
+      this.router.navigate(['/game', reponse.id]);
+    });
   }
 
-  reprendrePartie(): void {
-    console.log('Reprendre la partie');   // à brancher sur le back
+  chargerListeParties(): void {
+    console.log('Liste des parties');   // à brancher sur le back
+
+    this.joueurService.findMesParties().subscribe(parties => {
+      console.log('Parties du joueur :', parties);
+      this.parties = parties;
+      this.listeAffichee = true;
+    });
+  }
+
+  demarrerPartie(id: number): void {
+    console.log('Chargement de la partie', id);
+
+    this.router.navigate(['/game/', id]);
   }
 
   deconnexion(event: Event): void {
