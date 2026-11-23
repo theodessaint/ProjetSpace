@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../service/auth-service';
@@ -8,8 +8,9 @@ import { AuthService } from '../../service/auth-service';
   selector: 'app-inscription-page',
   styleUrl: './inscription-page.css',
   templateUrl: './inscription-page.html',
+  encapsulation: ViewEncapsulation.None,
 })
-export class InscriptionPage implements OnInit{
+export class InscriptionPage implements OnInit {
   private authService: AuthService = inject(AuthService);
   private formBuilder: FormBuilder = inject(FormBuilder);
   private router: Router = inject(Router);
@@ -25,7 +26,7 @@ export class InscriptionPage implements OnInit{
 
   ngOnInit(): void {
     this.usernameCtrl = this.formBuilder.control('', Validators.required);
-    this.passwordCtrl = this.formBuilder.control('', Validators.required );
+    this.passwordCtrl = this.formBuilder.control('', Validators.required);
 
     this.userForm = this.formBuilder.group({
       username: this.usernameCtrl,
