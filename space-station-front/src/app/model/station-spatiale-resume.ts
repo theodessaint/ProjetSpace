@@ -1,6 +1,6 @@
 export interface StationSpatialeResume {
     
-    id?: number;
+    id: number;
     nom: string;
     cycle: number;
     nbModulesDebloques: number;

@@ -2,7 +2,7 @@ import { Module } from "./module";
 
 export interface StationSpatiale {
 
-    id?: number;
+    id: number;
     nom: string;
     cycle: number;
     colonnes: number;

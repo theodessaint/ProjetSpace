@@ -53,6 +53,16 @@
 
 </main>
 
+<!-- Nom de la nouvelle partie -->
+<dialog #dialogNom class="regles">
+  <h2>Nouvelle partie</h2>
+  <form method="dialog" (submit)="confirmerCreation()">
+    <input class="champ-nom" name="nom" [(ngModel)]="nouveauNom"
+           placeholder="Nom de la partie" required autofocus>
+    <button class="btn btn-principal">Créer</button>
+  </form>
+</dialog>
+
 <!-- Fenêtre des règles -->
 <dialog #regles class="regles">
   <h2>Règles du jeu</h2>
