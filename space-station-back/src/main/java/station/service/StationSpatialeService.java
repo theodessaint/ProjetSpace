@@ -50,15 +50,27 @@ public class StationSpatialeService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Station introuvable"));
     }
     
+    public List<StationSpatiale> findByLoginJoueur(String login){
+        
+        Compte compte = this.compteRepository.findByLogin(login)
+        .orElseThrow(() -> {
+            log.warn("Compte introuvable pour le login {}", login);
+            return new CompteNotFoundException();
+        });
+        
+        return this.repository.findByJoueurId(compte.getId());
+        
+    }
+    
     public StationSpatiale findByIdEtJoueur(Integer id, String login){
         
         StationSpatiale station = this.findById(id);
-
+        
         if(!station.getJoueur().getLogin().equals(login)) {
             log.warn("Le joueur {} a tenté d'accéder à la station {}", login, id);
             throw new AccessDeniedException("Accès interdit");
         }
-
+        
         return station;
     }
     

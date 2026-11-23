@@ -19,6 +19,7 @@ import station.api.request.CreateOrUpdateStationSpatialeRequest;
 import station.api.response.EntityCreatedResponse;
 import station.api.response.EntityUpdatedResponse;
 import station.api.response.StationSpatialeResponse;
+import station.api.response.StationSpatialeResumeResponse;
 import station.model.StationSpatiale;
 import station.service.ModuleService;
 import station.service.StationSpatialeService;
@@ -44,19 +45,23 @@ public class StationSpatialeApiController {
         .toList();
     }
     
-    @GetMapping("/ma-partie") // Renvoie la partie du joueur connecté
-    public StationSpatialeResponse findMaPartie() {
+    @GetMapping("/mes-parties") // Renvoie les parties du joueur connecté sous la forme d'une liste
+    public List <StationSpatialeResumeResponse>findMesParties(){
         
-        String login = SecurityContextHolder.getContext().getAuthentication().getName();
-        StationSpatiale station = this.service.findByJoueurId(login);
-        return StationSpatialeResponse.convert(station, this.moduleService.peutDebloquer(station));
+        return this.service.findByLoginJoueur(this.getLoginConnecte()).stream()
+        .map(StationSpatialeResumeResponse::convert)
+        .toList();
 
     }
     
     @GetMapping("/{id}")
     public StationSpatialeResponse findById(@PathVariable Integer id) {
-        StationSpatiale station = this.service.findById(id);
-        return StationSpatialeResponse.convert(station, this.moduleService.peutDebloquer(station));
+        
+        StationSpatiale station = this.service.findByIdEtJoueur(id, this.getLoginConnecte());
+
+        boolean peutDebloquer = this.moduleService.peutDebloquer(station);
+        
+        return StationSpatialeResponse.convert(station, peutDebloquer);
     }
     
     @PostMapping
@@ -79,5 +84,11 @@ public class StationSpatialeApiController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Integer id) {
         this.service.deleteById(id);
+    }
+
+    private String getLoginConnecte(){ //Permet d'authentifier le login du joueur (merci claude)
+
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+
     }
 }
