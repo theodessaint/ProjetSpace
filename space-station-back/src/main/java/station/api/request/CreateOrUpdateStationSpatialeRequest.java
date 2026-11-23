@@ -11,9 +11,6 @@ public class CreateOrUpdateStationSpatialeRequest {
     @NotNull
     private Integer cycle;
 
-    @NotNull 
-    private Integer joueurId;
-
     public String getNom() {
         return nom;
     }
@@ -28,15 +25,5 @@ public class CreateOrUpdateStationSpatialeRequest {
 
     public void setCycle(Integer cycle) {
         this.cycle = cycle;
-    }
-
-    public Integer getJoueurId() {
-        return joueurId;
-    }
-
-    public void setJoueurId(Integer joueurId) {
-        this.joueurId = joueurId;
-    }
-
-      
+    }      
 }

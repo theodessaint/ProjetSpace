@@ -68,7 +68,7 @@ public class StationSpatialeApiController {
     @ResponseStatus(HttpStatus.CREATED)
     public EntityCreatedResponse create(@Valid @RequestBody CreateOrUpdateStationSpatialeRequest request) {
         
-        return new EntityCreatedResponse(this.service.save(request).getId());
+        return new EntityCreatedResponse(this.service.save(request, this.getLoginConnecte()).getId());
         
     }
     
