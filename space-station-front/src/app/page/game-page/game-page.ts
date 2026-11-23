@@ -158,4 +158,21 @@ export class GamePage {
     // passer au cycle suivant
     this.actionFaite('cycle');
   }
+
+  afficherTuto() {
+  this.index.set(0);
+  this.visible.set(true);
+}
+menuModulesOuvert = signal(false);
+
+  toggleMenuModules() {
+    this.menuModulesOuvert.update((ouvert) => !ouvert);
+  }
+
+  acheterModule(type: 'machines' | 'serre' | 'recyclage' | 'dortoir' | 'commande') {
+    if (type === 'machines' || type === 'serre' || type === 'recyclage') {
+      this.construireModule(type);
+    }
+this.menuModulesOuvert.set(false);
+  }
 }

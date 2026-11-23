@@ -7,103 +7,144 @@
   --glace: #6fd6ee;
   --trait: rgba(160, 190, 255, 0.22);
 }
- 
-/* Le composant occupe tout l'écran (ViewEncapsulation.None : on cible la balise) */
+
 app-game-page {
   display: block;
-
-}html, body {
-  margin: 0;               /* supprime la marge blanche par défaut du navigateur */
-  height: 100%;
-  background: var(--vide); /* si l'image ne couvre pas tout, on voit du sombre et non du blanc */
 }
 
-.jeu {
-  position: relative;
-  z-index: 3;
-  min-height: 100vh;
-  background: url('/Assets/Images/fond-game-page.png') center / cover no-repeat;
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--vide);
 }
 
-/* ---------- Le jeu (devant le fond) ---------- */
+/* ---------- Fond spatial ---------- */
 .jeu {
   position: relative;
   z-index: 3;
   min-height: 100vh;
   box-sizing: border-box;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 1rem 5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: system-ui, sans-serif;
   color: var(--etoile);
+  background: url('/Assets/Images/fond-game-page.png') center / cover no-repeat fixed;
 }
- 
-/* ---------- La station : grille 7 colonnes × 5 lignes ---------- */
+
+/* ---------- Station ---------- */
 .station {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 9rem));
-  grid-template-rows: repeat(5, 5.2rem);
-  gap: 0.6rem;
-  width: min(100%, 70rem);
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 3rem);
+  display: flex;
+  align-items: center;
   justify-content: center;
 }
- 
+
+.image-vaisseau {
+  display: block;
+  width: 96vw;
+  max-width: 1250px;
+  max-height: 86vh;
+  object-fit: contain;
+}
+
+.zone-gauche,
+.zone-centre,
+.zone-droite {
+  position: fixed;
+  right: 1rem;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  max-width: 48vw;
+}
+
+/* On empile les 3 zones au-dessus du coin bas-droit */
+.zone-droite {
+  bottom: 1rem;
+}
+
+.zone-gauche {
+  bottom: 4.2rem;
+}
+
+.zone-centre {
+  bottom: 7.4rem;
+}
+
 .module {
-  font: 600 0.9rem "Chakra Petch", system-ui, sans-serif;
-  line-height: 1.25;
+  font: 600 0.82rem 'Chakra Petch', system-ui, sans-serif;
+  line-height: 1.2;
   color: var(--etoile);
-  background: rgba(10, 16, 48, 0.8);
+  background: rgba(10, 16, 48, 0.88);
   border: 1px solid var(--trait);
-  border-radius: 12px;
-  padding: 0.5rem;
+  border-radius: 10px;
+  padding: 0.45rem 0.7rem;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
 }
- 
+
 .module:hover:not(.verrouille) {
   transform: translateY(-2px);
 }
- 
-.module.neutre  { background: rgba(26, 24, 60, 0.85); cursor: default; }
-.module.bleu    { background: rgba(10, 50, 80, 0.85);  border-color: #3aa7d8; }
-.module.vert    { background: rgba(14, 54, 30, 0.85);  border-color: #3fae5b; }
-.module.orange  { background: rgba(70, 36, 12, 0.85);  border-color: #e08a2c; }
- 
-.module.bleu:hover:not(.verrouille)   { box-shadow: 0 0 16px rgba(58, 167, 216, 0.55); }
-.module.vert:hover:not(.verrouille)   { box-shadow: 0 0 16px rgba(63, 174, 91, 0.55); }
-.module.orange:hover:not(.verrouille) { box-shadow: 0 0 16px rgba(224, 138, 44, 0.55); }
- 
-/* Module pas encore débloqué */
-.module.verrouille {
-  opacity: 0.4;
-  cursor: not-allowed;
+
+.module.recyclage {
+  background: rgba(10, 50, 80, 0.85);
+  border-color: #3aa7d8;
 }
- 
-/* ---------- ressources (bas gauche) ---------- */
+.module.recyclage:hover {
+  box-shadow: 0 0 16px rgba(58, 167, 216, 0.55);
+}
+
+.module.serre {
+  background: rgba(14, 54, 30, 0.85);
+  border-color: #3fae5b;
+}
+.module.serre:hover {
+  box-shadow: 0 0 16px rgba(63, 174, 91, 0.55);
+}
+
+.module.machines {
+  background: rgba(70, 36, 12, 0.85);
+  border-color: #e08a2c;
+}
+.module.machines:hover {
+  box-shadow: 0 0 16px rgba(224, 138, 44, 0.55);
+}
+
+.module.dortoir,
+.module.commande {
+  background: rgba(26, 24, 60, 0.88);
+}
+
+/* ---------- Ressources (bas gauche) ---------- */
 .ressources {
   position: fixed;
   left: 1rem;
   bottom: 1rem;
-  z-index: 3;
-  display: grid;
-  grid-template-columns: repeat(2, 9rem);
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 0.5rem;
-}
- 
-.ressources {
   padding: 0.45rem 0.9rem;
   font-size: 1rem;
   color: var(--etoile);
-  background: rgba(40, 48, 80, 0.85);
+  background: rgba(40, 48, 80, 0.88);
   border: 1px solid var(--trait);
   border-radius: 999px;
 }
 
- .ressources {
+.ressource {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .ressources img {
@@ -117,19 +158,21 @@ app-game-page {
   position: fixed;
   top: 1rem;
   right: 1rem;
-  z-index: 3;
+  z-index: 10;
   width: 2.6rem;
   height: 2.6rem;
-  font: 700 1.3rem "Chakra Petch", system-ui, sans-serif;
+  font: 700 1.3rem 'Chakra Petch', system-ui, sans-serif;
   color: var(--etoile);
-  background: rgba(10, 16, 48, 0.8);
+  background: rgba(10, 16, 48, 0.85);
   border: 2px solid var(--glace);
   border-radius: 50%;
   cursor: pointer;
   transition: box-shadow 0.2s;
 }
-.aide:hover { box-shadow: 0 0 14px rgba(111, 214, 238, 0.6); }
- 
+.aide:hover {
+  box-shadow: 0 0 14px rgba(111, 214, 238, 0.6);
+}
+
 /* ---------- Pop-up du tuto ---------- */
 .tuto-fond {
   position: fixed;
@@ -140,15 +183,14 @@ app-game-page {
   background: rgba(3, 6, 20, 0.7);
   z-index: 1000;
 }
- 
-/* Étapes avec action : le pop-up descend en bas et laisse cliquer sur le jeu */
+
 .tuto-fond.libre {
   background: transparent;
   pointer-events: none;
   align-items: flex-end;
   padding-bottom: 32px;
 }
- 
+
 .tuto-popup {
   pointer-events: auto;
   width: min(460px, 90vw);
@@ -159,15 +201,38 @@ app-game-page {
   color: #e8ecff;
   text-align: center;
 }
- 
-.tuto-popup h2 { margin: 0 0 4px; font-size: 1.4rem; }
-.tuto-popup h3 { margin: 0 0 16px; font-size: 1rem; font-weight: 400; color: #f59e0b; }
-.tuto-popup p { margin: 0 0 20px; line-height: 1.5; }
-.tuto-popup .consigne { color: #f59e0b; font-style: italic; }
-.tuto-popup ul { margin: 0 0 20px; padding-left: 20px; text-align: left; line-height: 1.5; }
- 
-.tuto-popup button { cursor: pointer; border-radius: 10px; font-size: 1rem; }
- 
+
+.tuto-popup h2 {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+}
+.tuto-popup h3 {
+  margin: 0 0 16px;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #f59e0b;
+}
+.tuto-popup p {
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+.tuto-popup .consigne {
+  color: #f59e0b;
+  font-style: italic;
+}
+.tuto-popup ul {
+  margin: 0 0 20px;
+  padding-left: 20px;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.tuto-popup button {
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
 .tuto-popup .suivant {
   padding: 10px 28px;
   border: none;
@@ -175,7 +240,7 @@ app-game-page {
   color: #0d1433;
   font-weight: 600;
 }
- 
+
 .tuto-popup .passer {
   display: block;
   margin: 14px auto 0;
@@ -185,4 +250,69 @@ app-game-page {
   font-size: 0.85rem;
   text-decoration: underline;
 }
- 
+
+/* ---------- Boutons d'actions rapides ("Accueillir un astronaute", "Cycle suivant") ---------- */
+.actions-rapides {
+  position: fixed;
+  right: 1rem;
+  bottom: 4.8rem;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.actions-rapides .btn-action,
+.btn-action {
+  appearance: none;
+  font: 600 0.85rem 'Chakra Petch', system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  color: var(--etoile, #e8ecff);
+  background: linear-gradient(135deg, rgba(16, 26, 68, 0.9), rgba(9, 15, 42, 0.92));
+  border: 1px solid rgba(111, 214, 238, 0.45);
+  border-radius: 12px;
+  padding: 0.55rem 0.95rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 0.16s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  border-color: var(--glace, #6fd6ee);
+  background: linear-gradient(135deg, rgba(24, 40, 98, 0.95), rgba(13, 22, 58, 0.95));
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55), 0 0 14px rgba(111, 214, 238, 0.35);
+}
+
+.btn-action:active {
+  transform: translateY(0);
+}
+
+/* ---------- Bouton principal "Acheter modules" ---------- */
+.menu-modules-container .btn-acheter-modules,
+.btn-acheter-modules {
+  appearance: none;
+  font: 700 0.92rem 'Chakra Petch', system-ui, sans-serif;
+  letter-spacing: 0.03em;
+  color: #090e24;
+  background: linear-gradient(135deg, #ffc875, #ff9f2e);
+  border: 1px solid rgba(255, 225, 170, 0.8);
+  border-radius: 12px;
+  padding: 0.65rem 1.15rem;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5), 0 0 14px rgba(255, 180, 84, 0.28);
+  transition: transform 0.16s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.btn-acheter-modules:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55), 0 0 22px rgba(255, 180, 84, 0.55);
+}
+
+.btn-acheter-modules:active {
+  transform: translateY(0);
+}
