@@ -72,10 +72,11 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorization -> {
 
             // Routes publiques
-            authorization.requestMatchers(HttpMethod.POST,"/compte/auth", "/compte/inscription", "/module/*/debloquer").permitAll();
+            authorization.requestMatchers(HttpMethod.POST,"/compte/auth", "/compte/inscription").permitAll();
             
             // Routes réservées aux admins
             authorization.requestMatchers(HttpMethod.GET, "/compte").hasRole("ADMIN");
+            authorization.requestMatchers(HttpMethod.GET, "/station").hasRole("ADMIN");
             authorization.requestMatchers(HttpMethod.PUT, "/compte").hasRole("ADMIN");
             authorization.requestMatchers(HttpMethod.PUT, "/module/*/debloquer").authenticated(); // pour qu'admin ET joueur puissent débloquer un module
             authorization.requestMatchers(HttpMethod.PUT, "/station/**", "/module/**").hasRole("ADMIN");
