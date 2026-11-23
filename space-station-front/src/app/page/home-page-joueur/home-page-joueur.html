@@ -12,7 +12,7 @@
 
   <nav class="menu" aria-label="Menu principal">
     <button class="btn btn-principal" (click)="nouvellePartie()">Créer une partie</button>
-    <button class="btn" (click)="reprendrePartie()">Reprendre ma partie</button>
+    <button class="btn" (click)="chargerListeParties()">Charger mes parties</button>
     <button class="btn" (click)="ouvrirRegles()">Règles du jeu</button>
 
     <fieldset class="difficulte">
@@ -33,7 +33,35 @@
       <p class="aide">{{ aides[difficulte] }}</p>
     </fieldset>
   </nav>
+
+  @if (listeAffichee) {
+    <section class = "liste-parties">
+      <h2>Mes parties</h2>
+
+      @for (partie of parties; track partie.id) {
+        <button class = "partie" (click) = "demarrerPartie(partie.id)">
+          <span class = "partie-nom">{{partie.nom}}</span>
+          <span class = "partie-infos">cycle {{partie.cycle}} - {{partie.nbModulesDebloques}} modules debloqués</span>
+        </button>
+      }
+      @empty {
+        <p class = "aide">Aucune partie en cours, veuillez en créer une.</p>
+      }
+
+    </section>
+  }
+
 </main>
+
+<!-- Nom de la nouvelle partie -->
+<dialog #dialogNom class="regles">
+  <h2>Nouvelle partie</h2>
+  <form method="dialog" (submit)="confirmerCreation()">
+    <input class="champ-nom" name="nom" [(ngModel)]="nouveauNom"
+           placeholder="Nom de la partie" required autofocus>
+    <button class="btn btn-principal">Créer</button>
+  </form>
+</dialog>
 
 <!-- Fenêtre des règles -->
 <dialog #regles class="regles">
