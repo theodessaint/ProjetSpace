@@ -123,7 +123,93 @@ body {
 .btndiff input:checked + label { background: var(--glace); color: #04202a; font-weight: 500; }
  
 .aide { min-height: 2.6em; margin: 0.6rem 0 0; font-size: 0.85rem; color: #98a6d6; }
+
+/* Liste des parties à charger */
+
+.liste-parties {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: min(100%, 22rem);   /* même largeur que le menu, pour l'alignement */
+  margin-top: 1.5rem;
+  padding: 1.4rem;
+  background: rgba(10, 16, 48, 0.62);
+  border: 1px solid var(--trait);
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
+}
+
+.liste-parties h2 {
+  margin: 0 0 0.4rem;
+  font: 500 1.05rem "Chakra Petch", sans-serif;
+  letter-spacing: 0.03em;
+  color: #b9c4ee;
+}
+
+.partie {
+  display: flex;
+  flex-direction: column;   /* sépare le nom des infos, sinon tout se colle */
+  align-items: flex-start;
+  gap: 0.2rem;
+
+  padding: 0.7rem 0.9rem;
+  color: var(--etoile);
+  background: transparent;
+  border: 1px solid var(--trait);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.partie:hover {
+  background: rgba(160, 190, 255, 0.12);
+  border-color: var(--glace);
+}
+
+.partie-nom {
+  font: 500 1rem "Chakra Petch", sans-serif;
+  letter-spacing: 0.03em;
+}
+
+.partie-infos {
+  font-size: 0.82rem;
+  color: #98a6d6;
+}
+
+.liste-parties .aide {
+  min-height: auto;   /* le 2.6em du menu laisserait un trou ici */
+  margin: 0;
+}
  
+/* Fenêtre de création d'une partie */
+
+.nouvelle-partie {
+  width: min(92vw, 26rem);
+  padding: 1.6rem;
+  color: var(--etoile);
+  background: var(--nuit);
+  border: 1px solid var(--trait);
+  border-radius: 14px;
+}
+.nouvelle-partie::backdrop { background: rgba(2, 4, 16, 0.75); }
+.nouvelle-partie h2 { margin: 0 0 1rem; font-family: "Chakra Petch", sans-serif; }
+.nouvelle-partie form { text-align: right; }
+
+.champ-nom {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;      /* sinon le padding fait déborder le champ */
+  margin-bottom: 1.4rem;
+  padding: 0.7rem 0.9rem;
+  font: 1rem system-ui, sans-serif;
+  color: var(--etoile);
+  background: rgba(2, 4, 16, 0.6);
+  border: 1px solid var(--trait);
+  border-radius: 8px;
+}
+.champ-nom:focus { outline: none; border-color: var(--glace); }
+
 /* Fenêtre des règles du jeu  */
 
 .regles {
