@@ -3,14 +3,14 @@
 <div class="twinkling"></div>
 
 <main class="jeu">
-  <button class="aide" (click)="afficherTuto()" aria-label="Afficher l'aide">?</button>
+  <!--<button class="aide" (click)="afficherTuto()" aria-label="Afficher l'aide">?</button>-->
   <!-- Les 4 jauges de ressources -->
-  <aside class="jauges">
-    <div class="jauge">⚡ X,XX</div>
-    <div class="jauge">💧 X,XX</div>
-    <div class="jauge">🌱 X,XX</div>
-    <div class="jauge">O₂ X,XX</div>
-  </aside>
+<aside class="ressources">
+  <div class="ressource"><img src="/Assets/Images/oxygene.png" alt="Oxygene" /> X,XX</div>
+  <div class="ressource"><img src="/Assets/Images/eau.png" alt="Eau" /> X,XX</div>
+  <div class="ressource"><img src="/Assets/Images/nourriture.png" alt="Nourriture" /> X,XX</div>
+  <div class="ressource"><img src="/Assets/Images/energie.png" alt="Électricité" /> X,XX</div>
+</aside>
 </main>
 
 <!-- -------------------- TUTO--------------------------- -->
@@ -68,8 +68,8 @@
     <div class="module serre" (click)="construireModule('serre')">Serre 2</div>
     <div class="module serre" (click)="construireModule('serre')">Serre 3</div>
   </div>
-
-  <div class="ressources"><!--
+<!--
+  <div class="ressources">
     <div class="ressource">
       <img src="/assets/images/ressources/air.png" alt="Air" />
       <span>{{ ressources.air }}</span>

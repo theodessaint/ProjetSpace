@@ -11,7 +11,7 @@
 /* Le composant occupe tout l'écran (ViewEncapsulation.None : on cible la balise) */
 app-game-page {
   display: block;
-  
+
 }html, body {
   margin: 0;               /* supprime la marge blanche par défaut du navigateur */
   height: 100%;
@@ -80,8 +80,8 @@ app-game-page {
   cursor: not-allowed;
 }
  
-/* ---------- Jauges (bas gauche) ---------- */
-.jauges {
+/* ---------- ressources (bas gauche) ---------- */
+.ressources {
   position: fixed;
   left: 1rem;
   bottom: 1rem;
@@ -91,7 +91,7 @@ app-game-page {
   gap: 0.5rem;
 }
  
-.jauge {
+.ressources {
   padding: 0.45rem 0.9rem;
   font-size: 1rem;
   color: var(--etoile);
@@ -99,7 +99,19 @@ app-game-page {
   border: 1px solid var(--trait);
   border-radius: 999px;
 }
- 
+
+ .ressources {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ressources img {
+  width: 1.4rem;
+  height: 1.4rem;
+  object-fit: contain;
+}
+
 /* ---------- Bouton « ? » (haut droite) ---------- */
 .aide {
   position: fixed;
