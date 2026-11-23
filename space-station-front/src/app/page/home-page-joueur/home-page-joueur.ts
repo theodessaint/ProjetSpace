@@ -47,7 +47,8 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
   }
 
   nouvellePartie(): void {
-    console.log('Créer une partie, difficulté :', this.difficulte);   // à brancher sur le back
+    console.log('Créer une partie, difficulté :', this.difficulte);   
+      this.router.navigate(['/game']);// à brancher sur le back
   }
 
   reprendrePartie(): void {
