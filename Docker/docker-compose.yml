@@ -9,26 +9,35 @@ services:
     container_name: space-station-db
 
     environment:
+      MYSQL_ROOT_USERNAME: root
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: space_station
 
     # Port où l'on pourra se connecter pour avoir la base MySQL
     ports:
-      - "3306:3306"
+      - 3306:3306
 
     #Le chemin du fichier à executer
     volumes:
-      - space-station_data:/var/lib/mysql 
+      - space-station-data:/data/var/lib/mysql 
 
     networks:
       - space-station-network
+    
+  #Service pour accéder à la BDD via un localhost
+  pma:
+    image: phpmyadmin
+    container_name: space-station-pma
 
-    # Mécanique que Docker va exécuter pour vérifier si le service est lancé
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 5s
-      retries: 10
-      interval: 10s
+    environment:
+      PMA_HOST: mysql
+
+    networks:
+     - space-station-network
+    
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   # Créer un service "springboot", qui deviendra un container Docker
   springboot:
@@ -37,12 +46,16 @@ services:
     container_name: space-station-back
 
     environment:
-     - DB_URL: jdbc:mysql://mysql:3306/space_station
-     - DB_USERNAME: root
-     - DB_PASSWORD: root
+     - SPRING_DATASOURCE_URL=jdbc:mysql://space-station-db:3306/space_station
+     - SPRING_DATASOURCE_USERNAME=root
+     - SPRING_DATASOURCE_PASSWORD=root
+     - JWT_SECRET_PATH=/secrets/jwt.key
+
+    volumes:
+     - ../secrets/jwt.key:/secrets/jwt.key
 
     ports:
-      - 8080:8080
+     - 8080:8080
 
     networks:
       - space-station-network
@@ -68,26 +81,28 @@ services:
       - springboot
 
   # Serveur Jenkins
-  jenkins:
-    image: jenkins/jenkins:lts-jdk21
-    container_name: space-station-jenkins
-    restart: unless-stopped
+  # jenkins:
+  #   image: jenkins/jenkins:lts-jdk21
+  #   container_name: space-station-jenkins
+  #   restart: unless-stopped
 
-    ports:
-      - "8081:8080"
+  #   ports:
+  #     - 8081:8080
 
-    volumes:
-      - jenkins_data:/var/jenkins_home
+  #   volumes:
+  #     - jenkins_data:/var/jenkins_home
 
-    networks:
-      - space-station-network
+  #   networks:
+  #     - space-station-network
 
 
 # Déclaration du réseau personnalisé
 networks:
-  - space-station
+  space-station-network:
+    name: space-station-network
 
 # Déclaration du volume MySQL
 volumes:
-  space-station_data:
-  jenkins_data:
+  space-station-data:
+    name: space-station-data
+  # jenkins_data:
