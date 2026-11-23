@@ -1,5 +1,5 @@
-import { Component, computed, signal } from '@angular/core';
- 
+import { Component, computed, signal, ViewEncapsulation } from '@angular/core';
+
 type Etape = {
   titre: string;
   sousTitre: string;
@@ -8,12 +8,13 @@ type Etape = {
   bouton?: string; // texte du bouton (par défaut « Suivant »)
   action?: string; // si présent, le joueur doit faire cette action pour continuer
 };
- 
+
 @Component({
   imports: [],
   selector: 'app-game-page',
   styleUrl: './game-page.css',
   templateUrl: './game-page.html',
+  encapsulation: ViewEncapsulation.None,
 })
 export class GamePage {
 
@@ -109,17 +110,17 @@ export class GamePage {
       action: 'cycle',
     },
   ];
- 
+
   index = signal(0); //indique a quelle etape on est dans le tuto
   visible = signal(true); // mettre false pour ne plus afficher le tuto
-  etape = computed(() => this.etapes[this.index()]); 
+  etape = computed(() => this.etapes[this.index()]);
   //donne le pop-up en cours 
   //Cette ligne donne « le pop-up en cours ». this.etapes est ta liste des 11 pop-ups,
   // et this.index() est le numéro actuel. Si index vaut 2, etape()
   // renvoie le 3e pop-up (« La mission »). computed signifie que cette valeur
   // se recalcule toute seule dès que index change. C'est ce qui permet à l'HTML 
   // d'afficher etape().titre. (mrc chat pour cette commande)
- 
+
   suivant() {
     if (this.index() < this.etapes.length - 1) {
       this.index.update((i) => i + 1);
@@ -127,32 +128,32 @@ export class GamePage {
       this.visible.set(false); // dernier pop-up : le tuto se ferme
     }
   }
- 
+
   // Fait avancer le tuto si le joueur vient de faire l’action que l'on attendait de lui. Sinon, ne fait rien.
   actionFaite(nom: string) {
     if (this.visible() && this.etape().action === nom) {
       this.suivant();
     }
   }
- 
+
   passer() { //bouton fait passer le tuto
     this.visible.set(false);
   }
- 
+
   // ---------- ACTIONS DU JEU ----------
   // Pour l’instant elles ne font que prévenir le tuto.
   // méthode à faire
- 
+
   construireModule(type: 'machines' | 'serre' | 'recyclage') {
     // construire le module (appel au back, mise à jour des ressources...)
     this.actionFaite(type);
   }
- 
+
   accueillirAstronaute() {
     // accueillir un astronaute
     this.actionFaite('accueillir');
   }
- 
+
   cycleSuivant() {
     // passer au cycle suivant
     this.actionFaite('cycle');

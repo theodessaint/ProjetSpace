@@ -1,4 +1,125 @@
-tuto-fond {
+/* ---------- Palette ---------- */
+:root {
+  --vide: #050816;
+  --nuit: #0c1233;
+  --etoile: #e8ecff;
+  --signal: #ffb454;
+  --glace: #6fd6ee;
+  --trait: rgba(160, 190, 255, 0.22);
+}
+ 
+/* Le composant occupe tout l'écran (ViewEncapsulation.None : on cible la balise) */
+app-game-page {
+  display: block;
+  
+}html, body {
+  margin: 0;               /* supprime la marge blanche par défaut du navigateur */
+  height: 100%;
+  background: var(--vide); /* si l'image ne couvre pas tout, on voit du sombre et non du blanc */
+}
+
+.jeu {
+  position: relative;
+  z-index: 3;
+  min-height: 100vh;
+  background: url('/Assets/Images/fond-game-page.png') center / cover no-repeat;
+}
+
+/* ---------- Le jeu (devant le fond) ---------- */
+.jeu {
+  position: relative;
+  z-index: 3;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 1.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, sans-serif;
+  color: var(--etoile);
+}
+ 
+/* ---------- La station : grille 7 colonnes × 5 lignes ---------- */
+.station {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 9rem));
+  grid-template-rows: repeat(5, 5.2rem);
+  gap: 0.6rem;
+  width: min(100%, 70rem);
+  justify-content: center;
+}
+ 
+.module {
+  font: 600 0.9rem "Chakra Petch", system-ui, sans-serif;
+  line-height: 1.25;
+  color: var(--etoile);
+  background: rgba(10, 16, 48, 0.8);
+  border: 1px solid var(--trait);
+  border-radius: 12px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
+}
+ 
+.module:hover:not(.verrouille) {
+  transform: translateY(-2px);
+}
+ 
+.module.neutre  { background: rgba(26, 24, 60, 0.85); cursor: default; }
+.module.bleu    { background: rgba(10, 50, 80, 0.85);  border-color: #3aa7d8; }
+.module.vert    { background: rgba(14, 54, 30, 0.85);  border-color: #3fae5b; }
+.module.orange  { background: rgba(70, 36, 12, 0.85);  border-color: #e08a2c; }
+ 
+.module.bleu:hover:not(.verrouille)   { box-shadow: 0 0 16px rgba(58, 167, 216, 0.55); }
+.module.vert:hover:not(.verrouille)   { box-shadow: 0 0 16px rgba(63, 174, 91, 0.55); }
+.module.orange:hover:not(.verrouille) { box-shadow: 0 0 16px rgba(224, 138, 44, 0.55); }
+ 
+/* Module pas encore débloqué */
+.module.verrouille {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+ 
+/* ---------- Jauges (bas gauche) ---------- */
+.jauges {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(2, 9rem);
+  gap: 0.5rem;
+}
+ 
+.jauge {
+  padding: 0.45rem 0.9rem;
+  font-size: 1rem;
+  color: var(--etoile);
+  background: rgba(40, 48, 80, 0.85);
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+}
+ 
+/* ---------- Bouton « ? » (haut droite) ---------- */
+.aide {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 3;
+  width: 2.6rem;
+  height: 2.6rem;
+  font: 700 1.3rem "Chakra Petch", system-ui, sans-serif;
+  color: var(--etoile);
+  background: rgba(10, 16, 48, 0.8);
+  border: 2px solid var(--glace);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+.aide:hover { box-shadow: 0 0 14px rgba(111, 214, 238, 0.6); }
+ 
+/* ---------- Pop-up du tuto ---------- */
+.tuto-fond {
   position: fixed;
   inset: 0;
   display: flex;
@@ -52,3 +173,4 @@ tuto-fond {
   font-size: 0.85rem;
   text-decoration: underline;
 }
+ 

@@ -1,3 +1,18 @@
+
+<div class="stars"></div>
+<div class="twinkling"></div>
+
+<main class="jeu">
+  <button class="aide" (click)="afficherTuto()" aria-label="Afficher l'aide">?</button>
+  <!-- Les 4 jauges de ressources -->
+  <aside class="jauges">
+    <div class="jauge">⚡ X,XX</div>
+    <div class="jauge">💧 X,XX</div>
+    <div class="jauge">🌱 X,XX</div>
+    <div class="jauge">O₂ X,XX</div>
+  </aside>
+</main>
+
 <!-- -------------------- TUTO--------------------------- -->
 @if (visible()) { <!-- on fait si seulement on pas skip le tuto -->
 <div class="tuto-fond" [class.libre]="etape().action">
