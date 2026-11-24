@@ -22,7 +22,7 @@ public class ModuleConso {
     private RessourceEnum ressource;
 
     @Column(nullable = false)
-    private Integer value;
+    private Double valeur;
 
     @ManyToOne
     @JoinColumn(name = "module_id")
@@ -30,10 +30,10 @@ public class ModuleConso {
 
     private Integer nbAstroAffectes;
 
-    public ModuleConso(Integer id, RessourceEnum ressource, Integer value, Module module, Integer nbAstroAffectes) {
+    public ModuleConso(Integer id, RessourceEnum ressource, Double valeur, Module module, Integer nbAstroAffectes) {
         this.id = id;
         this.ressource = ressource;
-        this.value = value;
+        this.valeur = valeur;
         this.module = module;
         this.nbAstroAffectes = nbAstroAffectes;
     }
@@ -54,12 +54,12 @@ public class ModuleConso {
         this.ressource = ressource;
     }
 
-    public Integer getValue() {
-        return value;
+    public Double getValeur() {
+        return valeur;
     }
 
-    public void setValue(Integer value) {
-        this.value = value;
+    public void setValeur(Double valeur) {
+        this.valeur = valeur;
     }
 
     public Module getModule() {

@@ -22,7 +22,7 @@ public class ModuleProd {
     private RessourceEnum ressource;
 
     @Column(nullable = false)
-    private Integer value;
+    private Double valeur;
 
     @ManyToOne
     @JoinColumn(name = "module_id")
@@ -32,10 +32,10 @@ public class ModuleProd {
 
     public ModuleProd () {}
 
-    public ModuleProd(Integer id, RessourceEnum ressource, Integer value, Module module, Integer nbAstroAffectes) {
+    public ModuleProd(Integer id, RessourceEnum ressource, Double valeur, Module module, Integer nbAstroAffectes) {
         this.id = id;
         this.ressource = ressource;
-        this.value = value;
+        this.valeur = valeur;
         this.module = module;
         this.nbAstroAffectes = nbAstroAffectes;
     }
@@ -56,12 +56,12 @@ public class ModuleProd {
         this.ressource = ressource;
     }
 
-    public Integer getValue() {
-        return value;
+    public Double getValeur() {
+        return valeur;
     }
 
-    public void setValue(Integer value) {
-        this.value = value;
+    public void setValeur(Double valeur) {
+        this.valeur = valeur;
     }
 
     public Module getModule() {
@@ -82,7 +82,7 @@ public class ModuleProd {
 
     @Override
     public String toString() {
-        return "ModuleProd [id=" + id + ", ressource=" + ressource + ", value=" + value + ", module=" + module
+        return "ModuleProd [id=" + id + ", ressource=" + ressource + ", valeur=" + valeur + ", module=" + module
                 + ", nbAstroAffectes=" + nbAstroAffectes + "]";
     }
 }
