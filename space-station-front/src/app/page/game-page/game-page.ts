@@ -1,6 +1,9 @@
 import { Component, computed, signal, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { inject } from '@angular/core';
+import { StationSpatialeService } from '../../service/station-spatiale-service';
+import { StationSpatiale } from '../../model/station-spatiale';
+import { Module } from '../../model/module';
 
 type Etape = {
   titre: string;

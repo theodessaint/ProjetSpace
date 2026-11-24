@@ -8,6 +8,8 @@ export interface StationSpatiale {
     colonnes: number;
     lignes: number;
     peutDebloquer: boolean;
+    nbDeblocagesDisponibles: number;   
+    deblocageObligatoire: boolean;     
     modules: Module[];
 
 }
