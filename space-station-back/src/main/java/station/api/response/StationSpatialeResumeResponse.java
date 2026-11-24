@@ -1,7 +1,6 @@
 package station.api.response;
 
 import station.model.StationSpatiale;
-import station.model.Module;
 
 public class StationSpatialeResumeResponse {
     
@@ -18,7 +17,7 @@ public class StationSpatialeResumeResponse {
         response.cycle = station.getCycle();
         
         response.nbModulesDebloques = station.getModules().stream()
-        .filter(Module::isDebloque)
+        .filter(module -> module.isDebloque())
         .count();
 
         return response;
