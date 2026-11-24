@@ -10,17 +10,9 @@
 #Pour le docker : - Ouvrir un nouveau terminal
 #                 - Pas besoin d'etre dans un dossier spécifique
 #                 - Lancer Docker Desktop
-#                 - docker network create space-station-network
-    #Pour la BDD :
-#                 - docker run -d --name space-station -v space-station-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root mysql:8.4.13
-#                 - docker network connect space-station-network space-station
-#                 - docker exec -it space-station  mysql -uroot -p
-#                 - show databases;
-#                 - create database space_station;
+#                 - docker compose up -d
 
-    #Pour le Boot :
-#                 - docker build -t space-station:boot .
-#                 - docker network connect space-station-network space-station
+
 
 
 

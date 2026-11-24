@@ -1,18 +1,85 @@
-<div class="stars"></div>
-<img #astronaute class="astronaute" id="astronaute" src="Assets/Images/Jastronaute.png" width="200" alt="Astronaute">
-<div class="twinkling"></div>
-<header class="haut">
-  <span class="haut-compte">Admin {{ username }} connecté</span>
-  <a class="haut-lien" href="#" (click)="deconnexion($event)">Se déconnecter</a>
-</header>
+<div class="admin">
 
-<main class="accueil">
-  <h1 class="titre">Station<br>Spatiale</h1>
-  <p class="accroche">Espace administrateur<br>gérez les règles et suivez les parties</p>
+  <!-- Titre principal -->
+  <header class="entete">
+    <h1>Administration - Station spatiale</h1>
+  </header>
 
-  <nav class="menu" aria-label="Menu administrateur">
-    <button class="btn btn-principal" (click)="modifierRegles()">Modifier les règles</button>
-    <button class="btn" (click)="partiesEnCours()">Parties en cours</button>
-    <button class="btn" (click)="partiesTerminees()">Parties terminées</button>
-  </nav>
-</main>
+  <main class="contenu">
+
+    <!-- Colonne gauche : statistiques -->
+    <aside class="admin-stats">
+
+      <!--Total des nombres de parties en cours et finies--->
+      <div class="stat-item">
+        <h2>Total nombre de parties</h2>
+        <p>{{ nombreParties }}</p>
+      </div>
+
+      <div class="stat-item">
+        <h2>En cours</h2>
+        <p>{{ partiesEnCours }}</p>
+      </div>
+
+      <div class="stat-item">
+        <h2>Finies</h2>
+        <p>{{ partiesTerminees }}</p>
+      </div>
+
+    </aside>
+
+    <!-- Partie centrale : liste des parties et comptes -->
+    <section class="admin-liste">
+      <h2>Liste partie / compte</h2>
+      <div class="list-content"></div>
+    </section>
+
+    <!-- Colonne droite -->
+    <aside class="admin-action">
+
+      <!-- Gestion des comptes -->
+      <section class="compte-gestion">
+
+        <button class="admin-button">
+          <span>Modifier / Supprimer compte</span>
+        </button>
+
+      </section>
+
+      <!-- Conseil intergalactique -->
+      <section class="conseil">
+
+        <h2>Conseil intergalactique</h2>
+
+        <div class="conseil-membres">
+
+          <div class="conseil-membre">
+            <img src="assets/images/admin/avatar1.png"
+                 alt="Membre du conseil 1">
+          </div>
+
+          <div class="conseil-membre">
+            <img src="assets/images/admin/avatar2.png"
+                 alt="Membre du conseil 2">
+          </div>
+
+          <div class="conseil-membre">
+            <img src="assets/images/admin/avatar3.png"
+                 alt="Membre du conseil 3">
+          </div>
+
+          <div class="conseil-membre">
+            <img src="assets/images/admin/avatar4.png"
+                 alt="Membre du conseil 4">
+          </div>
+
+          <div class="conseil-membre">
+            <img src="assets/images/admin/avatar5.png"
+                 alt="Membre du conseil 5">
+          </div>
+          
+        </div>
+      </section>
+    </aside>
+  </main>
+</div>
