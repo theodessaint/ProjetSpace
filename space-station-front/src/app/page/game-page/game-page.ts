@@ -1,4 +1,6 @@
 import { Component, computed, signal, ViewEncapsulation } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { inject } from '@angular/core';
 
 type Etape = {
   titre: string;
@@ -18,6 +20,8 @@ type Etape = {
 })
 export class GamePage {
 
+  private route = inject(ActivatedRoute);
+  stationId = Number(this.route.snapshot.paramMap.get('id'));
   // ---------- TUTO (le lore + cycle 1(tuto joueur)) ----------
   // Pop-ups 1 à 4 : le lore, puis pop-ups 5 à 11 : le tuto du cycle 1
   etapes: Etape[] = [
@@ -160,10 +164,10 @@ export class GamePage {
   }
 
   afficherTuto() {
-  this.index.set(0);
-  this.visible.set(true);
-}
-menuModulesOuvert = signal(false);
+    this.index.set(0);
+    this.visible.set(true);
+  }
+  menuModulesOuvert = signal(false);
 
   toggleMenuModules() {
     this.menuModulesOuvert.update((ouvert) => !ouvert);
@@ -173,6 +177,6 @@ menuModulesOuvert = signal(false);
     if (type === 'machines' || type === 'serre' || type === 'recyclage') {
       this.construireModule(type);
     }
-this.menuModulesOuvert.set(false);
+    this.menuModulesOuvert.set(false);
   }
 }

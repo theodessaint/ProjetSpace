@@ -37,7 +37,7 @@ export const routes: Routes = [
     },
 
     {
-        path: 'game',
+        path: 'game/:id',
         title: "Partie",
         component: GamePage,
         canActivate: [ authGuard ],
