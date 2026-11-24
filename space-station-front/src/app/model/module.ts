@@ -1,6 +1,6 @@
 export interface Module {
     
-    id?: number;
+    id: number;
     nom: string;
     nbAstroModuleMax: number;
     nbModuleMax: number;
