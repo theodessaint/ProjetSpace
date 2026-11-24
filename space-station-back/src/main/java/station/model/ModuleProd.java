@@ -28,13 +28,16 @@ public class ModuleProd {
     @JoinColumn(name = "module_id")
     private Module module;
 
+    private Integer nbAstroAffectes;
+
     public ModuleProd () {}
 
-    public ModuleProd(Integer id, RessourceEnum ressource, Integer value, Module module) {
+    public ModuleProd(Integer id, RessourceEnum ressource, Integer value, Module module, Integer nbAstroAffectes) {
         this.id = id;
         this.ressource = ressource;
         this.value = value;
         this.module = module;
+        this.nbAstroAffectes = nbAstroAffectes;
     }
 
     public Integer getId() {
@@ -45,11 +48,11 @@ public class ModuleProd {
         this.id = id;
     }
 
-    public RessourceEnum getRessourceEnum() {
+    public RessourceEnum getRessource() {
         return ressource;
     }
 
-    public void setRessourceEnum(RessourceEnum ressource) {
+    public void setRessource(RessourceEnum ressource) {
         this.ressource = ressource;
     }
 
@@ -69,10 +72,17 @@ public class ModuleProd {
         this.module = module;
     }
 
-    public String toString() {
-        return "ModuleProd [id=" + id + ", ressourceEnum=" + ressource + ", value=" + value + ", module=" + module + "]";
+    public Integer getNbAstroAffectes() {
+        return nbAstroAffectes;
     }
-    
-    
 
+    public void setNbAstroAffectes(Integer nbAstroAffectes) {
+        this.nbAstroAffectes = nbAstroAffectes;
+    }
+
+    @Override
+    public String toString() {
+        return "ModuleProd [id=" + id + ", ressource=" + ressource + ", value=" + value + ", module=" + module
+                + ", nbAstroAffectes=" + nbAstroAffectes + "]";
+    }
 }
