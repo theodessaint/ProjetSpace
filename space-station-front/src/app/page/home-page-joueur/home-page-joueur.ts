@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewChildren, QueryList, ViewEncapsulation, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/auth-service';
 import { JoueurService } from '../../service/joueur-service';
@@ -17,7 +17,7 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
   private authService = inject(AuthService);
   private joueurService = inject(JoueurService);
   
-  @ViewChild('astronaute') astro!: ElementRef<HTMLImageElement>;
+  @ViewChildren('astronaute') astros!: QueryList<ElementRef<HTMLImageElement>>;
   @ViewChild('regles') regles!: ElementRef<HTMLDialogElement>;
   @ViewChild('dialogNom') dialogNom!: ElementRef<HTMLDialogElement>;
   private timer?: ReturnType<typeof setInterval>;
@@ -47,10 +47,13 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
   }
   
   private deplacer(): void {
-    const x = Math.random() * (window.innerWidth - 200);
-    const y = Math.random() * (window.innerHeight - 200);
-    const angle = Math.random() * 60 - 30;
-    this.astro.nativeElement.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+    this.astros.forEach(astros => {
+      const x = Math.random() * (window.innerWidth - 200);
+      const y = Math.random() * (window.innerHeight - 200);
+      const angle = Math.random() * 60 - 30;
+      astros.nativeElement.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+    });
+    
   }
   
   ouvrirRegles(): void {
