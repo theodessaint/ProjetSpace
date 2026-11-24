@@ -58,6 +58,7 @@ public class RessourceService {
     
     public void deleteById(Integer id) {
         this.repository.deleteById(id);
+        log.debug("Ressource {} supprimée !", id);
     }
     
     private Ressource save(Ressource ressource, CreateOrUpdateRessourceRequest request) {
