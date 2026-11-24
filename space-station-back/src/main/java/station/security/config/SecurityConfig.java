@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -83,6 +82,7 @@ public class SecurityConfig {
             authorization.requestMatchers(HttpMethod.POST, "/compte").hasRole("ADMIN");
             authorization.requestMatchers(HttpMethod.POST, "/module/**").hasRole("ADMIN");
             authorization.requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN");
+            authorization.requestMatchers("/error").permitAll();
 
             
             authorization.requestMatchers("/home-admin").hasRole("ADMIN");
