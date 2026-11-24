@@ -1,0 +1,26 @@
+/* ---------- Bouton son (à gauche du « ? ») ---------- */
+.btn-son {
+  position: fixed;
+  top: 1rem;
+  right: 4.2rem;   /* 1rem de marge + 2.6rem du bouton ? + 0.6rem d'écart */
+  z-index: 10;
+  width: 2.6rem;
+  height: 2.6rem;
+
+  /* Centre l'emoji : il ne se cale pas tout seul dans un cercle */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font: 700 1.1rem 'Chakra Petch', system-ui, sans-serif;
+  color: var(--etoile);
+  background: rgba(10, 16, 48, 0.85);
+  border: 2px solid var(--glace);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+
+.btn-son:hover {
+  box-shadow: 0 0 14px rgba(111, 214, 238, 0.6);
+}
