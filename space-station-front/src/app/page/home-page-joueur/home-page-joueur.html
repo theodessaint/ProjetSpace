@@ -13,7 +13,7 @@
 
   <nav class="menu" aria-label="Menu principal">
     <button class="btn btn-principal" (click)="nouvellePartie()">Créer une partie</button>
-    <button class="btn" (click)="chargerListeParties()">Charger mes parties</button>
+    <button class="btn" (click)="chargerListeParties()">Charger une partie</button>
     <button class="btn" (click)="ouvrirRegles()">Règles du jeu</button>
 
     <fieldset class="difficulte">
@@ -35,11 +35,11 @@
     </fieldset>
   </nav>
 
-  @if (listeAffichee) {
+  @if (listeAffichee()) {
     <section class = "liste-parties">
       <h2>Mes parties</h2>
 
-      @for (partie of parties; track partie.id) {
+      @for (partie of parties(); track partie.id) {
         <button class = "partie" (click) = "demarrerPartie(partie.id)">
           <span class = "partie-nom">{{partie.nom}}</span>
           <span class = "partie-infos">cycle {{partie.cycle}} - {{partie.nbModulesDebloques}} modules debloqués</span>

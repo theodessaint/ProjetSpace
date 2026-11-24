@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewChildren, QueryList, ViewEncapsulation, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewChildren, QueryList, ViewEncapsulation, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/auth-service';
 import { JoueurService } from '../../service/joueur-service';
@@ -33,9 +33,9 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
     difficile: 'Ressources de départ limitées / Les ressources sont consommées plus vite et leurs créations sont ralenties.',
   };
   
-  parties: StationSpatialeResume[] = [];
+  parties = signal<StationSpatialeResume[]>([]); // Permet de prévenir angular que la valeur change pour que la liste s'affiche avec un seul click et pas deux
   
-  listeAffichee = false;
+  listeAffichee = signal(false);
   
   ngAfterViewInit(): void {
     this.deplacer();
@@ -57,10 +57,12 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
   }
   
   ouvrirRegles(): void {
+    this.listeAffichee.set(false);
     this.regles.nativeElement.showModal();
   }
   
   nouvellePartie(): void {
+    this.listeAffichee.set(false);
     this.nouveauNom = '';
     this.dialogNom.nativeElement.showModal();
     
@@ -76,12 +78,16 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
   }
   
   chargerListeParties(): void {
-    console.log('Liste des parties');   // à brancher sur le back
+    console.log('Liste des parties');
+    if (this.listeAffichee()) {
+      this.listeAffichee.set(false);
+      return;
+    }
     
     this.joueurService.findMesParties().subscribe(parties => {
       console.log('Parties du joueur :', parties);
-      this.parties = parties;
-      this.listeAffichee = true;
+      this.parties.set(parties);
+      this.listeAffichee.set(true);
     });
   }
   
