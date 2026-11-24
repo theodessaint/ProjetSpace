@@ -3,6 +3,7 @@ package station.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -44,13 +45,13 @@ public class Module {
     @JoinColumn(name = "station_id", nullable = false)
     private StationSpatiale station;
 
-    @OneToMany(mappedBy = "module")
+    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL)
     private List<ModuleProd> prodModules = new ArrayList<ModuleProd>();
 
-    @OneToMany(mappedBy = "module")
+    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL)
     private List<ModuleConso> consoModules = new ArrayList<ModuleConso>();
 
-    @OneToMany(mappedBy = "module")
+    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL)
     private List<Astronaute> astronautes = new ArrayList<Astronaute>();
 
     public Module () {}
