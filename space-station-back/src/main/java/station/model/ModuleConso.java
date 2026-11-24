@@ -30,6 +30,8 @@ public class ModuleConso {
 
     private Integer nbAstroAffectes;
 
+    public ModuleConso() {}
+
     public ModuleConso(Integer id, RessourceEnum ressource, Double valeur, Module module, Integer nbAstroAffectes) {
         this.id = id;
         this.ressource = ressource;
@@ -70,11 +72,11 @@ public class ModuleConso {
         this.module = module;
     }
 
-    public Integer getnbAstroAffectes() {
+    public Integer getNbAstroAffectes() {
         return nbAstroAffectes;
     }
 
-    public void setnbAstroAffectes(Integer nbAstroAffectes) {
+    public void setNbAstroAffectes(Integer nbAstroAffectes) {
         this.nbAstroAffectes = nbAstroAffectes;
     }
 
