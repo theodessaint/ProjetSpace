@@ -1,1 +1,7 @@
 <router-outlet />
+
+<button class="btn-son" (click)="musique.basculer()">
+  {{ musique.active() ? '🔊' : '🔇' }}
+</button>
+
+<router-outlet />

@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal, ViewEncapsulation } from '@angular/c
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../service/auth-service';
+import { MusiqueService } from '../../service/musique-service';
 
 @Component({
   imports: [ ReactiveFormsModule, RouterLink ],
@@ -13,6 +14,7 @@ export class LoginPage implements OnInit {
   private authService: AuthService = inject(AuthService);
   private formBuilder: FormBuilder = inject(FormBuilder);
   private router: Router = inject(Router);
+  private musique = inject(MusiqueService);
 
   protected loginError = signal(false);
   protected userForm!: FormGroup;
@@ -45,6 +47,8 @@ export class LoginPage implements OnInit {
         this.authService.token = resp.token;
         this.authService.role = resp.role;
         this.authService.username = this.usernameCtrl.value;
+
+        this.musique.demarrer();
         this.router.navigate([ resp.role === 'ADMIN' ? '/home-admin' : '/home-joueur' ]);
       },
       error: () => this.loginError.set(true)
