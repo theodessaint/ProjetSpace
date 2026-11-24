@@ -1,5 +1,6 @@
 <div class="stars"></div>
-<img #astronaute class="astronaute" id="astronaute" src="Assets/Images/Jastronaute.png" width="200" alt="Astronaute">
+<img #astronaute class="astronaute" src="Assets/Images/Jastronaute.png" width="200" alt="Astronaute">
+<img #astronaute class="astronaute" src="Assets/Images/Jeremy_astronaute.png" width="200" alt="Astronaute">
 <div class="twinkling"></div>
 <header class="haut">
   <span class="haut-compte">Joueur {{ username }} connecté</span>
@@ -12,7 +13,7 @@
 
   <nav class="menu" aria-label="Menu principal">
     <button class="btn btn-principal" (click)="nouvellePartie()">Créer une partie</button>
-    <button class="btn" (click)="chargerListeParties()">Charger mes parties</button>
+    <button class="btn" (click)="chargerListeParties()">Charger une partie</button>
     <button class="btn" (click)="ouvrirRegles()">Règles du jeu</button>
 
     <fieldset class="difficulte">
@@ -34,11 +35,11 @@
     </fieldset>
   </nav>
 
-  @if (listeAffichee) {
+  @if (listeAffichee()) {
     <section class = "liste-parties">
       <h2>Mes parties</h2>
 
-      @for (partie of parties; track partie.id) {
+      @for (partie of parties(); track partie.id) {
         <button class = "partie" (click) = "demarrerPartie(partie.id)">
           <span class = "partie-nom">{{partie.nom}}</span>
           <span class = "partie-infos">cycle {{partie.cycle}} - {{partie.nbModulesDebloques}} modules debloqués</span>
