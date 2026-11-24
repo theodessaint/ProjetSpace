@@ -1,7 +1,6 @@
 package station.model;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -29,11 +28,14 @@ public class ModuleConso {
     @JoinColumn(name = "module_id")
     private Module module;
 
-    public ModuleConso(Integer id, RessourceEnum ressource, Integer value, Module module) {
+    private Integer nbAstroAffectes;
+
+    public ModuleConso(Integer id, RessourceEnum ressource, Integer value, Module module, Integer nbAstroAffectes) {
         this.id = id;
         this.ressource = ressource;
         this.value = value;
         this.module = module;
+        this.nbAstroAffectes = nbAstroAffectes;
     }
 
     public Integer getId() {
@@ -44,11 +46,11 @@ public class ModuleConso {
         this.id = id;
     }
 
-    public RessourceEnum getRessourceEnum() {
+    public RessourceEnum getRessource() {
         return ressource;
     }
 
-    public void setRessourceEnum(RessourceEnum ressource) {
+    public void setRessource(RessourceEnum ressource) {
         this.ressource = ressource;
     }
 
@@ -68,8 +70,12 @@ public class ModuleConso {
         this.module = module;
     }
 
-    public String toString() {
-        return "ModuleConso [id=" + id + ", ressourceEnum=" + ressource + ", value=" + value + ", module=" + module + "]";
+    public Integer getnbAstroAffectes() {
+        return nbAstroAffectes;
+    }
+
+    public void setnbAstroAffectes(Integer nbAstroAffectes) {
+        this.nbAstroAffectes = nbAstroAffectes;
     }
 
 }
