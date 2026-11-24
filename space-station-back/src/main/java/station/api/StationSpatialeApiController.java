@@ -23,70 +23,75 @@ import station.api.response.StationSpatialeResumeResponse;
 import station.model.StationSpatiale;
 import station.service.ModuleService;
 import station.service.StationSpatialeService;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/station")
 public class StationSpatialeApiController {
-    
+
     private final StationSpatialeService service;
     private final ModuleService moduleService;
-    
+
     public StationSpatialeApiController(StationSpatialeService service, ModuleService moduleService) {
         this.service = service;
         this.moduleService = moduleService;
     }
-    
+
     @GetMapping
     public List<StationSpatialeResponse> findAll() {
         return this.service.findAll().stream()
-        .map(station -> StationSpatialeResponse.convert(station, this.moduleService.peutDebloquer(station)))
-        .toList();
+                .map(station -> StationSpatialeResponse.convert(station, this.moduleService))
+                .toList();
     }
-    
+
     @GetMapping("/mes-parties") // Renvoie les parties du joueur connecté sous la forme d'une liste
-    public List <StationSpatialeResumeResponse>findMesParties(){
-        
+    public List<StationSpatialeResumeResponse> findMesParties() {
+
         return this.service.findByLoginJoueur(this.getLoginConnecte()).stream()
-        .map(StationSpatialeResumeResponse::convert)
-        .toList();
+                .map(StationSpatialeResumeResponse::convert)
+                .toList();
 
     }
-    
+
     @GetMapping("/{id}")
     public StationSpatialeResponse findById(@PathVariable Integer id) {
-        
+
         StationSpatiale station = this.service.findByIdEtJoueur(id, this.getLoginConnecte());
 
-        boolean peutDebloquer = this.moduleService.peutDebloquer(station);
-        
-        return StationSpatialeResponse.convert(station, peutDebloquer);
+        return StationSpatialeResponse.convert(station, this.moduleService);
     }
-    
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EntityCreatedResponse create(@Valid @RequestBody CreateOrUpdateStationSpatialeRequest request) {
-        
+
         return new EntityCreatedResponse(this.service.save(request, this.getLoginConnecte()).getId());
-        
+
     }
-    
+
+    // Bouton "Cycle suivant" : refusé (400) si un déblocage de module est obligatoire
+    @PostMapping("/{id}/cycle-suivant")
+    public StationSpatialeResponse cycleSuivant(@PathVariable Integer id) {
+
+        StationSpatiale station = this.service.cycleSuivant(id, this.getLoginConnecte());
+
+        return StationSpatialeResponse.convert(station, this.moduleService);
+    }
+
     @PutMapping("/{id}")
     public EntityUpdatedResponse update(@PathVariable Integer id, @Valid @RequestBody CreateOrUpdateStationSpatialeRequest request) {
-        
+
         this.service.save(id, request);
         return new EntityUpdatedResponse(id, true);
-        
+
     }
-    
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Integer id) {
         this.service.deleteById(id);
     }
 
-    private String getLoginConnecte(){ //Permet d'authentifier le login du joueur (merci claude)
+    private String getLoginConnecte() { // Permet d'authentifier le login du joueur
 
         return SecurityContextHolder.getContext().getAuthentication().getName();
 
