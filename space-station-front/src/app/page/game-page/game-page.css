@@ -44,12 +44,17 @@ body {
   justify-content: center;
 }
 
+/* Ls ruban enfin truc de travaux sont positionnés en % par rapport à lui-même */
+.vaisseau {
+  position: relative;
+  line-height: 0;
+  width: min(96vw, 1250px);
+}
+
 .image-vaisseau {
   display: block;
-  width: 96vw;
-  max-width: 1250px;
-  max-height: 86vh;
-  object-fit: contain;
+  width: 100%;
+  height: auto;
 }
 
 .zone-gauche,
@@ -315,4 +320,111 @@ body {
 
 .btn-acheter-modules:active {
   transform: translateY(0);
+}
+
+/* ---------- Rubans « travaux » sur les modules verrouillés ---------- */
+.travaux {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 8px;
+  pointer-events: none;
+}
+ 
+.travaux img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+ 
+/* ---------- Cycle, erreurs, alertes ---------- */
+.cycle-actuel {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  padding: 0.4rem 0.9rem;
+  font: 700 1rem 'Chakra Petch', system-ui, sans-serif;
+  background: rgba(10, 16, 48, 0.85);
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+}
+ 
+.message-erreur {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  padding: 0.6rem 1.1rem;
+  font: 600 0.9rem 'Chakra Petch', system-ui, sans-serif;
+  color: #fff;
+  background: rgba(150, 30, 30, 0.95);
+  border-radius: 10px;
+}
+ 
+.alerte-deblocage {
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  max-width: 16rem;
+  text-align: right;
+  font: 600 0.8rem 'Chakra Petch', system-ui, sans-serif;
+  color: var(--signal);
+}
+ 
+.btn-action:disabled,
+.module:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+ 
+/* ---------- Menu des modules ---------- */
+.menu-modules-container {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 16;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+ 
+.panneau-modules {
+  width: 17rem;
+  padding: 0.8rem;
+  background: rgba(10, 16, 48, 0.95);
+  border: 1px solid var(--trait);
+  border-radius: 12px;
+}
+ 
+.panneau-entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 700 0.95rem 'Chakra Petch', system-ui, sans-serif;
+}
+ 
+.fermer-panneau {
+  background: none;
+  border: none;
+  color: var(--etoile);
+  font-size: 1rem;
+  cursor: pointer;
+}
+ 
+.info-deblocage {
+  margin: 0.5rem 0;
+  font-size: 0.82rem;
+  color: var(--glace);
+}
+ 
+.liste-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+ 
+.liste-modules .module {
+  text-align: left;
 }
