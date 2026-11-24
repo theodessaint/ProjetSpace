@@ -2,7 +2,7 @@
 .btn-son {
   position: fixed;
   top: 1rem;
-  right: 4.2rem;   /* 1rem de marge + 2.6rem du bouton ? + 0.6rem d'écart */
+  right: 9.5rem;   /* dégage « Se déconnecter », qui occupe environ 7rem */
   z-index: 10;
   width: 2.6rem;
   height: 2.6rem;
