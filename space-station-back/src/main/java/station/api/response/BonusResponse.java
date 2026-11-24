@@ -1,11 +1,13 @@
 package station.api.response;
 
+import station.enumerator.ModuleEnum;
 import station.enumerator.RoleEnum;
 import station.model.Bonus;
 
 public class BonusResponse {
     private Integer id;
     private RoleEnum role;
+    private ModuleEnum module;
     private Integer ressourceId;
     private Double multiplicateur;
 
@@ -15,11 +17,13 @@ public class BonusResponse {
         
         response.id = bonus.getId();
         response.role = bonus.getRole();
+        response.module = bonus.getModule();
         response.ressourceId = bonus.getRessource().getId();
         response.multiplicateur = bonus.getMultiplicateur();
         
         return response;
     }
+
 
     public Integer getId() {
         return id;
@@ -30,9 +34,16 @@ public class BonusResponse {
         return role;
     }
 
+
+    public ModuleEnum getModule() {
+        return module;
+    }
+
+
     public Integer getRessourceId() {
         return ressourceId;
     }
+
 
     public Double getMultiplicateur() {
         return multiplicateur;
