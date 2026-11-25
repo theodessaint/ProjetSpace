@@ -26,5 +26,7 @@ export class StationSpatialeService {
   affecterAstronaute(astronauteId: number, moduleId: number): Observable<Astronaute> {
     return this.http.put<Astronaute>(`/astronaute/${astronauteId}/affecter`, { moduleId });
   }
-
+  accueillirAstronaute(id: number): Observable<StationSpatiale> {
+    return this.http.post<StationSpatiale>(`/station/${id}/accueillir-astronaute`, {});
+  }
 }

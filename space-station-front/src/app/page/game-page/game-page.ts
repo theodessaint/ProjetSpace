@@ -16,6 +16,7 @@ type Etape = {
   liste?: string[]; // puces pop-up 3 sous le texte
   bouton?: string; // texte du bouton (par défaut « Suivant »)
   action?: string; // si présent, le joueur doit faire cette action pour continuer
+  cible?: 'ressources' | 'modules' | 'centre' | 'cycle'; // élément mis en surbrillance pendant cette le tuto (félix ca va te plaire)
 };
 
 // ---------- AFFICHAGE DES MODULES SUR L'IMAGE ----------
@@ -28,11 +29,11 @@ type Emplacement = {
   width: number;
   height: number;
 };
-const CENTRE_COMMANDE = { left: 44, top: 24, width: 12, height: 11.6 };
+const CENTRE_COMMANDE = { left: 44.2, top: 29.3, width: 12, height: 9.2 };
 const EMPLACEMENTS: Record<string, Emplacement> = {
   // Recyclage : le 1 est le plus proche du centre
   '2,1': { label: 'Recyclage Eau / Air 1', type: 'recyclage', left: 29.5, top: 24, width: 10, height: 11.6 },
-  '1,1': { label: 'Recyclage Eau / Air 2', type: 'recyclage', left: 18.6, top: 24, width: 10, height: 11.6},
+  '1,1': { label: 'Recyclage Eau / Air 2', type: 'recyclage', left: 18.6, top: 24, width: 10, height: 11.6 },
   '0,1': { label: 'Recyclage Eau / Air 3', type: 'recyclage', left: 7.6, top: 24, width: 10, height: 11.6 },
 
   // Serres
@@ -95,16 +96,140 @@ export class GamePage implements OnInit {
       //{} en gros ca fusionne dans un seul objet les données du back celles de la table et un booléen tuto. 
       //POSITIONS_TUTO.includes(cle) vaut TRUE si c emodule est l'un des 3 du tutos
 
-//le back m'envoie m = { id: 12, nom: 'Serre', debloque: false, positionX: 4, positionY: 1, stationId: 8, ... }
-//et le front emplacement = { label: 'Serre 1', type: 'serre', left: 60.3, top: 17.6, width: 10.9, height: 19.9 }
-//on les fusionne en un seul objet car sinon le back ne sait pas ou dessiner le ruban
+      //le back m'envoie m = { id: 12, nom: 'Serre', debloque: false, positionX: 4, positionY: 1, stationId: 8, ... }
+      //et le front emplacement = { label: 'Serre 1', type: 'serre', left: 60.3, top: 17.6, width: 10.9, height: 19.9 }
+      //on les fusionne en un seul objet car sinon le back ne sait pas ou dessiner le ruban
 
       .filter((m): m is ModuleVue => m !== null) //on retire de snull sinon la partie m is modelvue croirait qu'il peut rester des null
       .sort((a, b) => a.label.localeCompare(b.label));
   });// tri alphabétique pour que les modules du tuto apparaissent en premier dans le menu (pas utile mais vas y )
 
+
+// ---------- AFFECTATION DES ASTRONAUTES ----------
+
+  // Le HTML ne peut pas lire les constantes du haut du fichier (CENTRE_COMMANDE),
+  // on la copie dans un champ de la classe pour que le HTML puisse l'utiliser
+  centre = CENTRE_COMMANDE;
+
+  // signal = une valeur que Angular surveille. true : la pop-up est affichée, false : elle est cachée
+  affectationOuverte = signal(false);
+
+  // Liste des astronautes de la station, recalculée toute seule quand la station change.
+  // station()?.astronautes : le ?. évite une erreur si la station n'est pas encore arrivée du back.
+  // ?? [] : si on n'a rien (null/undefined), on prend une liste vide
+  astronautes = computed(() => this.station()?.astronautes ?? []);
+
+  // Cherche dans les modules celui qui s'appelle 'Dortoir' (find renvoie le premier trouvé, ou undefined)
+  dortoir = computed(() => this.station()?.modules.find((m) => m.nom === 'Dortoir'));
+
+  // Astronautes arrivés mais pas encore envoyés dans un module : ils attendent au Dortoir
+  // (sert à afficher la pastille orange sur le bouton)
+  nbEnAttente = computed(() => {
+    const dortoirId = this.dortoir()?.id; // l'id du Dortoir (undefined si pas encore chargé)
+    // filter garde les astronautes dont le module est le Dortoir, .length les compte
+    return this.astronautes().filter((a) => a.moduleId === dortoirId).length;
+  });
+
+  // Liste des modules proposés dans les listes déroulantes :
+  // débloqués, avec de la place (le Centre est exclu car il a 0 place)
+  destinations = computed<Destination[]>(() => {
+    const s = this.station();
+    if (!s) return []; // pas de station reçue : aucune destination
+
+    return s.modules
+      // On garde un module s'il est débloqué ET (c'est le Dortoir OU il a au moins 1 place)
+      .filter((m) => m.debloque && (m.nom === 'Dortoir' || m.nbAstroModuleMax > 0))
+      // map transforme chaque module en un petit objet {id, label, occupes, max}
+      .map((m) => ({
+        id: m.id,
+        // Nom affiché : "Dortoir", ou le label du tableau EMPLACEMENTS (ex : "Serre 1").
+        // Si le label n'existe pas, on prend le nom du back (m.nom)
+        label: m.nom === 'Dortoir' ? 'Dortoir' : (EMPLACEMENTS[this.cle(m)]?.label ?? m.nom),
+        // Nombre d'astronautes déjà dans ce module
+        occupes: this.astronautes().filter((a) => a.moduleId === m.id).length,
+        max: m.nom === 'Dortoir' ? null : m.nbAstroModuleMax, // le Dortoir n'a pas de limite : null
+      }))
+      // Tri alphabétique par nom pour que la liste soit toujours dans le même ordre
+      .sort((a, b) => a.label.localeCompare(b.label));
+  });
+
+  // Vrai si le module est plein, sauf pour l'astronaute qui s'y trouve déjà
+  // (sinon il ne pourrait pas rester sélectionné dans sa propre liste)
+  complet(d: Destination, a: Astronaute): boolean {
+    // d.max !== null : le module a une limite (pas le Dortoir)
+    // d.occupes >= d.max : il n'y a plus de place
+    // a.moduleId !== d.id : l'astronaute n'est pas déjà dans ce module
+    return d.max !== null && d.occupes >= d.max && a.moduleId !== d.id;
+  }
+
+  // Bouton du Centre de commandement : ouvre la pop-up d'affectation.
+  // Si aucun astronaute n'est encore arrivé, on fait d'abord arriver les 3 premiers.
+  ouvrirAffectation() {
+    if (this.enCours()) return; // une requête est déjà en cours : on ignore le clic
+
+    // Aucun astronaute : on demande au back de faire arriver les 3 premiers
+    if (this.astronautes().length === 0) {
+      this.enCours.set(true); // on bloque les boutons pendant la requête
+      this.stationService.accueillirAstronaute(this.stationId).subscribe({
+        next: (s) => { // succès : le back renvoie la station avec ses 3 astronautes
+          this.station.set(s); // on met à jour l'écran avec la nouvelle station
+          this.enCours.set(false); // on débloque les boutons
+          this.affectationOuverte.set(true); // on ouvre la pop-up
+          this.actionFaite('accueillir'); // on prévient le tuto : l'étape « accueillir » est faite
+        },
+        error: (e) => { // échec : on débloque les boutons et on affiche le message d'erreur
+          this.enCours.set(false);
+          this.afficherErreur(e);
+        },
+      });
+      return; // on s'arrête là : la pop-up s'ouvrira quand le back aura répondu
+    }
+
+    // Il y a déjà des astronautes : on ouvre simplement la pop-up
+    this.affectationOuverte.set(true);
+    this.actionFaite('accueillir'); // utile si le tuto attend encore cette étape
+  }
+
+  // Ferme la pop-up (appelée par la croix ✕ ou par un clic sur le fond sombre)
+  fermerAffectation() {
+    this.affectationOuverte.set(false);
+  }
+
+  // Appelée quand le joueur choisit un autre module dans la liste déroulante d'un astronaute
+  affecter(a: Astronaute, event: Event) {
+    // event.target est la liste déroulante cliquée. On la convertit en HTMLSelectElement
+    // pour pouvoir lire sa valeur
+    const select = event.target as HTMLSelectElement;
+    // select.value est un texte (« 9 »), on le transforme en nombre
+    const moduleId = Number(select.value);
+    // On ne fait rien si une requête est en cours ou si le joueur a choisi le module où l'astronaute est déjà
+    if (this.enCours() || moduleId === a.moduleId) return;
+
+    this.enCours.set(true); // on bloque les boutons pendant la requête
+    // Envoie le PUT /astronaute/{id}/affecter au back avec le module choisi
+    this.stationService.affecterAstronaute(a.id, moduleId).subscribe({
+      next: () => { // le back a accepté l'affectation
+        // Vrai si le joueur a envoyé l'astronaute vers le Dortoir
+        const versDortoir = moduleId === this.dortoir()?.id;
+        // Pour le tuto : seule une affectation hors Dortoir compte.
+        // recharger() redemande la station au back, puis exécute la fonction fournie
+        this.recharger(() => {
+          if (!versDortoir) this.actionFaite('affecter'); // prévient le tuto que l'étape « affecter » est faite
+        });
+      },
+      error: (e) => { // le back a refusé (module plein, pas débloqué...)
+        this.enCours.set(false); // on débloque les boutons
+        this.afficherErreur(e); // on affiche le message d'erreur du back
+        // La liste déroulante affiche encore le mauvais choix : on la remet sur le vrai module
+        select.value = String(a.moduleId ?? '');
+      },
+    });
+  }
+
+
+
   ngOnInit(): void {
-    this.stationService.findById(this.stationId).subscribe({ 
+    this.stationService.findById(this.stationId).subscribe({
       next: (s) => {
         this.station.set(s);//
 
@@ -134,10 +259,10 @@ export class GamePage implements OnInit {
         autre.debloque &&
         Math.abs(autre.positionX - m.positionX) + Math.abs(autre.positionY - m.positionY) === 1,
     );// ca c'est chat de a à z j'ai pas capté mais askip Deux modules sont voisins quand la distance entre eux vaut exactement 1 case.
-   // Math.abs prend la valeur absolue, pour ignorer le signe.
-   //On additionne l'écart en X et l'écart en Y.
-  //Serre 2 en (5,1) et Serre 1 en (4,1) : 1 + 0 = 1, donc voisines.
-  //Serre 3 en (6,1) et Serre 1 en (4,1) : 2 + 0 = 2, donc pas voisines.
+    // Math.abs prend la valeur absolue, pour ignorer le signe.
+    //On additionne l'écart en X et l'écart en Y.
+    //Serre 2 en (5,1) et Serre 1 en (4,1) : 1 + 0 = 1, donc voisines.
+    //Serre 3 en (6,1) et Serre 1 en (4,1) : 2 + 0 = 2, donc pas voisines.
   }
 
   peutDebloquer(m: ModuleVue): boolean {
@@ -193,11 +318,6 @@ export class GamePage implements OnInit {
   }//en gros pour chaque erreur débloqué, on renvoie la réponse de l'erreur programmé dans le back ex : « Aucun déblocage disponible… »
 
   // ---------- ACTIONS DU JEU ----------
-
-  accueillirAstronaute() {
-    // TODO : appel au back quand les astronautes seront faits (A FAIRE)
-    this.actionFaite('accueillir');
-  }
 
   cycleSuivant() {
     if (this.enCours() || this.cycleBloque()) return; //on ignore le clic sur cyclesuivant si une requête est deja en cours
@@ -272,6 +392,7 @@ export class GamePage implements OnInit {
       sousTitre: 'Quatre ressources, une seule règle',
       texte:
         'Vos quatre ressources sont affichées en bas à gauche de l’écran : énergie, eau, oxygène et nourriture. Elles diminuent à chaque cycle, car l’équipage consomme. Gardez-les au-dessus de zéro et évitez d’avoir plus de trois seuils critiques détectés, sinon c’est la fin de la mission.',
+      cible: 'ressources',
     },
     {
       // Pop-up 6
@@ -280,6 +401,7 @@ export class GamePage implements OnInit {
       texte:
         'Sans énergie, la station s’éteint. Ouvrez « Débloquer modules » et débloquez la salle des machines : elle alimente le reste du vaisseau.',
       action: 'machines',
+      cible: 'modules',
     },
     {
       // Pop-up 7
@@ -288,6 +410,7 @@ export class GamePage implements OnInit {
       texte:
         'La serre produit la nourriture dont votre équipage a besoin. Chaque astronaute en consomme à chaque cycle : sans serre, la faim s’installe vite. Débloquez votre première serre.',
       action: 'serre',
+      cible: 'modules',
     },
     {
       // Pop-up 8
@@ -296,21 +419,24 @@ export class GamePage implements OnInit {
       texte:
         'Le recyclage purifie l’air et récupère l’eau utilisée à bord : c’est lui qui fournit l’oxygène et l’eau de l’équipage. Débloquez votre premier module de recyclage.',
       action: 'recyclage',
+      cible: 'modules',
     },
     {
       // Pop-up 9
       titre: 'Une navette arrive',
       sousTitre: 'Ils comptent sur vous',
       texte:
-        'Une navette de TPT vient de s’amarrer. Accueillez votre premier astronaute. Chaque astronaute peut posséder un rôle qui détermine là où il sera le plus utile. Par exemple, un agriculteur dans la serre produit davantage de nourriture.',
+        'Une navette de TPT vient de s’amarrer avec vos trois premiers astronautes. Cliquez sur le Centre de commandement pour les accueillir. Chaque astronaute peut posséder un rôle qui détermine là où il sera le plus utile. Par exemple, un agriculteur dans la serre produit davantage de nourriture.',
       action: 'accueillir',
+      cible: 'centre',
     },
     {
       // Pop-up 10
-      titre: 'Les alertes',
-      sousTitre: 'Ne laissez pas tomber une jauge',
+      titre: 'Les affectations',
+      sousTitre: 'Chacun à sa place',
       texte:
-        'Quand une ressource passe sous 30 %, une alerte de danger s’affiche. Sous 10 %, elle devient critique. Anticipez en débloquant des modules et en affectant vos astronautes avant d’en arriver là.',
+        'Les astronautes arrivent au Dortoir. Depuis le Centre de commandement, envoyez-les dans vos modules débloqués : une serre accueille 2 astronautes, les autres modules un seul. Affectez au moins un astronaute pour continuer. Pensez-y au début de chaque cycle.',
+      action: 'affecter',
     },
     {
       // Pop-up 11
@@ -319,6 +445,7 @@ export class GamePage implements OnInit {
       texte:
         'Vos choix sont faits. Cliquez sur « Cycle suivant » : les ressources seront consommées et produites selon vos modules et vos astronautes. Tous les 5 cycles, vous devrez débloquer un nouveau module. Bonne chance, commandant.',
       action: 'cycle',
+      cible: 'cycle',
     },
   ];
 
@@ -326,6 +453,7 @@ export class GamePage implements OnInit {
   visible = signal(false); // le tuto s'affiche seulement sur une partie neuve (voir ngOnInit)
   etape = computed(() => this.etapes[this.index()]); // donne le pop-up en cours
   cycleBloque = computed(() => this.visible() && this.etape().action !== 'cycle');//cyclesuivant bloquer pdt tuto
+  cible = computed(() => (this.visible() ? this.etape().cible : undefined));// element à mettre en surbrillance (seulement pendant le tuto)
 
   suivant() {
     this.avancer();
@@ -353,6 +481,12 @@ export class GamePage implements OnInit {
   }
 
   private actionDejaAccomplie(action: string): boolean {
+    // Tuto réaffiché avec « ? » : on saute ces étapes si elles sont déjà faites
+    if (action === 'accueillir') return this.astronautes().length > 0;
+    if (action === 'affecter') {
+      const dortoirId = this.dortoir()?.id;
+      return this.astronautes().some((a) => a.moduleId !== null && a.moduleId !== dortoirId);
+    }
     if (action !== 'machines' && action !== 'serre' && action !== 'recyclage') return false;
 
     const s = this.station();
@@ -371,7 +505,7 @@ export class GamePage implements OnInit {
     }
   }
 
- passer() {
+  passer() {
     // bouton « Passer le tuto » : on ferme le tuto et le back débloque les 3 modules gratuits
     this.visible.set(false);
     this.stationService.debloquerTuto(this.stationId).subscribe({
