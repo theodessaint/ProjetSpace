@@ -47,7 +47,31 @@ body {
   border: none;
 }
 
-.haut-lien { color: var(--etoile); opacity: 0.75; text-decoration: none; }
+.entete .haut-lien {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--u) * 3);
+  transform: translateY(-50%);
+
+  white-space: nowrap;   /* tient sur une ligne */
+  padding: calc(var(--u) * 0.25) calc(var(--u) * 0.7);
+
+  font: 700 calc(var(--u) * 0.85) 'Orbitron', Arial, sans-serif;
+  letter-spacing: 0.04em;
+  color: #ffad45;
+  text-decoration: none;
+
+  background: transparent;
+  border: 1px solid #ffad45;
+  border-radius: 4px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.entete .haut-lien:hover {
+  color: #68d9f2;
+  border-color: #68d9f2;
+  text-decoration: none;
+}
 
 /* ========================================
    ZONES (position de chaque cadre dans l'image, en %)
