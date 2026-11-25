@@ -87,7 +87,24 @@ public class StationSpatialeResponse {
         return modules;
     }
 
+    public Integer getIdJoueur() {
+        return idJoueur;
+    }
+
+    public void setIdJoueur(Integer idJoueur) {
+        this.idJoueur = idJoueur;
+    }
+
+    public String getLoginJoueur() {
+        return loginJoueur;
+    }
+
+    public void setLoginJoueur(String loginJoueur) {
+        this.loginJoueur = loginJoueur;
+    }
+
     public List<AstronauteResponse> getAstronautes() {
         return astronautes;
     }
+    
 }
