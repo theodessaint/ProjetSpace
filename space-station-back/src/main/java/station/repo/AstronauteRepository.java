@@ -9,10 +9,11 @@ import station.model.Astronaute;
 
 public interface AstronauteRepository extends JpaRepository<Astronaute, Integer> {
 
-    List<Astronaute> findByRole(RoleEnum role);
+    List<Astronaute> findByReferenceRole(RoleEnum role);
 
     List<Astronaute> findByStationId(Integer stationId);
 
-    List<Astronaute> findByStationIdAndRole(Integer stationId, RoleEnum role);
+    List<Astronaute> findByStationIdAndReferenceRole(Integer stationId, RoleEnum role);
 
+    long countByModuleId(Integer moduleId); // cb d'astronautes ds le module
 }

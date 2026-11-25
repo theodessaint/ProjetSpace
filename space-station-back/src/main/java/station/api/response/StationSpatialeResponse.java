@@ -17,6 +17,7 @@ public class StationSpatialeResponse {
     private int nbDeblocagesDisponibles;
     private boolean deblocageObligatoire; // le joueur doit débloquer un module avant de passer au cycle suivant
     private List<ModuleResponse> modules;
+    private List<AstronauteResponse> astronautes;
 
     private Integer idJoueur;
     private String loginJoueur;
@@ -41,6 +42,10 @@ public class StationSpatialeResponse {
 
         response.modules = station.getModules().stream()
                 .map(ModuleResponse::convert)
+                .toList();
+
+        response.astronautes = station.getAstronautes().stream()
+                .map(AstronauteResponse::convert)
                 .toList();
 
         return response;
@@ -82,11 +87,7 @@ public class StationSpatialeResponse {
         return modules;
     }
 
-    public Integer getIdJoueur() {
-        return idJoueur;
-    }
-
-    public String getLoginJoueur() {
-        return loginJoueur;
+    public List<AstronauteResponse> getAstronautes() {
+        return astronautes;
     }
 }

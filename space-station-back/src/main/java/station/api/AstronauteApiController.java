@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import station.api.request.AffecterAstronauteRequest;
 import station.api.request.CreateOrUpdateAstronauteRequest;
 import station.api.response.AstronauteResponse;
 import station.api.response.EntityCreatedResponse;
@@ -56,6 +57,12 @@ public class AstronauteApiController {
         this.service.save(id, request);
         return new EntityUpdatedResponse(id, true);
     }
+
+    @PutMapping("/{id}/affecter")
+    public AstronauteResponse affecter (@PathVariable Integer id, @Valid @RequestBody AffecterAstronauteRequest request){
+        return AstronauteResponse.convert(this.service.affecter(id, request.getModuleId()));
+    }
+
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

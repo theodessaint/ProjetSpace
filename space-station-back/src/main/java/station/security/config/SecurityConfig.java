@@ -82,6 +82,7 @@ public class SecurityConfig {
             authorization.requestMatchers(HttpMethod.POST, "/compte").hasRole("ADMIN");
             authorization.requestMatchers(HttpMethod.POST, "/module/**").hasRole("ADMIN");
             authorization.requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN");
+
             authorization.requestMatchers("/error").permitAll();
 
             
