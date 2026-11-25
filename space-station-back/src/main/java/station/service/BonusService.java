@@ -2,6 +2,8 @@ package station.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import jakarta.transaction.Transactional;
 import station.api.request.CreateOrUpdateBonusRequest;
 import station.config.PartieConfig;
 import station.config.modelConfig.BonusConfig;
+import station.config.modelConfig.BonusKey;
 import station.enumerator.RessourceEnum;
 import station.exception.BonusNotFoundException;
 import station.model.Bonus;
@@ -89,28 +92,40 @@ public class BonusService {
     @Transactional
     public void initialiserBonus() {
         
+        Set<BonusKey> bonusExistants = this.repository.findAll().stream()
+        .map(b -> new BonusKey(
+            b.getRole(),
+            b.getModule(),
+            b.getRessource()
+        ))
+        .collect(Collectors.toSet());
+        
         List<Bonus> bonusList = new ArrayList<>();
         
         for (BonusConfig bc : config.bonus()) {
             
-            if (this.repository.existsByRoleAndModuleAndRessource(
-                bc.role(),
-                bc.module(),
-                bc.ressource())) {
-                    continue;
-                }
-                
-                Bonus bonus = new Bonus();
-                
-                bonus.setRole(bc.role());
-                bonus.setModule(bc.module());
-                bonus.setRessource(bc.ressource());
-                bonus.setMultiplicateur(bc.multiplicateur());
-                
-                bonusList.add(bonus);
+            if (!bonusExistants.add(bc.key())) {
+                continue;
             }
             
+            Bonus bonus = new Bonus();
+            
+            bonus.setRole(bc.role());
+            bonus.setModule(bc.module());
+            bonus.setRessource(bc.ressource());
+            bonus.setMultiplicateur(bc.multiplicateur());
+            
+            bonusList.add(bonus);
+        }
+        
+        if (!bonusList.isEmpty()) {
             this.repository.saveAll(bonusList);
+            log.debug("Initialisation des bonus manquants terminée !");
+        } else {
+            log.debug("Vérification des bonus terminée, aucun bonus manquant.");
         }
         
     }
+    
+    
+}

@@ -9,4 +9,8 @@ public record BonusConfig(
     ModuleEnum module,
     RessourceEnum ressource,
     Double multiplicateur
-) {}
+) {
+    public BonusKey key() {
+        return new BonusKey(role, module, ressource);
+    }
+}
