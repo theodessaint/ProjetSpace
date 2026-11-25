@@ -1,18 +1,27 @@
 package station.api.request;
 
 import jakarta.validation.constraints.NotNull;
+import station.enumerator.RessourceEnum;
 import station.enumerator.RoleEnum;
 
 public class CreateOrUpdateBonusRequest {
 
+    @NotNull 
+    private RessourceEnum ressource;
+
     @NotNull  
     private RoleEnum role;
 
-    @NotNull 
-    private Integer ressourceId;
-
     @NotNull
     private Double multiplicateur;
+
+    public RessourceEnum getRessource() {
+        return ressource;
+    }
+
+    public void setRessource(RessourceEnum ressource) {
+        this.ressource = ressource;
+    }
 
     public RoleEnum getRole() {
         return role;
@@ -22,14 +31,6 @@ public class CreateOrUpdateBonusRequest {
         this.role = role;
     }
 
-    public Integer getRessourceId() {
-        return ressourceId;
-    }
-
-    public void setRessourceId(Integer ressourceId) {
-        this.ressourceId = ressourceId;
-    }
-
     public Double getMultiplicateur() {
         return multiplicateur;
     }
@@ -37,5 +38,6 @@ public class CreateOrUpdateBonusRequest {
     public void setMultiplicateur(Double multiplicateur) {
         this.multiplicateur = multiplicateur;
     }
-    
+
+       
 }

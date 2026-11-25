@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import station.api.request.CreateOrUpdateBonusRequest;
+import station.enumerator.RessourceEnum;
 import station.exception.BonusNotFoundException;
 import station.model.Bonus;
-import station.model.Ressource;
 import station.repo.BonusRepository;
 
 @Service
@@ -65,12 +65,12 @@ public class BonusService {
         
         bonus.setRessource(
             List.of(
-                Ressource.EAU, Ressource.ENERGIE, Ressource.NOURRITURE, Ressource.OXYGENE)
+                RessourceEnum.EAU, RessourceEnum.ENERGIE, RessourceEnum.NOURRITURE, RessourceEnum.OXYGENE)
                 .stream()
-                .filter(ressource -> ressource.getId() == request.getRessourceId())
+                .filter(ressource -> ressource == request.getRessource())
                 .findFirst()
                 .orElseThrow(
-                    () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ressource inconnue : " + request.getRessourceId()
+                    () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ressource inconnue : " + request.getRessource()
                 )
             )
             
