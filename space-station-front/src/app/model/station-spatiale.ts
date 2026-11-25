@@ -9,5 +9,6 @@ export interface StationSpatiale {
     lignes: number;
     peutDebloquer: boolean;
     modules: Module[];
+    nomJoueur: string;
 
 }

@@ -4,5 +4,6 @@ export interface StationSpatialeResume {
     nom: string;
     cycle: number;
     nbModulesDebloques: number;
+    //terminee: boolean;
 
 }
