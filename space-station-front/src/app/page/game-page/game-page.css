@@ -428,3 +428,138 @@ body {
 .liste-modules .module {
   text-align: left;
 }
+
+/* ---------- Bouton du Centre de commandement (sur l'image) ---------- */
+.centre-commande {
+  position: absolute;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.15s, filter 0.2s;
+}
+
+.centre-commande img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.centre-commande:hover:not(:disabled) {
+  transform: scale(1.04);
+  filter: drop-shadow(0 0 10px rgba(111, 214, 238, 0.8));
+}
+
+.centre-commande:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Pastille : nombre d'astronautes qui attendent d'être affectés (en vrai ca fait vraiment notif)*/
+.pastille {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 1.4rem;
+  padding: 0.1rem 0.35rem;
+  box-sizing: border-box;
+  font: 700 0.8rem/1.2rem 'Chakra Petch', system-ui, sans-serif;
+  text-align: center;
+  color: #090e24;
+  background: var(--signal);
+  border-radius: 999px;
+  animation: pulse-pastille 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse-pastille {
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+/* ---------- Pop-up d'affectation des astronautes ---------- */
+.affectation-fond {
+  position: fixed;
+  inset: 0;
+  z-index: 900; /* sous le tuto (1000) pour qu'on voie encore ses consignes */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3, 6, 20, 0.6);
+}
+
+.affectation-popup {
+  width: min(520px, 92vw);
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 1rem;
+  color: var(--etoile);
+  background: rgba(10, 16, 48, 0.97);
+  border: 1px solid var(--trait);
+  border-radius: 14px;
+}
+
+.liste-astronautes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.astronaute {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.5rem 0.7rem;
+  background: rgba(26, 24, 60, 0.88);
+  border: 1px solid var(--trait);
+  border-radius: 10px;
+}
+
+.astronaute-infos {
+  display: flex;
+  flex-direction: column;
+  font: 600 0.9rem 'Chakra Petch', system-ui, sans-serif;
+}
+
+.astronaute .role {
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--glace);
+}
+
+.astronaute select {
+  font: 600 0.82rem 'Chakra Petch', system-ui, sans-serif;
+  color: var(--etoile);
+  background: rgba(10, 16, 48, 0.95);
+  border: 1px solid var(--glace);
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+  cursor: pointer;
+}
+
+.astronaute select:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* ----------pour le tuto --> mise en surbrillance de l'élément dont on parle ---------- */
+.surbrillance {
+  z-index: 950; /* au-dessus des autres éléments du jeu, sous la pop-up du tuto (1000) */
+  box-shadow: 0 0 0 9999px rgba(3, 6, 20, 0.78); /* assombrit tout le reste de l'écran */
+}
+
+.centre-commande.surbrillance,
+.actions-rapides.surbrillance,
+.menu-modules-container.surbrillance {
+  border-radius: 14px;
+}
+
+/* Étape avec surbrillance : le tuto n'assombrit pas une deuxième fois l'écran */
+.tuto-fond.cible {
+  background: transparent;
+}
