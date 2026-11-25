@@ -22,7 +22,7 @@ public class Compte implements Serializable { //    Pas de abstract pour qu'un C
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected  Integer id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     protected  String login;
 
     @Column(nullable = false)
