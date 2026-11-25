@@ -1,85 +1,86 @@
 <div class="admin">
-
+ 
   <!-- Titre principal -->
-  <header class="entete">
+  <header class="entete cadre">
     <h1>Administration - Station spatiale</h1>
   </header>
-
+ 
   <main class="contenu">
-
+ 
     <!-- Colonne gauche : statistiques -->
-    <aside class="admin-stats">
-
-      <!--Total des nombres de parties en cours et finies--->
+    <aside class="admin-stats cadre">
+ 
       <div class="stat-item">
         <h2>Total nombre de parties</h2>
-        <!-- <p>{{ nombreParties }}</p> -->
+        <p>{{ parties().length }}</p>
       </div>
-
+ 
       <div class="stat-item">
         <h2>En cours</h2>
-        <p>{{ partiesEnCours }}</p>
+        <!--<p>{{ nbEnCours() }}</p>-->
       </div>
-
+ 
       <div class="stat-item">
         <h2>Finies</h2>
-        <p>{{ partiesTerminees }}</p>
+        <!--<p>{{ nbFinies() }}</p>-->
       </div>
-
+ 
     </aside>
-
-    <!-- Partie centrale : liste des parties et comptes -->
-    <section class="admin-liste">
-      <h2>Liste partie / compte</h2>
-      <div class="list-content"></div>
+ 
+    <!-- Partie centrale : liste des parties -->
+    <section class="admin-liste cadre">
+      <h2>Liste des parties</h2>
+ 
+      <ul class="list-content">
+        @for (partie of parties(); track partie.id) {
+          <li class="partie">
+            <span class = "partie-nom">{{partie.nom}}</span>
+            <span class="partie-joueur">{{ partie.nomJoueur ?? 'Joueur inconnu' }}</span>
+            <span class = "partie-infos">cycle: {{partie.cycle}} -  modules debloqués {{nbModulesDebloques}}</span>
+            <button type="button" class="btn btn--modifier" (click)="modifier(partie)">Modifier</button>
+            <button type="button" class="btn btn--supprimer" (click)="supprimer(partie)">Supprimer</button>
+          </li>
+        } @empty {
+          <li class="aide">Aucune partie en cours, veuillez en créer une.</li>
+        }
+      </ul>
     </section>
-
+ 
     <!-- Colonne droite -->
     <aside class="admin-action">
-
+ 
       <!-- Gestion des comptes -->
-      <section class="compte-gestion">
-
-        <button class="admin-button">
-          <span>Modifier / Supprimer compte</span>
+      <section class="compte-gestion cadre">
+        <button type="button" class="admin-button">
+          <span>Supprimer compte</span>
         </button>
-
       </section>
-
+ 
       <!-- Conseil intergalactique -->
-      <section class="conseil">
-
+      <section class="conseil cadre">
+ 
         <h2>Conseil intergalactique</h2>
-
+ 
         <div class="conseil-membres">
-
           <div class="conseil-membre">
-            <img src="assets/images/admin/avatar1.png"
-                 alt="Membre du conseil 1">
+            <img src="/Assets/Images/felix.png" alt="Membre du conseil 1">
           </div>
-
           <div class="conseil-membre">
-            <img src="assets/images/admin/avatar2.png"
-                 alt="Membre du conseil 2">
+            <img src="/Assets/Images/leo.png" alt="Membre du conseil 2">
           </div>
-
           <div class="conseil-membre">
-            <img src="assets/images/admin/avatar3.png"
-                 alt="Membre du conseil 3">
+            <img src="/Assets/Images/steven.png" alt="Membre du conseil 3">
           </div>
-
           <div class="conseil-membre">
-            <img src="assets/images/admin/avatar4.png"
-                 alt="Membre du conseil 4">
+            <img src="/Assets/Images/theo.png" alt="Membre du conseil 4">
           </div>
-
           <div class="conseil-membre">
-            <img src="assets/images/admin/avatar5.png"
-                 alt="Membre du conseil 5">
+            <img src="/Assets/Images/tristan.png" alt="Membre du conseil 5">
           </div>
-          
         </div>
+ 
       </section>
     </aside>
   </main>
 </div>
+ 

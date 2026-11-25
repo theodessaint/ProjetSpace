@@ -1,152 +1,308 @@
-
-/* Ma palette de couleur */
-
-:root { /* Utile pour declaré des propriétés CSS personnalisées globales */
-  
-/* fait avec color.adobe.com  */
-
-  --vide: #050816;
-  --nuit: #0c1233;
-  --etoile: #e8ecff;
-  --signal: #ffb454;
-  --glace: #6fd6ee;
-  --trait: rgba(160, 190, 255, 0.22); /* pour les bordures  */
+* {
+  box-sizing: border-box;
 }
 
-html, body { 
-   height: 100%;
-   margin: 0;
-   }
- 
 body {
-  background: var(--vide);   
-  color: var(--etoile); /* couleur du texte par défaut  */
-  font-family: system-ui, sans-serif; /* Juste une police (on verra plus tard) */
-  overflow-x: hidden;   /*  gère ce qui dépasse horizontalement (askip c bien poru un background dynamique*/
+  margin: 0;           /* supprime la marge blanche autour de la page */
 }
 
- 
-/* haut du haut */
-.haut {
-  position: relative; /* permet d'utiliser z-index */
-  z-index: 3; /* fond d'écran dynamique donc on passe par exemple se déconnecter au premier plan pour éviter 
-  que des étoile snous empêchent de cliquer */
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem 1.5rem; /* marge intérieure */
-  font-size: 0.9rem; /* taille du texte */
-}
-.haut-compte { color: var(--glace); }
-.haut-lien { color: var(--etoile); opacity: 0.75; text-decoration: none; } /* pas souligné de base */
-.haut-lien:hover { opacity: 1; text-decoration: underline; } /*hover : quand on passe la souris dessus active ça */
- 
-/* Contenu */
-.accueil {
+/* ========================================
+   SCÈNE : l'image de fond contient les cadres.
+   On fixe le conteneur aux proportions de l'image
+   et on place chaque bloc en % par-dessus son cadre.
+
+   --ratio : largeur / hauteur de TON image de fond
+   --u     : 1% de la largeur de la scène (sert aux tailles)
+======================================== */
+
+.admin {
+  /* --ratio : proportions de l'image (largeur / hauteur), sert seulement à
+     dimensionner les textes pour qu'ils tiennent dans les cadres */
+  --ratio: 1.9;
+  --u: min(1vw, calc(var(--ratio) * 1dvh));
+
   position: relative;
-  z-index: 3;
+  width: 100%;
+  height: 100dvh;      /* l'image remplit tout l'écran */
+  margin: 0;
+  overflow: hidden;
+
+  background-image: url('/Assets/Images/fond-admin-page.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+
+  color: #ffad45;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Les wrappers ne comptent plus : leurs enfants se placent dans .admin */
+.contenu,
+.admin-action {
+  display: contents;
+}
+
+/* Plus de cadre en CSS : il est dans l'image */
+.cadre {
+  background: none;
+  border: none;
+}
+
+/* ========================================
+   ZONES (position de chaque cadre dans l'image, en %)
+   Astuce de réglage : décommente le bloc "debug" tout en bas.
+======================================== */
+
+.entete,
+.admin-stats,
+.admin-liste,
+.compte-gestion,
+.conseil {
+  position: absolute;
   display: flex;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  /* marge intérieure, identique partout : le contenu reste dans le cadre */
+  padding: calc(var(--u) * 2) calc(var(--u) * 2.6) calc(var(--u) * 2.4);
+}
+
+/* Titre */
+.entete {
+  left: 19.3%;
+  top: 10.1%;
+  width: 77.8%;
+  height: 13.9%;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Colonne gauche : stats */
+.admin-stats {
+  left: 2.8%;
+  top: 10.7%;
+  width: 15.4%;
+  height: 81.9%;
   flex-direction: column;
+  justify-content: space-around;
   align-items: center;
   text-align: center;
-  padding: 2vh 1.25rem 12vh;
 }
- 
-.titre { /* pour c egenr ede truc l'ia a fait le taff */
-  font-family: "Chakra Petch", sans-serif;
-  font-weight: 700;
-  font-size: clamp(2.8rem, 9vw, 6rem);
-  line-height: 0.95;
-  letter-spacing: 0.04em;
-  margin: 2vh 0 1rem;
-  background: linear-gradient(180deg, #ffffff 30%, #9fb6ff 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 22px rgba(120, 150, 255, 0.45));
+
+/* Centre : liste */
+.admin-liste {
+  left: 19.3%;
+  top: 26%;
+  width: 47.9%;
+  height: 57.3%;
+  flex-direction: column;
 }
- 
-.accroche {
-  max-width: 34ch;
-  margin: 0 0 2rem;
-  color: #b9c4ee;
-  font-size: 1.05rem;
+
+/* Droite haut : gestion du compte */
+.compte-gestion {
+  left: 68.1%;
+  top: 26%;
+  width: 29.1%;
+  height: 24.1%;
+  justify-content: center;
+  align-items: center;
 }
- 
-/* Menu */
-.menu {
+
+/* Droite bas : conseil */
+.conseil {
+  left: 68.1%;
+  top: 51.9%;
+  width: 29.1%;
+  height: 32.3%;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ========================================
+   CONTENU
+======================================== */
+
+.entete h1 {
+  width: 100%;
+  margin: 0;
+  color: #68d9f2;
+  font-size: calc(var(--u) * 2.4);
+  text-align: center;
+  text-decoration: underline;
+}
+
+/* Stats */
+
+.stat-item {
+  width: 100%;
+}
+
+.stat-item h2 {
+  margin: 0;
+  color: #ffad45;
+  font-size: calc(var(--u) * 1.4);
+  text-decoration: underline;
+}
+
+.stat-item p {
+  margin: calc(var(--u) * 0.5) 0 0;
+  color: white;
+  font-size: calc(var(--u) * 1.8);
+}
+
+/* Liste (raccourcie : bornée par le cadre, défilement interne) */
+
+.admin-liste h2 {
+  flex-shrink: 0;
+  margin: 0 0 calc(var(--u) * 0.8);
+  color: #ffad45;
+  font-size: calc(var(--u) * 2.1);
+  text-align: center;
+}
+
+.list-content {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable both-edges;   /* marges gauche/droite identiques */
+  scrollbar-width: thin;
+  scrollbar-color: #68d9f2 transparent;
+
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  width: min(100%, 22rem);
-  padding: 1.4rem;
-  background: rgba(10, 16, 48, 0.62);
-  border: 1px solid var(--trait);
-  border-radius: 14px;
-  backdrop-filter: blur(6px);
+  gap: calc(var(--u) * 0.45);
 }
- 
+
+.partie {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 0.45);
+  flex-shrink: 0;
+
+  padding: calc(var(--u) * 0.45) calc(var(--u) * 0.7);
+  font-size: calc(var(--u) * 0.9);
+
+  border: 1px solid rgba(104, 217, 242, 0.4);
+  border-radius: 6px;
+  background: rgba(5, 15, 35, 0.5);
+}
+
+.partie-nom {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.partie-joueur {
+  color: #68d9f2;
+  white-space: nowrap;
+}
+
+.aide {
+  text-align: center;
+  opacity: 0.8;
+}
+
 .btn {
-  font: 500 1.05rem "Chakra Petch", sans-serif;
-  letter-spacing: 0.03em;
-  color: var(--etoile);
+  padding: calc(var(--u) * 0.2) calc(var(--u) * 0.55);
+  font-size: calc(var(--u) * 0.8);
   background: transparent;
-  border: 1px solid var(--trait);
-  border-radius: 8px;
-  padding: 0.8rem 1rem;
+  color: #ffad45;
+  border: 1px solid #ffad45;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
-.btn:hover { background: rgba(160, 190, 255, 0.12); border-color: var(--glace); }
- 
-.btn-principal {
-  color: #1a1100;
-  background: var(--signal);
-  border-color: var(--signal);
-  font-weight: 700;
-  box-shadow: 0 0 22px rgba(255, 180, 84, 0.35);
+
+.btn:hover,
+.btn:focus-visible {
+  color: #68d9f2;
+  border-color: #68d9f2;
 }
-.btn-principal:hover { background: #ffc473; border-color: #ffc473; box-shadow: 0 0 30px rgba(255, 180, 84, 0.55); }
 
-/* Background étoilé trouvé sur codeopen.io :  https://codepen.io/NazarAzhar/pen/zqXMqP*/
+.btn--supprimer {
+  color: #ff5c5c;
+  border-color: #ff5c5c;
+}
 
+.btn--supprimer:hover,
+.btn--supprimer:focus-visible {
+  color: #ff8a8a;
+  border-color: #ff8a8a;
+}
 
-.stars, .twinkling {
-  position: fixed;          /*  fixed évite que ça se décale au scroll (si besoin) */
-  inset: 0;
+/* Gestion du compte */
+
+.admin-button {
+  background: transparent;
+  border: none;
+  color: #ffad45;
+  font-size: calc(var(--u) * 1.5);
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.admin-button span {
+  font-size: inherit;
+}
+
+.admin-button:hover {
+  color: #68d9f2;
+  transform: scale(1.05);
+}
+
+/* Conseil intergalactique */
+
+.conseil h2 {
+  flex-shrink: 0;
+  margin: 0 0 calc(var(--u) * 0.6);
+  color: #ffad45;
+  font-size: calc(var(--u) * 1.4);
+  text-align: center;
+}
+
+.conseil-membres {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  gap: calc(var(--u) * 0.4);
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.conseil-membre {
+  width: calc(var(--u) * 4.2);
+  aspect-ratio: 1 / 1;
+}
+
+.conseil-membre img {
   width: 100%;
   height: 100%;
-  display: block;
-  pointer-events: none;     /* important : les calques ne bloquent pas les clics */
+  object-fit: contain;
 }
 
-.stars {
-  z-index: 0;
-  background: #000 url('https://i.imgur.com/YKY28eT.png') repeat top center;
+.entete h1,
+.stat-item h2,
+.admin-liste h2,
+.conseil h2,
+.admin-button {
+  font-family: 'Orbitron', Arial, sans-serif;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.04em;
 }
 
-.twinkling {
-  z-index: 1;
-  background: transparent url('https://i.imgur.com/XYMF4ca.png') repeat top center;
-  animation: move-twink-back 200s linear infinite;
-}
-
-
-@keyframes move-twink-back {
-  from { background-position: 0 0; }
-  to   { background-position: -10000px 5000px; }
-}
-
-
-/* Petit astronautes jordan */
-
-.astronaute {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 2;               /* au-dessus des étoiles, sous ton contenu (z-index 3) */
-  font-size: 3rem;
-  pointer-events: none;     /* ne bloque pas les clics */
-  transition: transform 10s ease-in-out; 
-  opacity: 0.8;
-    /* durée du trajet */
-}
+/* Orbitron est plus large qu'Arial : on réduit un peu les tailles */
+.entete h1      { font-size: calc(var(--u) * 2.1); }
+.stat-item h2   { font-size: calc(var(--u) * 1.1); }
+.admin-liste h2 { font-size: calc(var(--u) * 1.8); }
+.conseil h2     { font-size: calc(var(--u) * 1.2); }
