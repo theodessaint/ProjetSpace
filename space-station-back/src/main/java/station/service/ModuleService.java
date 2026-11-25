@@ -156,7 +156,7 @@ public class ModuleService {
     // Déblocages gagnés (1 tous les 5 cycles) - déblocages déjà utilisés (hors départ et hors tuto)
     public int nbDeblocagesDisponibles(StationSpatiale station) {
         long utilises = this.repository.findByStationId(station.getId()).stream()
-                .filter(Module::isDebloque) // garde ceux qui sont débloqués
+                .filter(m -> m.isDebloque()) // garde ceux qui sont débloqués
                 .filter(m -> !Grille.estPremierModule(m.getPosition())) // retire les 3 modules du tuto
                 .filter(m -> !Grille.estOuvertAuDepart(m.getPosition())) // retire Dortoir et Centre de commandement
                 .count(); // modules débloqués grâce à un déblocage

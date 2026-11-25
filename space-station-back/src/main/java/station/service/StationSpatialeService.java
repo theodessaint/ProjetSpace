@@ -40,21 +40,27 @@ import station.repo.StationSpatialeRepository;
 public class StationSpatialeService {
  
     private static final Logger log = LoggerFactory.getLogger(StationSpatialeService.class);
+
     private final StationSpatialeRepository repository;
     private final ModuleRepository moduleRepository;
     private final CompteRepository compteRepository;
+
+    private final ModuleService moduleService;
+
     private final PartieConfig config;
     
     public StationSpatialeService(
         StationSpatialeRepository repository, 
         ModuleRepository moduleRepository, 
         CompteRepository compteRepository,
+        ModuleService moduleService,
         PartieConfig config
     ) {
         
         this.repository = repository;
         this.moduleRepository = moduleRepository;
         this.compteRepository = compteRepository;
+        this.moduleService = moduleService;
         this.config = config;
     }
  
@@ -242,6 +248,23 @@ public class StationSpatialeService {
             
             module.getConsoModules().add(conso);
         });
+    }
+
+    // Passe au cycle suivant, mais seulement si le joueur a fait son déblocage obligatoire (tous les 5 cycles)
+    @Transactional
+    public StationSpatiale cycleSuivant(Integer id, String login) {
+ 
+        StationSpatiale station = this.findByIdEtJoueur(id, login); // vérifie aussi que la station appartient au joueur
+ 
+        if (this.moduleService.deblocageObligatoireEnAttente(station)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Vous devez débloquer un module avant de passer au cycle suivant");
+        }
+ 
+        station.executerCycle(); // le cycle avance à la fin de cette méthode
+        log.debug("Station {} : passage au cycle {}", id, station.getCycle());
+ 
+        return this.repository.save(station);
     }
     
 }
