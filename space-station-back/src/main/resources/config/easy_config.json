@@ -1,9 +1,11 @@
-{   
+{
     "cycleFin": 25,
-    "nbAgriculteursMax": 1,
-    "nbPlombiersMax": 1,
-    "nbMecaniciensMax": 1,
-     "bonus": [
+    "nbAstronautesMaxParRole": {
+        "Agriculteur": 1,
+        "Plombier": 1,
+        "Mecanicien": 1
+    },
+    "bonus": [
         {
             "role": "Agriculteur",
             "module": "Serre",
@@ -55,26 +57,26 @@
             "nbAstroModuleMax": 0
         },
         {
-           "module": "Dortoir",
+            "module": "Dortoir",
             "nbModuleMax": 1,
             "nbAstroModuleMax": 9
         },
         {
-           "module": "RecyclageEauEtOxygene",
+            "module": "RecyclageEauEtOxygene",
             "nbModuleMax": 3,
             "nbAstroModuleMax": 1
         },
         {
-           "module": "SalleDesMachines",
+            "module": "SalleDesMachines",
             "nbModuleMax": 3,
             "nbAstroModuleMax": 1
         },
         {
-           "module": "Serre",
+            "module": "Serre",
             "nbModuleMax": 3,
             "nbAstroModuleMax": 2
         }
-       
+        
     ], 
     "moduleConso" : [
         {
@@ -154,29 +156,29 @@
         }
     ],
     "ressources" : [
-            {
-                "type": "EAU",
-                "start": 100,
-                "danger": 30,
-                "critique": 15
-            },
-            {
-                "type": "NOURRITURE",
-                "start": 100,
-                "danger": 30,
-                "critique": 10
-            },
-            {
-                "type": "OXYGENE",
-                "start": 100,
-                "danger": 40,
-                "critique": 20
-            },
-            {
-                "type": "ENERGIE",
-                "start": 100,
-                "danger": 25,
-                "critique": 10
-            }
+        {
+            "type": "EAU",
+            "start": 100,
+            "danger": 30,
+            "critique": 15
+        },
+        {
+            "type": "NOURRITURE",
+            "start": 100,
+            "danger": 30,
+            "critique": 10
+        },
+        {
+            "type": "OXYGENE",
+            "start": 100,
+            "danger": 40,
+            "critique": 20
+        },
+        {
+            "type": "ENERGIE",
+            "start": 100,
+            "danger": 25,
+            "critique": 10
+        }
     ]
 }
