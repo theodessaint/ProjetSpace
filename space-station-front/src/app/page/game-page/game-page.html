@@ -39,7 +39,7 @@
         <p class="alerte-deblocage">Choisissez un module à débloquer pour continuer</p>
       }
       <button class="btn-action" (click)="accueillirAstronaute()">Accueillir un astronaute</button>
-      <button class="btn-action" (click)="cycleSuivant()" [disabled]="deblocageObligatoire() || enCours()">
+      <button class="btn-action" (click)="cycleSuivant()" [disabled]="deblocageObligatoire() || enCours() || cycleBloque()">
         Cycle suivant
       </button>
     </div>

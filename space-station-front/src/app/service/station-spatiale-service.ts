@@ -19,4 +19,8 @@ export class StationSpatialeService {
   cycleSuivant(id: number): Observable<StationSpatiale> {
     return this.http.post<StationSpatiale>(`/station/${id}/cycle-suivant`, {});
   }
+
+    debloquerTuto(id: number): Observable<StationSpatiale> {
+    return this.http.post<StationSpatiale>(`/station/${id}/debloquer-tuto`, {});
+  }
 }

@@ -197,7 +197,7 @@ export class GamePage implements OnInit {
   }
 
   cycleSuivant() {
-    if (this.enCours()) return; //on ignore le clic sur cyclesuivant si une requête est deja en cours
+    if (this.enCours() || this.cycleBloque()) return; //on ignore le clic sur cyclesuivant si une requête est deja en cours
 
     this.enCours.set(true);
     this.stationService.cycleSuivant(this.stationId).subscribe({
@@ -322,6 +322,7 @@ export class GamePage implements OnInit {
   index = signal(0); // indique à quelle étape on est dans le tuto
   visible = signal(false); // le tuto s'affiche seulement sur une partie neuve (voir ngOnInit)
   etape = computed(() => this.etapes[this.index()]); // donne le pop-up en cours
+  cycleBloque = computed(() => this.visible() && this.etape().action !== 'cycle');//cyclesuivant bloquer pdt tuto
 
   suivant() {
     this.avancer();
@@ -367,9 +368,13 @@ export class GamePage implements OnInit {
     }
   }
 
-  passer() {
-    // bouton « Passer le tuto »
+ passer() {
+    // bouton « Passer le tuto » : on ferme le tuto et le back débloque les 3 modules gratuits
     this.visible.set(false);
+    this.stationService.debloquerTuto(this.stationId).subscribe({
+      next: (s) => this.station.set(s),
+      error: (e) => this.afficherErreur(e),
+    });
   }
 
   afficherTuto() {

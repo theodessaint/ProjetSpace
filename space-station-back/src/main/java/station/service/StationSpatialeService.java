@@ -250,6 +250,22 @@ public class StationSpatialeService {
         });
     }
 
+
+        // Bouton "Passer le tuto" : les 3 premiers modules sont débloqués gratuitement d'un coup
+    @Transactional
+    public StationSpatiale debloquerModulesTuto(Integer id, String login) {
+
+        StationSpatiale station = this.findByIdEtJoueur(id, login);
+
+        for (Module module : station.getModules()) {
+            if (Grille.estPremierModule(module.getPosition())) {
+                module.setDebloque(true);
+            }
+        }
+
+        return this.repository.save(station);
+    }
+    
     // Passe au cycle suivant, mais seulement si le joueur a fait son déblocage obligatoire (tous les 5 cycles)
     @Transactional
     public StationSpatiale cycleSuivant(Integer id, String login) {

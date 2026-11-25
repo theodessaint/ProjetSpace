@@ -67,6 +67,14 @@ public class StationSpatialeApiController {
         return new EntityCreatedResponse(this.service.save(request, this.getLoginConnecte()).getId());
 
     }
+        // Bouton "Passer le tuto" : débloque gratuitement les 3 premiers modules
+    @PostMapping("/{id}/debloquer-tuto")
+    public StationSpatialeResponse debloquerTuto(@PathVariable Integer id) {
+
+        StationSpatiale station = this.service.debloquerModulesTuto(id, this.getLoginConnecte());
+
+        return StationSpatialeResponse.convert(station, this.moduleService);
+    }
 
     // Bouton "Cycle suivant" : refusé (400) si un déblocage de module est obligatoire
     @PostMapping("/{id}/cycle-suivant")
