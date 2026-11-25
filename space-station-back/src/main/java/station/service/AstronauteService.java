@@ -127,5 +127,6 @@ public class AstronauteService {
     @Transactional
     public void initialiserCatalogueAstronautes() {
         sqlLoader.loadSqlFile("config/astronaute_choix.sql");
+        log.debug("Initialisation du catalogue d'astronautes terminée !");
     }
 }
