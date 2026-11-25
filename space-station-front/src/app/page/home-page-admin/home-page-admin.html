@@ -37,7 +37,7 @@
           <li class="partie">
             <span class = "partie-nom">{{partie.nom}}</span>
             <span class="partie-joueur">joueur : {{ partie.loginJoueur }}</span>
-            <span class = "partie-infos">cycle : {{partie.cycle}} -  modules debloqués </span>
+            <span class="partie-infos">cycle : {{ partie.cycle }} - {{ nbDebloques(partie) }} modules debloqués</span>
             <button type="button" class="btn btn--modifier" (click)="modifier(partie)">Modifier</button>
             <button type="button" class="btn btn--supprimer" (click)="supprimer(partie)">Supprimer</button>
           </li>
