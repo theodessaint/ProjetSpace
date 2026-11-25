@@ -47,7 +47,31 @@ body {
   border: none;
 }
 
-.haut-lien { color: var(--etoile); opacity: 0.75; text-decoration: none; }
+.entete .haut-lien {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--u) * 3);
+  transform: translateY(-50%);
+
+  white-space: nowrap;   /* tient sur une ligne */
+  padding: calc(var(--u) * 0.25) calc(var(--u) * 0.7);
+
+  font: 700 calc(var(--u) * 0.85) 'Orbitron', Arial, sans-serif;
+  letter-spacing: 0.04em;
+  color: #ffad45;
+  text-decoration: none;
+
+  background: transparent;
+  border: 1px solid #ffad45;
+  border-radius: 4px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.entete .haut-lien:hover {
+  color: #68d9f2;
+  border-color: #68d9f2;
+  text-decoration: none;
+}
 
 /* ========================================
    ZONES (position de chaque cadre dans l'image, en %)
@@ -262,12 +286,13 @@ body {
 }
 
 .partie {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--u) * 0.45);
-  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1.6fr) auto auto; /* 3 colonnes de texte + 2 boutons */
+  align-items: center;                /* tout centré verticalement */
+  gap: calc(var(--u) * 0.9);          /* espace entre les colonnes */
+  flex-shrink: 0;                     /* empêche l'écrasement dans la liste */
 
-  padding: calc(var(--u) * 0.45) calc(var(--u) * 0.7);
+  padding: calc(var(--u) * 0.5) calc(var(--u) * 0.8);
   font-size: calc(var(--u) * 0.9);
 
   border: 1px solid rgba(104, 217, 242, 0.4);
@@ -276,10 +301,9 @@ body {
 }
 
 .partie-nom {
-  flex: 1;
-  min-width: 0;
+  min-width: 0;                       /* autorise la colonne à rétrécir */
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: ellipsis;            /* coupe un nom trop long avec … */
   white-space: nowrap;
 }
 
