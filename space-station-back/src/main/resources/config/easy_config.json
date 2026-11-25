@@ -1,5 +1,8 @@
 {   
     "cycleFin": 25,
+    "nbAgriculteursMax": 1,
+    "nbPlombiersMax": 1,
+    "nbMecaniciensMax": 1,
      "bonus": [
         {
             "role": "Agriculteur",
