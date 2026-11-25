@@ -17,6 +17,7 @@ public class StationSpatialeResponse {
     private int nbDeblocagesDisponibles;
     private boolean deblocageObligatoire; // le joueur doit débloquer un module avant de passer au cycle suivant
     private List<ModuleResponse> modules;
+    private String loginJoueur;
 
     public static StationSpatialeResponse convert(StationSpatiale station, ModuleService moduleService) {
 
@@ -25,6 +26,7 @@ public class StationSpatialeResponse {
         response.id = station.getId();
         response.nom = station.getNom();
         response.cycle = station.getCycle();
+        response.loginJoueur = station.getJoueur().getLogin();
 
         response.colonnes = Grille.nb_Colonnes;
         response.lignes = Grille.nb_Lignes;
@@ -74,5 +76,9 @@ public class StationSpatialeResponse {
 
     public List<ModuleResponse> getModules() {
         return modules;
+    }
+
+    public String getLoginJoueur() {
+        return loginJoueur;
     }
 }

@@ -11,6 +11,6 @@ export interface StationSpatiale {
     nbDeblocagesDisponibles: number;   
     deblocageObligatoire: boolean;     
     modules: Module[];
-    nomJoueur: string;
+    loginJoueur: string;
 
 }
