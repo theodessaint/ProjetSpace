@@ -52,9 +52,21 @@
  
       <!-- Gestion des comptes -->
       <section class="compte-gestion cadre">
-        <button type="button" class="admin-button">
-          <span>Supprimer compte</span>
-        </button>
+        <button type="button" class="admin-button" (click)="listeComptes()">Supprimer compte</button>
+        @if (listeComptesOuverte()) {
+          <ul class="liste-comptes">
+          @for (j of joueurs(); track j.id) {
+            <li>
+              <button type="button" class="compte-item" (click)="supprimerCompte(j)">
+                <span>{{ j.login }}</span>
+                <span class="compte-item__croix">✕</span>
+              </button>
+            </li>
+          } @empty {
+            <li class="aide">Aucun joueur.</li>
+          }
+          </ul>
+        }
       </section>
  
       <!-- Conseil intergalactique -->

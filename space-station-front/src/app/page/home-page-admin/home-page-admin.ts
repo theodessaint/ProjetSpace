@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../service/admin-service';
 import { StationSpatiale } from '../../model/station-spatiale';
 import { finalize } from 'rxjs';
+import { JoueurAdmin } from '../../model/joueur-admin';
 
 @Component({
   selector: 'app-home-page-admin',
@@ -28,19 +29,30 @@ export class HomePageAdmin implements OnInit {
   nombreParties: number = 0;
 
   listeAffichee = false;
+
+  joueurs = signal<JoueurAdmin[]>([]);
+
+  joueurChoisi = signal<number | null>(null);
+
+  listeComptesOuverte = signal(false);
   
 
   ngOnInit(): void {
     // Chargement au montage du composant : l'admin vient pour voir
     // la liste, inutile de lui faire cliquer un bouton.
-    this.adminService.findAll().subscribe(parties => {
-      console.log('Première partie :', parties[0]);
-      this.parties.set(parties);
-    });
+    this.charger();
   }
 
   private charger(): void {
-    this.adminService.findAll().subscribe(parties => this.parties.set(parties));
+  this.adminService.findAll().subscribe(p => this.parties.set(p));
+
+  this.adminService.findAllJoueurs().subscribe({
+    next: (j) => {
+      console.log('Joueurs reçus :', j);
+      this.joueurs.set(j);
+    },
+    error: (err) => console.error('Erreur chargement joueurs', err),
+    });
   }
 
   modifier(partie: StationSpatiale): void {
@@ -68,6 +80,21 @@ export class HomePageAdmin implements OnInit {
       error: (err) => console.error('Erreur lors de la suppression', err),
     });
   }
+
+  listeComptes(): void {
+    this.listeComptesOuverte.update(v => !v);
+  }
+
+  supprimerCompte(joueur: JoueurAdmin): void {
+    if (!confirm(`Supprimer définitivement le compte « ${joueur.login} » et toutes ses parties ?`)) return;
+
+    this.adminService.supprimerCompte(joueur.id)
+      .pipe(finalize(() => this.charger()))
+      .subscribe({
+        error: (err) => console.error('Erreur lors de la suppression du compte', err),
+      });
+  }
+
 
   // chargerNbParties() {
   //   console.log('Nombre des parties');

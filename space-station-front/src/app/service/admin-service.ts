@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { StationSpatiale } from '../model/station-spatiale';
+import { JoueurAdmin } from '../model/joueur-admin';
 
 @Injectable({
   providedIn: 'root',
@@ -29,11 +30,15 @@ export class AdminService {
         return this.http.delete(`${this.url}/${id}`, { responseType: 'text' });
     }
 
-    // afficherJoueur(id:number): Observable<void> {
-    //     return this.http.put<StationSpatiale>((`${this.url}/${station.id}`, station);
-    // }
+    findAllJoueurs(): Observable<JoueurAdmin[]> {
+        return this.http.get<JoueurAdmin[]>('/admin/joueurs');
+    }
 
-    //DeleteJoueur():
+    supprimerCompte(id: number): Observable<string> {
+        return this.http.delete(`/admin/joueurs/${id}`, { responseType: 'text' });
+    }
+
+
 
     // // Récupérer les parties terminées
     // partiesTerminees(): Observable<StationSpatialeResume[]> {
