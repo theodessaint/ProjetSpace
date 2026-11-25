@@ -92,6 +92,7 @@ public class BonusService {
     @Transactional
     public void initialiserBonus() {
         
+        // Récupération des bonus existants en BDD
         Set<BonusKey> bonusExistants = this.repository.findAll().stream()
         .map(b -> new BonusKey(
             b.getRole(),
@@ -100,14 +101,18 @@ public class BonusService {
         ))
         .collect(Collectors.toSet());
         
+        
         List<Bonus> bonusList = new ArrayList<>();
         
-        for (BonusConfig bc : config.bonus()) {
+        // Lecture de la configuration des bonus à partir du fichier
+        for (BonusConfig bc : config.bonus()) { 
             
             if (!bonusExistants.add(bc.key())) {
                 continue;
             }
             
+            
+            // Création des bonus manquants
             Bonus bonus = new Bonus();
             
             bonus.setRole(bc.role());
@@ -121,6 +126,7 @@ public class BonusService {
         if (!bonusList.isEmpty()) {
             this.repository.saveAll(bonusList);
             log.debug("Initialisation des bonus manquants terminée !");
+            
         } else {
             log.debug("Vérification des bonus terminée, aucun bonus manquant.");
         }
