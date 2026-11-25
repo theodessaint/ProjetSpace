@@ -71,6 +71,7 @@ export class GamePage implements OnInit {
 
   cycle = computed(() => this.station()?.cycle ?? 0);// cycle en cours, pour l'afficher dans le centre de commandement
   deblocagesDisponibles = computed(() => this.station()?.nbDeblocagesDisponibles ?? 0);// combien de modules le joueur peut encore débloquer avant le prochain palier genre 5, 10, 15…
+  //?? 0 si le résultat est null ou undefined, on renvoie 0 par défaut.
   deblocageObligatoire = computed(() => this.station()?.deblocageObligatoire ?? false);// le joueur doit débloquer un module avant de passer au cycle suivant
   prochainDeblocage = computed(
     () => (Math.floor(this.cycle() / CYCLES_PAR_DEBLOCAGE) + 1) * CYCLES_PAR_DEBLOCAGE,
