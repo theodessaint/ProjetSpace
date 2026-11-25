@@ -3,6 +3,7 @@
   <!-- Titre principal -->
   <header class="entete cadre">
     <h1>Administration - Station spatiale</h1>
+    <a class="haut-lien" href="#" (click)="deconnexion($event)">Se déconnecter</a>
   </header>
  
   <main class="contenu">
@@ -35,8 +36,8 @@
         @for (partie of parties(); track partie.id) {
           <li class="partie">
             <span class = "partie-nom">{{partie.nom}}</span>
-            <span class="partie-joueur">{{ partie.nomJoueur ?? 'Joueur inconnu' }}</span>
-            <span class = "partie-infos">cycle: {{partie.cycle}} -  modules debloqués {{nbModulesDebloques}}</span>
+            <span class="partie-joueur">joueur : {{ partie.loginJoueur }}</span>
+            <span class = "partie-infos">cycle : {{partie.cycle}} -  modules debloqués </span>
             <button type="button" class="btn btn--modifier" (click)="modifier(partie)">Modifier</button>
             <button type="button" class="btn btn--supprimer" (click)="supprimer(partie)">Supprimer</button>
           </li>
