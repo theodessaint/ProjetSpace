@@ -1,4 +1,4 @@
-INSERT INTO astronaute (id, nom, genre, role)
+INSERT INTO astronautes_catalogue (id, nom, genre, role)
 VALUES
 (1, 'Neil ARMSTRONG', 'homme', NULL),
 (2, 'Buzz ALDRIN', 'homme', NULL),
