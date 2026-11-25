@@ -107,13 +107,13 @@
             "module": "Serre",
             "nbAstroAffectes": 2,
             "ressource": "ENERGIE",
-            "valeur": 1
+            "valeur": 6
         },  
         {
             "module": "Serre",
             "nbAstroAffectes": 2,
             "ressource": "EAU",
-            "valeur": 1
+            "valeur": 7
         }
         
     ],
