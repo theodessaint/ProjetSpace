@@ -1,5 +1,5 @@
 import { Module } from "./module";
-
+import { Astronaute } from "./astronaute";
 export interface StationSpatiale {
 
     id: number;
@@ -11,6 +11,7 @@ export interface StationSpatiale {
     nbDeblocagesDisponibles: number;   
     deblocageObligatoire: boolean;     
     modules: Module[];
+    astronautes: Astronaute[];
     idJoueur: number;
     loginJoueur: string;
 

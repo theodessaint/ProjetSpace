@@ -3,10 +3,10 @@ import { StationSpatiale } from '../model/station-spatiale';
 import { Observable } from 'rxjs/internal/Observable';
 import { HttpClient } from '@angular/common/http';
 import { Module } from '../model/module';
-
+import { Astronaute } from '../model/astronaute';
 @Service()
 export class StationSpatialeService {
-      private http = inject(HttpClient);
+  private http = inject(HttpClient);
 
   findById(id: number): Observable<StationSpatiale> {
     return this.http.get<StationSpatiale>(`/station/${id}`);
@@ -20,7 +20,11 @@ export class StationSpatialeService {
     return this.http.post<StationSpatiale>(`/station/${id}/cycle-suivant`, {});
   }
 
-    debloquerTuto(id: number): Observable<StationSpatiale> {
+  debloquerTuto(id: number): Observable<StationSpatiale> {
     return this.http.post<StationSpatiale>(`/station/${id}/debloquer-tuto`, {});
   }
+  affecterAstronaute(astronauteId: number, moduleId: number): Observable<Astronaute> {
+    return this.http.put<Astronaute>(`/astronaute/${astronauteId}/affecter`, { moduleId });
+  }
+
 }

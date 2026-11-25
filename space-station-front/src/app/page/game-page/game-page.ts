@@ -4,6 +4,8 @@ import { ActivatedRoute } from '@angular/router';
 import { StationSpatialeService } from '../../service/station-spatiale-service';
 import { StationSpatiale } from '../../model/station-spatiale';
 import { Module } from '../../model/module';
+import { Astronaute } from '../../model/astronaute';
+
 
 type TypeModule = 'machines' | 'serre' | 'recyclage';
 
@@ -26,7 +28,7 @@ type Emplacement = {
   width: number;
   height: number;
 };
-
+const CENTRE_COMMANDE = { left: 44, top: 24, width: 12, height: 11.6 };
 const EMPLACEMENTS: Record<string, Emplacement> = {
   // Recyclage : le 1 est le plus proche du centre
   '2,1': { label: 'Recyclage Eau / Air 1', type: 'recyclage', left: 29.5, top: 24, width: 10, height: 11.6 },
@@ -50,6 +52,7 @@ const POSITIONS_TUTO = ['2,1', '3,2', '4,1'];
 const CYCLES_PAR_DEBLOCAGE = 5;
 
 type ModuleVue = Module & Emplacement & { tuto: boolean };
+type Destination = { id: number; label: string; occupes: number; max: number | null };
 
 @Component({
   imports: [],
