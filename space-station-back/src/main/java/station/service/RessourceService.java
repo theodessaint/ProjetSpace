@@ -1,5 +1,6 @@
 package station.service;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -20,10 +21,10 @@ public class RessourceService {
         this.stationService = stationService;
     }
     
-    public Set<Ressource> getRessources(Integer stationId, String username) {
+    public Map<Ressource, Double> getRessources(Integer stationId) {
         log.debug("Liste des types de ressources ...");
         
-        return this.stationService.findByIdEtJoueur(stationId, username).getStats().keySet();
+        return this.stationService.findById(stationId).getStats();
     }
     
   
