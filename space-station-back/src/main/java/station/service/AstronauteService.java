@@ -6,14 +6,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import station.api.request.CreateOrUpdateAstronauteRequest;
 import station.enumerator.RoleEnum;
-import station.exception.AstronauteNotFoundException;
+import station.exception.AstronauteReferenceNotFoundException;
 import station.exception.ModuleNotFoundException;
 import station.exception.StationSpatialeNotFoundException;
 import station.model.Astronaute;
 import station.model.Module;
 import station.model.StationSpatiale;
+import station.repo.AstronauteReferenceRepository;
 import station.repo.AstronauteRepository;
 import station.repo.ModuleRepository;
 import station.repo.StationSpatialeRepository;
@@ -22,16 +24,19 @@ import station.repo.StationSpatialeRepository;
 public class AstronauteService {
     private static final Logger log = LoggerFactory.getLogger(AstronauteService.class);
     private final AstronauteRepository repository;
-
+    private final AstronauteReferenceRepository referenceRepository;
+    
     private final ModuleRepository moduleRepository;
     private final StationSpatialeRepository stationRepository;
     
     public AstronauteService(
-        AstronauteRepository repository, 
+        AstronauteRepository repository,
+        AstronauteReferenceRepository referenceRepository,
         ModuleRepository moduleRepository,
         StationSpatialeRepository stationRepository
     ) {
         this.repository = repository;
+        this.referenceRepository = referenceRepository;
         this.moduleRepository = moduleRepository;
         this.stationRepository = stationRepository;
     }
@@ -54,7 +59,7 @@ public class AstronauteService {
         return this.repository.findById(id).orElseThrow(
             () -> {
                 log.warn("Astronaute introuvable : id={}", id);
-                return new AstronauteNotFoundException();
+                return new AstronauteReferenceNotFoundException();
             }
         );
     }
@@ -80,11 +85,17 @@ public class AstronauteService {
     }
     
     private Astronaute save(Astronaute astronaute, CreateOrUpdateAstronauteRequest request) {
-        astronaute.setNom(request.getNom());
-        astronaute.setGenre(request.getGenre());
-        astronaute.setRole(request.getRole());
-
-       Module module = moduleRepository.findById(request.getModuleId())
+        astronaute.setReference(
+            this.referenceRepository.findById(request.getReferenceId())
+            .orElseThrow(
+                () -> {
+                    log.warn("AstronauteReference introuvable : id={}", request.getReferenceId());
+                    return new AstronauteReferenceNotFoundException();
+                }
+            )
+        );
+        
+        Module module = moduleRepository.findById(request.getModuleId())
         .orElseThrow(
             () -> {
                 log.warn("Module introuvable : id={}", request.getModuleId());
@@ -92,7 +103,7 @@ public class AstronauteService {
             }
         );
         astronaute.setModule(module);
-
+        
         StationSpatiale station = stationRepository.findById(request.getStationId())
         .orElseThrow(
             () -> {
@@ -103,5 +114,9 @@ public class AstronauteService {
         astronaute.setStation(station);
         
         return this.repository.save(astronaute);
+    }
+    
+    @Transactional
+    public void initialiserAstronautes() {
     }
 }

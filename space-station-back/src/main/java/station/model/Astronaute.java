@@ -1,8 +1,6 @@
 package station.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,14 +18,10 @@ public class Astronaute {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
-    private String nom;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "astronaute_reference_id")
+    private AstronauteReference reference;
     
-    @Enumerated(EnumType.STRING)
-    private GenreEnum genre;
-    
-    @Enumerated(EnumType.STRING)
-    private RoleEnum role;
-
     @ManyToOne
     @JoinColumn(name="module_id")
     private Module module;
@@ -36,12 +30,14 @@ public class Astronaute {
     @JoinColumn(name = "station_id", nullable = false)
     private StationSpatiale station;
     
-    public Astronaute(){}
-    public Astronaute(Integer id, String nom, GenreEnum genre, RoleEnum role){
-        this.id=id;
-        this.nom=nom;
-        this.genre=genre;
-        this.role=role;
+    public Astronaute() {}
+    
+    public Astronaute(Integer id, AstronauteReference reference, Module module,
+        StationSpatiale station) {
+        this.id = id;
+        this.reference = reference;
+        this.module = module;
+        this.station = station;
     }
     
     public Integer getId() {
@@ -52,46 +48,45 @@ public class Astronaute {
         this.id = id;
     }
     
-    public String getNom() {
-        return nom;
+    public AstronauteReference getReference() {
+        return this.reference;
     }
     
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setReference(AstronauteReference reference) {
+        this.reference = reference;
+    }
+    
+    public String getNom() {
+        return this.getReference().getNom();
     }
     
     public GenreEnum getGenre() {
-        return genre;
-    }
-    
-    public void setGenre(GenreEnum genre) {
-        this.genre = genre;
+        return this.getReference().getGenre();
     }
     
     public RoleEnum getRole() {
-        return role;
+        return this.getReference().getRole();
     }
     
-    public void setRole(RoleEnum role) {
-        this.role = role;
-    }
-    public StationSpatiale getStation() {
-        return station;
-    }
-    public void setStation(StationSpatiale station) {
-        this.station = station;
-    }
-
     public Module getModule() {
         return module;
     }
+    
     public void setModule(Module module) {
         this.module = module;
     }
     
-    @Override
-    public String toString() {
-        return "Astronaute [id=" + id + ", nom=" + nom + ", genre=" + genre + ", role=" + role + "]";
+    public StationSpatiale getStation() {
+        return station;
     }
     
+    public void setStation(StationSpatiale station) {
+        this.station = station;
+    }
+    
+    @Override
+    public String toString() {
+        return "Astronaute [id=" + id + ", nom=" + getNom() + ", genre=" + getGenre() + ", role="
+        + getRole() + "]";
+    }    
 }
