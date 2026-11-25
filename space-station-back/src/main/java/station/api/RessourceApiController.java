@@ -9,7 +9,7 @@ import station.enumerator.RessourceEnum;
 import station.service.RessourceService;
 
 @RestController
-@RequestMapping("/station/{id}/ressources")
+@RequestMapping("/station/{stationId}/ressources")
 public class RessourceApiController {
     private final RessourceService service;
 
