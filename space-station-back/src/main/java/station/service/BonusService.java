@@ -86,22 +86,31 @@ public class BonusService {
         return this.repository.save(bonus);
     }
     
-    @Transactional 
+    @Transactional
     public void initialiserBonus() {
-        List<BonusConfig> bonusConfigList = config.bonus();
-        List<Bonus> bonusList = new ArrayList<Bonus>();
         
-        for (BonusConfig bonusConfig : bonusConfigList) {
-            Bonus bonus = new Bonus();
+        List<Bonus> bonusList = new ArrayList<>();
+        
+        for (BonusConfig bc : config.bonus()) {
             
-            bonus.setRole(bonusConfig.role());
-            bonus.setModule(bonusConfig.module());
-            bonus.setRessource(bonusConfig.ressource());
-            bonus.setMultiplicateur(bonusConfig.multiplicateur());
+            if (this.repository.existsByRoleAndModuleAndRessource(
+                bc.role(),
+                bc.module(),
+                bc.ressource())) {
+                    continue;
+                }
+                
+                Bonus bonus = new Bonus();
+                
+                bonus.setRole(bc.role());
+                bonus.setModule(bc.module());
+                bonus.setRessource(bc.ressource());
+                bonus.setMultiplicateur(bc.multiplicateur());
+                
+                bonusList.add(bonus);
+            }
             
-            bonusList.add(bonus);
+            this.repository.saveAll(bonusList);
         }
-        this.repository.saveAll(bonusList);
+        
     }
-    
-}
