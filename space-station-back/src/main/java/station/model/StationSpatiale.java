@@ -234,11 +234,11 @@ public class StationSpatiale {
                 
             }
             
-            this.cycle++;
+            
             
         }
         
-        
+        this.cycle++;
     }
     
     public void afficherEtat(){}
