@@ -104,4 +104,14 @@ public class StationSpatialeApiController {
         return SecurityContextHolder.getContext().getAuthentication().getName();
 
     }
+       @PostMapping("/{id}/accueillir-astronaute")
+    public StationSpatialeResponse accueillirAstronaute(@PathVariable Integer id) {
+
+        StationSpatiale station = this.service.accueillirPremierAstronaute(id, this.getLoginConnecte());
+
+        return StationSpatialeResponse.convert(station, this.moduleService);
+    }
+
+    // Bouton "Passer le tuto" : débloque les 3 premiers modules et fait arriver les astronautes
+
 }

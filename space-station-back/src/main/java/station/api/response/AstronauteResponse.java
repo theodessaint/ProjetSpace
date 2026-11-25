@@ -20,7 +20,8 @@ public class AstronauteResponse {
         response.nom = astronaute.getNom();
         response.genre = astronaute.getGenre();
         response.role = astronaute.getRole();
-        response.moduleId = astronaute.getModule().getId();
+        response.moduleId = astronaute.getModule().getId() != null ? astronaute.getModule().getId() : null;
+        //si l'astronaute a un module getModule() != null, on prend l'id de ce module sinon on met null
         response.stationId = astronaute.getStation().getId();
 
         return response;
