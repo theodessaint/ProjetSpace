@@ -124,33 +124,90 @@ body {
  
 .aide { min-height: 2.6em; margin: 0.6rem 0 0; font-size: 0.85rem; color: #98a6d6; }
 
-/* Liste des parties à charger */
+/* ---------- Fenêtre de choix d'une partie ---------- */
 
-.liste-parties {
+.choix-partie {
+  width: min(460px, 90vw);
+  padding: 24px;
+  color: #e8ecff;
+  background: #0d1433;
+  border: 1px solid #2a3566;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.choix-partie::backdrop { background: rgba(3, 6, 20, 0.7); }
+
+.choix-partie h2 {
+  margin: 0 0 4px;
+  font: 500 1.4rem "Chakra Petch", sans-serif;
+}
+
+.choix-partie .sous-titre {
+  margin: 0 0 20px;
+  font-size: 1rem;
+  color: #f59e0b;
+}
+
+.choix-partie .liste-contenu {
+  max-height: 13rem;
+  text-align: left;   /* la fenêtre centre son titre, pas ses entrées */
+}
+
+.choix-partie .partie {
+  background: rgba(26, 36, 82, 0.6);
+  border-color: #2a3566;
+}
+
+.choix-partie .partie:hover {
+  background: rgba(40, 56, 120, 0.7);
+  border-color: #f59e0b;
+}
+
+/* Bouton discret, dans l'esprit de « Passer le tuto » */
+.choix-partie form { margin: 0; }
+
+.choix-partie form .btn {
+  display: block;
+  margin: 18px auto 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #8f9acb;
+  font-size: 0.85rem;
+  text-decoration: underline;
+}
+
+.choix-partie .aide {
+  min-height: auto;
+  margin: 0;
+}
+
+.liste-contenu {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  width: min(100%, 22rem);   /* même largeur que le menu, pour l'alignement */
-  margin-top: 1.5rem;
-  padding: 1.4rem;
-  background: rgba(10, 16, 48, 0.62);
-  border: 1px solid var(--trait);
-  border-radius: 14px;
-  backdrop-filter: blur(6px);
+
+  max-height: 14rem;     /* environ quatre parties visibles */
+  overflow-y: auto;
+  padding-right: 0.4rem; /* évite que la barre colle aux boutons */
 }
 
-.liste-parties h2 {
-  margin: 0 0 0.4rem;
-  font: 500 1.05rem "Chakra Petch", sans-serif;
-  letter-spacing: 0.03em;
-  color: #b9c4ee;
+/* Barre de défilement accordée au thème plutôt qu'au gris du système */
+.liste-contenu::-webkit-scrollbar { width: 6px; }
+.liste-contenu::-webkit-scrollbar-track { background: transparent; }
+.liste-contenu::-webkit-scrollbar-thumb {
+  background: var(--trait);
+  border-radius: 3px;
 }
+.liste-contenu::-webkit-scrollbar-thumb:hover { background: var(--glace); }
 
 .partie {
   display: flex;
   flex-direction: column;   /* sépare le nom des infos, sinon tout se colle */
   align-items: flex-start;
   gap: 0.2rem;
+  flex-shrink: 0;   /* sinon les boutons s'écrasent au lieu de déborder */
 
   padding: 0.7rem 0.9rem;
   color: var(--etoile);

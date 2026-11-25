@@ -35,22 +35,27 @@
     </fieldset>
   </nav>
 
-  @if (listeAffichee()) {
-    <section class = "liste-parties">
-      <h2>Mes parties</h2>
+  <!-- Choix d'une partie à charger -->
+  <dialog #dialogParties class="choix-partie">
+    <h2>Mes parties</h2>
+    <p class="sous-titre">Choisissez la partie à reprendre</p>
 
+    <div class="liste-contenu">
       @for (partie of parties(); track partie.id) {
-        <button class = "partie" (click) = "demarrerPartie(partie.id)">
-          <span class = "partie-nom">{{partie.nom}}</span>
-          <span class = "partie-infos">cycle {{partie.cycle}} - {{partie.nbModulesDebloques}} modules debloqués</span>
+        <button class="partie" (click)="demarrerPartie(partie.id)">
+          <span class="partie-nom">{{ partie.nom }}</span>
+          <span class="partie-infos">cycle {{ partie.cycle }} - {{ partie.nbModulesDebloques }} modules debloqués</span>
         </button>
+      } @empty {
+        <p class="aide">Aucune partie en cours, veuillez en créer une.</p>
       }
-      @empty {
-        <p class = "aide">Aucune partie en cours, veuillez en créer une.</p>
-      }
+    </div>
 
-    </section>
-  }
+    <form method="dialog">
+      <button class="btn">Fermer</button>
+    </form>
+  </dialog>
+
 
 </main>
 

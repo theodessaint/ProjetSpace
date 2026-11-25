@@ -20,6 +20,7 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
   @ViewChildren('astronaute') astros!: QueryList<ElementRef<HTMLImageElement>>;
   @ViewChild('regles') regles!: ElementRef<HTMLDialogElement>;
   @ViewChild('dialogNom') dialogNom!: ElementRef<HTMLDialogElement>;
+  @ViewChild('dialogParties') dialogParties!: ElementRef<HTMLDialogElement>;
   private timer?: ReturnType<typeof setInterval>;
   
   nouveauNom = '';
@@ -34,8 +35,6 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
   };
   
   parties = signal<StationSpatialeResume[]>([]); // Permet de prévenir angular que la valeur change pour que la liste s'affiche avec un seul click et pas deux
-  
-  listeAffichee = signal(false);
   
   ngAfterViewInit(): void {
     this.deplacer();
@@ -57,12 +56,10 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
   }
   
   ouvrirRegles(): void {
-    this.listeAffichee.set(false);
     this.regles.nativeElement.showModal();
   }
   
   nouvellePartie(): void {
-    this.listeAffichee.set(false);
     this.nouveauNom = '';
     this.dialogNom.nativeElement.showModal();
     
@@ -79,15 +76,11 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
   
   chargerListeParties(): void {
     console.log('Liste des parties');
-    if (this.listeAffichee()) {
-      this.listeAffichee.set(false);
-      return;
-    }
     
     this.joueurService.findMesParties().subscribe(parties => {
       console.log('Parties du joueur :', parties);
       this.parties.set(parties);
-      this.listeAffichee.set(true);
+      this.dialogParties.nativeElement.showModal();
     });
   }
   
