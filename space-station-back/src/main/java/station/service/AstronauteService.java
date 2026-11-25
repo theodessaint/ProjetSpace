@@ -1,6 +1,8 @@
 package station.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,11 +10,13 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import station.api.request.CreateOrUpdateAstronauteRequest;
+import station.config.SqlLoader;
 import station.enumerator.RoleEnum;
 import station.exception.AstronauteReferenceNotFoundException;
 import station.exception.ModuleNotFoundException;
 import station.exception.StationSpatialeNotFoundException;
 import station.model.Astronaute;
+import station.model.AstronauteReference;
 import station.model.Module;
 import station.model.StationSpatiale;
 import station.repo.AstronauteReferenceRepository;
@@ -28,17 +32,21 @@ public class AstronauteService {
     
     private final ModuleRepository moduleRepository;
     private final StationSpatialeRepository stationRepository;
+
+    private final SqlLoader sqlLoader;
     
     public AstronauteService(
         AstronauteRepository repository,
         AstronauteReferenceRepository referenceRepository,
         ModuleRepository moduleRepository,
-        StationSpatialeRepository stationRepository
+        StationSpatialeRepository stationRepository,
+        SqlLoader sqlLoader
     ) {
         this.repository = repository;
         this.referenceRepository = referenceRepository;
         this.moduleRepository = moduleRepository;
         this.stationRepository = stationRepository;
+        this.sqlLoader = sqlLoader;
     }
     
     public List<Astronaute> findAll() {
@@ -117,6 +125,7 @@ public class AstronauteService {
     }
     
     @Transactional
-    public void initialiserAstronautes() {
+    public void initialiserCatalogueAstronautes() {
+        sqlLoader.loadSqlFile("config/astronaute_choix.sql");
     }
 }
