@@ -1,5 +1,6 @@
 {   
-     "bonus" : [
+    "cycleFin": 25,
+     "bonus": [
         {
             "role": "Agriculteur",
             "module": "Serre",
