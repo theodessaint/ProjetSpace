@@ -9,9 +9,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import station.enumerator.RessourceEnum;
 
 @Entity 
+@Table(name = "modules_prod")
 public class ModuleProd {
     
     @Id

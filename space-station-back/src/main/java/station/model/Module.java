@@ -17,7 +17,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity 
-@Table(uniqueConstraints = 
+@Table(name = "modules", uniqueConstraints = 
 @UniqueConstraint(columnNames = {"station_id", "x","y"})
 )
 public class Module {

@@ -8,10 +8,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import station.enumerator.GenreEnum;
 import station.enumerator.RoleEnum;
 
 @Entity
+@Table(name = "astronautes")
 public class Astronaute {
     
     @Id
