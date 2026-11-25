@@ -3,44 +3,44 @@
         {
             "role": "Agriculteur",
             "module": "Serre",
-            "ressource": "Nourriture",
+            "ressource": "NOURRITURE",
             "multiplicateur": 1.15
         },
         {
             "role": "Agriculteur",
             "module": "Serre",
-            "ressource": "Eau",
+            "ressource": "EAU",
             "multiplicateur": 0.95
         },
         {
             "role": "Mecanicien",
             "module": "SalleDesMachines",
-            "ressource": "Énergie",
+            "ressource": "ENERGIE",
             "multiplicateur": 1.10
         },
         {
             "role": "Mecanicien",
             "module": "RecyclageEauEtOxygene",
-            "ressource": "Oxygène",
+            "ressource": "OXYGENE",
             "multiplicateur": 1.10
         },
         {
             "role": "Plombier",
             "module": "RecyclageEauEtOxygene",
-            "ressource": "Eau",
+            "ressource": "EAU",
             "multiplicateur": 1.10
         },
         {
             "role": "Plombier",
             "module": "Serre",
-            "ressource": "Énergie",
+            "ressource": "ENERGIE",
             "multiplicateur": 0.80
         }
         ,
         {
             "role": "Plombier",
             "module": "Serre",
-            "ressource": "Eau",
+            "ressource": "EAU",
             "multiplicateur": 0.92
         }
     ],  
@@ -76,43 +76,43 @@
         {
             "module": "CentreDeCommandement",
             "nbAstroAffectes": 1,
-            "ressource": "Énergie",
+            "ressource": "ENERGIE",
             "valeur": 2
         },
         {
             "module": "Dortoir",
             "nbAstroAffectes": 1,
-            "ressource": "Énergie",
+            "ressource": "ENERGIE",
             "valeur": 1
         },
         {
             "module": "RecyclageEauEtOxygene",
             "nbAstroAffectes": 1,
-            "ressource": "Énergie",
+            "ressource": "ENERGIE",
             "valeur": 4
         },
         {
             "module": "Serre",
             "nbAstroAffectes": 1,
-            "ressource": "Énergie",
+            "ressource": "ENERGIE",
             "valeur": 5
         },  
         {
             "module": "Serre",
             "nbAstroAffectes": 1,
-            "ressource": "Eau",
+            "ressource": "EAU",
             "valeur": 6
         },
         {
             "module": "Serre",
             "nbAstroAffectes": 2,
-            "ressource": "Énergie",
+            "ressource": "ENERGIE",
             "valeur": 1
         },  
         {
             "module": "Serre",
             "nbAstroAffectes": 2,
-            "ressource": "Eau",
+            "ressource": "EAU",
             "valeur": 1
         }
         
@@ -121,55 +121,55 @@
         {
             "module": "RecyclageEauEtOxygene",
             "nbAstroAffectes": 1,
-            "ressource": "Eau",
+            "ressource": "EAU",
             "valeur": 14
         },
         {
             "module": "RecyclageEauEtOxygene",
             "nbAstroAffectes": 1,
-            "ressource": "Oxygène",
+            "ressource": "OXYGENE",
             "valeur": 5
         },
         {
             "module": "SalleDesMachines",
             "nbAstroAffectes": 1,
-            "ressource": "Énergie",
+            "ressource": "ENERGIE",
             "valeur": 16
         },
         {
             "module": "Serre",
             "nbAstroAffectes": 1,
-            "ressource": "Nourriture",
+            "ressource": "NOURRITURE",
             "valeur": 8
         },  
         {
             "module": "Serre",
             "nbAstroAffectes": 2,
-            "ressource": "Nourriture",
+            "ressource": "NOURRITURE",
             "valeur": 12
         }
     ],
     "ressources" : [
             {
-                "type": "Eau",
+                "type": "EAU",
                 "start": 100,
                 "danger": 30,
                 "critique": 15
             },
             {
-                "type": "Nourriture",
+                "type": "NOURRITURE",
                 "start": 100,
                 "danger": 30,
                 "critique": 10
             },
             {
-                "type": "Oxygène",
+                "type": "OXYGENE",
                 "start": 100,
                 "danger": 40,
                 "critique": 20
             },
             {
-                "type": "Énergie",
+                "type": "ENERGIE",
                 "start": 100,
                 "danger": 25,
                 "critique": 10
