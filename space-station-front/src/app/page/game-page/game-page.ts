@@ -1,6 +1,6 @@
 import { Component, OnInit, computed, inject, signal, ViewEncapsulation } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { StationSpatialeService } from '../../service/station-spatiale-service';
 import { StationSpatiale } from '../../model/station-spatiale';
 import { Module } from '../../model/module';
@@ -29,6 +29,43 @@ type Emplacement = {
   width: number;
   height: number;
 };
+
+// ---------- RAPPORT DE FIN DE CYCLE ----------
+type FluxRessource = { ressource: string; consommee: number; produite: number };
+type RapportModule = { id: number; label: string; astronautes: string[]; flux: FluxRessource[] };
+const RESSOURCES = ['Oxygène', 'Eau', 'Nourriture', 'Énergie'];
+type Flux = Partial<Record<string, number>>; // ex : { 'Énergie': 5, 'Eau': 6 }
+
+// Consommation de chaque astronaute par cycle (peu importe ou il est)
+const CONSO_ASTRONAUTE: Flux = { 'Nourriture': 3, 'Eau': 3, 'Oxygène': 2 };
+
+// consommation fixe, sans astronaute (juste spawn et commandes)
+const CONSO_FIXE: Record<string, Flux> = {
+  'Centre de commandement': { 'Énergie': 2 }, 
+  'Dortoir': { 'Énergie': 1 },
+};
+
+// Modules de production : l'index du tableau = nombre d'astronautes dans le module
+// (0 astronaute = le module ne produit et ne consomme rien)
+const TABLE_MODULES: Record<TypeModule, { conso: Flux; prod: Flux }[]> = {
+  serre: [
+    { conso: {}, prod: {} },
+    { conso: { 'Énergie': 5, 'Eau': 6 }, prod: { 'Nourriture': 8 } },
+    { conso: { 'Énergie': 6, 'Eau': 7 }, prod: { 'Nourriture': 12 } }, // 2eme astronaute : +1 énergie, +1 eau, +4 nourriture (look doc)
+  ],
+  recyclage: [
+    { conso: {}, prod: {} },
+    { conso: { 'Énergie': 4 }, prod: { 'Eau': 14, 'Oxygène': 5 } },
+  ],
+  machines: [
+    { conso: {}, prod: {} },
+    { conso: {}, prod: { 'Énergie': 16 } }, // production nette (sa conso est déjà déduite)
+  ],
+};
+
+
+
+
 const CENTRE_COMMANDE = { left: 44.2, top: 29.3, width: 12, height: 9.2 };
 const EMPLACEMENTS: Record<string, Emplacement> = {
   // Recyclage : le 1 est le plus proche du centre
@@ -65,6 +102,7 @@ type Destination = { id: number; label: string; occupes: number; max: number | n
 export class GamePage implements OnInit {
   private route = inject(ActivatedRoute);
   private stationService = inject(StationSpatialeService);
+  private router = inject(Router);
 
   stationId = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -111,12 +149,12 @@ export class GamePage implements OnInit {
   // on la copie dans un champ de la classe pour que le HTML puisse l'utiliser
   centre = CENTRE_COMMANDE;
 
-  // signal = une valeur que Angular surveille. true : la pop-up est affichée, false : elle est cachée
+  // signal = une valeur que Angular surveille. true : la pop-up est affichée, false : elle est cachée (au cas ou on sait plus ce qu'est un signal=)
   affectationOuverte = signal(false);
 
-  // Liste des astronautes de la station, recalculée toute seule quand la station change.
+  // Liste des astronautes de la station, recalculée (automatique en somme) toute seule quand la station change.
   // station()?.astronautes : le ?. évite une erreur si la station n'est pas encore arrivée du back.
-  // ?? [] : si on n'a rien (null/undefined), on prend une liste vide
+  // ?? [] : si on n'a rien (null), on prend une liste vide
   astronautes = computed(() => this.station()?.astronautes ?? []);
 
   // Cherche dans les modules celui qui s'appelle 'Dortoir' (find renvoie le premier trouvé, ou undefined)
@@ -317,9 +355,126 @@ export class GamePage implements OnInit {
     setTimeout(() => this.erreur.set(''), 4000);
   }//en gros pour chaque erreur débloqué, on renvoie la réponse de l'erreur programmé dans le back ex : « Aucun déblocage disponible… »
 
+
+
+
+
+ // ---- RAPPORT DE FIN DE CYCLE ----------
+  finCycleVisible = signal(false);      // pop-up du rapport affichée ou non
+  cycleTermine = signal(0);             // numéro du cycle qui vient de se terminer
+  ongletRapport = signal<'global' | 'modules'>('global'); // onglet affiché dans le rapport
+  moduleOuvert = signal<number | null>(null); // id du module déplié dans l'onglet "Par module"
+ 
+  icones: Record<string, string> = {
+    'Oxygène': 'Assets/Images/oxygene.png',
+    'Eau': 'Assets/Images/eau.png',
+    'Nourriture': 'Assets/Images/nourriture.png',
+    'Énergie': 'Assets/Images/energie.png',
+  };
+ 
+  // Un rapport par module débloqué, avec les astronautes qui sont dedans
+  // computed = se recalcule tout seul quand station() ou astronautes() changent
+  rapportModules = computed<RapportModule[]>(() => {
+    const s = this.station(); // on récupère la station actuelle (venue du back)
+    if (!s) return []; // pas encore de station reçue : rapport vide
+
+    return s.modules // on part de la liste de tous les modules de la station
+      .filter((m) => m.debloque) // on garde seulement les modules débloqués (les verrouillés ne comptent pas)
+      .map((m) => { // pour chaque module, on fabrique une "fiche" de rapport (car on fait pa rmodule aussi)
+        const emplacement = EMPLACEMENTS[this.cle(m)]; // on cherche son emplacement grâce à sa clé "x,y" (undefined pour Dortoir / Centre)
+        const presents = this.astronautes().filter((a) => a.moduleId === m.id); // les astronautes qui sont dans ce module
+        return { // la fiche du module :
+          id: m.id, // l'id du module (sert pour le track du @for (html en gros))
+          label: emplacement?.label ?? m.nom, // nom affiché : "Serre 1"… sinon le nom du back ("Dortoir", "Centre de commandement")
+          astronautes: presents.map((a) => (a.role ? `${a.nom} (${a.role})` : a.nom)), // liste de textes : "Yuri (Agriculteur)" ou juste "Yuri" si pas de rôle (je trouve pas pertinent de mettre "pas de rôle")
+          flux: this.calculerFlux(emplacement?.type ?? m.nom, presents.length), // ce que le module consomme/produit, selon son type et son nb d'astronautes
+        };
+      })
+      .sort((a, b) => a.label.localeCompare(b.label)); // tri alphabétique pour avoir toujours le même ordre d'affichage (comme les modules je préfère mais facultatif)
+  });
+
+  // Rapport global = somme de tous les modules, ressource par ressource
+  rapportGlobal = computed<FluxRessource[]>(() => // se recalcule tout seul quand rapportModules() change
+    RESSOURCES.map((r) => { // pour chaque ressource 
+      let consommee = 0; // total consommé de cette ressource, on part de 0
+      let produite = 0; // total produit de cette ressource, on part de 0
+      for (const m of this.rapportModules()) { // on passe sur chaque module du rapport
+        const f = m.flux.find((x) => x.ressource === r); // on cherche la ligne de cette ressource dans le module
+        if (f) { // si le module touche à cette ressource…
+          consommee += f.consommee; // … on ajoute sa consommation au total
+          produite += f.produite; // … et sa production au total
+        }
+      }
+      return { ressource: r, consommee, produite }; // une ligne du tableau global pour cette ressource
+    }),
+  );
+
+  // Calcule ce qu'un module consomme et produit pendant un cycle
+  // (valeurs de base, sans les bonus de rôle pour l'instant)
+  // type = 'serre' | 'recyclage' | 'machines' | 'Dortoir' | 'Centre de commandement' (voir en haut du .ts)
+  private calculerFlux(type: string, nbAstro: number): FluxRessource[] {
+    const total: Record<string, FluxRessource> = {}; // un "compteur" par ressource, ex : total['Eau']
+    for (const r of RESSOURCES) total[r] = { ressource: r, consommee: 0, produite: 0 }; // on met tous les compteurs à 0
+
+    // petite fonction interne : ajoute un Flux (ex : { 'Énergie': 5, 'Eau': 6 }) dans le bon compteur
+    const ajouter = (flux: Flux, champ: 'consommee' | 'produite') => { // champ = on ajoute en conso ou en prod
+      for (const [r, valeur] of Object.entries(flux)) total[r][champ] += valeur ?? 0; // pour chaque ressource du flux, on l'ajoute au total (0 si vide)
+    };
+
+    // pour les modules Centre, Dortoir : conso fixe
+    const fixe = CONSO_FIXE[type]; // on regarde si ce type a une conso fixe 
+    if (fixe) ajouter(fixe, 'consommee'); // si oui, on l'ajoute en consommation
+
+    // Modules de production (les autres) : selon le nombre d'astronautes
+    const paliers = TABLE_MODULES[type as TypeModule]; // le tableau des paliers du type 
+    if (paliers) { // si c'est un module de production…
+      const palier = paliers[Math.min(nbAstro, paliers.length - 1)]; // on prend la ligne qui correspond au nb d'astronautes (sans dépasser la dernière)
+      ajouter(palier.conso, 'consommee'); // on ajoute ce que le module consomme
+      ajouter(palier.prod, 'produite'); // on ajoute ce que le module produit
+    }
+
+    // Les astronautes présents dans le module consomment aussi
+    for (let i = 0; i < nbAstro; i++) ajouter(CONSO_ASTRONAUTE, 'consommee'); // chaque astronaute : +3 nourriture, +3 eau, +2 oxygène consommés
+
+    // on n'affiche que les ressources qui bougent
+    return Object.values(total).filter((f) => f.consommee > 0 || f.produite > 0); // on transforme les compteurs en liste, sans les lignes à 0/0
+  }
+
+  // Bilan d'une ressource : positif = on en a gagné, négatif = on en a perdu
+  bilan(f: FluxRessource): number {
+    return f.produite - f.consommee; // produit moins consommé
+  }
+
+  // Bilan total d'un module : somme des bilans de toutes ses ressources
+  bilanModule(m: RapportModule): number {
+    return m.flux.reduce((total, f) => total + this.bilan(f), 0); //  additionne les bilans un par un, en partant de 0
+  }
+
+  // Clic sur un module dans l'onglet "Par module" : le déplie ou le replie
+  toggleModule(id: number) {
+    this.moduleOuvert.update((actuel) => (actuel === id ? null : id)); // si ce module était déjà ouvert, on le ferme (null), sinon on l'ouvre
+  }
+ 
+  continuerCycle() {
+    this.finCycleVisible.set(false);
+    // Nouveau palier : on ouvre le menu des modules seulement maintenant
+    if (this.deblocageObligatoire()) this.menuModulesOuvert.set(true);
+  }
+ 
+  sauvegarderEtQuitter() {
+    this.finCycleVisible.set(false);
+    this.router.navigate(['/home-joueur']); //redirection home-joueur 
+  }
+
+
+
+
+
+
+
   // ---------- ACTIONS DU JEU ----------
 
-  cycleSuivant() {
+    cycleSuivant() {
     if (this.enCours() || this.cycleBloque()) return; //on ignore le clic sur cyclesuivant si une requête est deja en cours
 
     this.enCours.set(true);
@@ -328,18 +483,20 @@ export class GamePage implements OnInit {
         this.station.set(s);
         this.enCours.set(false);
 
-        // Nouveau palier : on ouvre le menu pour que le joueur choisisse son module
-        if (s.deblocageObligatoire) this.menuModulesOuvert.set(true);
+        this.actionFaite('cycle'); // ferme le tuto s'il attendait cette étape
 
-        this.actionFaite('cycle');
+        // On ouvre le rapport du cycle qui vient de se terminer
+        // (le menu des modules s'ouvrira à la fermeture du rapport, voir continuerCycle)
+        this.cycleTermine.set(s.cycle);
+        this.ongletRapport.set('global');
+        this.moduleOuvert.set(null);
+        this.finCycleVisible.set(true);
       },
       error: (e) => {
         this.enCours.set(false);
         this.afficherErreur(e);
       },
-    }); //Le POST /station/{id}/cycle-suivant fait exécuter le cycle côté back.
-    //si le nv cycle est un palier on a deblocageObligatoire qui vaut true --> ouverture de menu auto
-    //de plus actionFaite fait vancer le tuto s'il attendait l'action qd on n'en demande une 
+    });
   }
 
   // ---------- MENU « ACHETER MODULES » ----------
