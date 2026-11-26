@@ -563,3 +563,199 @@ body {
 .tuto-fond.cible {
   background: transparent;
 }
+
+
+
+/* ----------Rapport fin de cycle ---------- */
+
+.fin-cycle-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 10, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+ 
+.fin-cycle-popup {
+  width: 620px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, #0b1630, #1a0f3a);
+  border: 2px solid #4fc3f7;
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(79, 195, 247, 0.5);
+  padding: 30px 40px;
+  color: #e0f7ff;
+  text-align: center;
+}
+ 
+.fin-cycle-popup h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4fc3f7;
+}
+ 
+.fin-cycle-sous-titre {
+  margin: 6px 0 20px;
+  opacity: 0.8;
+}
+ 
+/* ---------- Onglets ---------- */
+.fin-cycle-onglets {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+ 
+.fin-cycle-onglets button {
+  flex: 1;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid rgba(79, 195, 247, 0.4);
+  border-radius: 8px;
+  color: #e0f7ff;
+  cursor: pointer;
+}
+ 
+.fin-cycle-onglets button.actif {
+  background: rgba(79, 195, 247, 0.2);
+  border-color: #4fc3f7;
+  color: #4fc3f7;
+  font-weight: bold;
+}
+ 
+/* zone qui défile s'il y a beaucoup de modules */
+.fin-cycle-contenu {
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding-right: 4px;
+}
+ 
+/* ---------- Tableaux ---------- */
+.fin-cycle-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+ 
+.fin-cycle-table th,
+.fin-cycle-table td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(79, 195, 247, 0.25);
+}
+ 
+.fin-cycle-table th {
+  color: #4fc3f7;
+  font-weight: normal;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+ 
+.fin-cycle-table.petite th,
+.fin-cycle-table.petite td {
+  padding: 6px;
+  font-size: 0.9rem;
+}
+ 
+.fin-cycle-ressource {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+ 
+.fin-cycle-ressource img {
+  width: 28px;
+  height: 28px;
+}
+ 
+.conso, .negatif { color: #ff6b6b; }
+.prod, .positif  { color: #69f0ae; }
+ 
+/* ---------- Onglet "Par module" ---------- */
+.fin-cycle-module {
+  border: 1px solid rgba(79, 195, 247, 0.25);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+ 
+.fin-cycle-module.ouvert {
+  border-color: #4fc3f7;
+  background: rgba(79, 195, 247, 0.06);
+}
+ 
+.fin-cycle-module-entete {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+ 
+.fin-cycle-module-entete:hover {
+  background: rgba(79, 195, 247, 0.1);
+}
+ 
+.fin-cycle-module-detail {
+  padding: 0 14px 12px;
+}
+ 
+.fin-cycle-astronautes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+ 
+.chip {
+  background: rgba(105, 240, 174, 0.15);
+  border: 1px solid #69f0ae;
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 0.85rem;
+}
+ 
+.aucun {
+  opacity: 0.6;
+  font-style: italic;
+  font-size: 0.85rem;
+  margin: 0 0 8px;
+}
+ 
+/* ---------- Boutons ---------- */
+.fin-cycle-boutons {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+ 
+.fin-cycle-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+ 
+.fin-cycle-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 12px rgba(79, 195, 247, 0.7);
+}
+ 
+.fin-cycle-btn.principal {
+  background: #4fc3f7;
+  border: none;
+  color: #0b1630;
+  font-weight: bold;
+}
+ 
+.fin-cycle-btn.secondaire {
+  background: transparent;
+  border: 1px solid #4fc3f7;
+  color: #4fc3f7;
+}

@@ -179,3 +179,113 @@ cible : une surbrillance est active, le fond du tuto ne doit pas assombrir en pl
   </div>
 </div>
 }
+
+<!-- ========== RAPPORT DE FIN DE CYCLE ========== -->
+<!-- ton bouton "Cycle suivant" de la page reste avec (click)="cycleSuivant()" -->
+
+@if (finCycleVisible()) {
+  <div class="fin-cycle-overlay">
+    <div class="fin-cycle-popup">
+      <h2>Rapport de fin du cycle {{ cycleTermine() }}</h2>
+      <p class="fin-cycle-sous-titre">
+        {{ rapportModules().length }} modules actifs · {{ astronautes().length }} astronautes
+      </p>
+
+      <!-- Onglets -->
+      <div class="fin-cycle-onglets">
+        <button [class.actif]="ongletRapport() === 'global'" (click)="ongletRapport.set('global')">Global</button>
+        <button [class.actif]="ongletRapport() === 'modules'" (click)="ongletRapport.set('modules')">Par module</button>
+      </div>
+
+      <div class="fin-cycle-contenu">
+        <!-- Onglet GLOBAL -->
+        @if (ongletRapport() === 'global') {
+          <table class="fin-cycle-table">
+            <thead>
+              <tr><th>Ressource</th><th>Consommée</th><th>Produite</th><th>Bilan</th></tr>
+            </thead>
+            <tbody>
+              @for (f of rapportGlobal(); track f.ressource) {
+                <tr>
+                  <td class="fin-cycle-ressource">
+                    <img [src]="icones[f.ressource]" [alt]="f.ressource" /> {{ f.ressource }}
+                  </td>
+                  <td class="conso">-{{ f.consommee }}</td>
+                  <td class="prod">+{{ f.produite }}</td>
+                  <td [class.positif]="bilan(f) >= 0" [class.negatif]="bilan(f) < 0">
+                    {{ bilan(f) >= 0 ? '+' : '' }}{{ bilan(f) }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+
+        <!-- Onglet PAR MODULE -->
+        @if (ongletRapport() === 'modules') {
+          @for (m of rapportModules(); track m.id) {
+            <div class="fin-cycle-module" [class.ouvert]="moduleOuvert() === m.id">
+              <div class="fin-cycle-module-entete" (click)="toggleModule(m.id)">
+                <span>{{ moduleOuvert() === m.id ? '▾' : '▸' }} {{ m.label }}</span>
+                <span>
+                  👨‍🚀 {{ m.astronautes.length }}
+                  <span [class.positif]="bilanModule(m) >= 0" [class.negatif]="bilanModule(m) < 0">
+                    ({{ bilanModule(m) >= 0 ? '+' : '' }}{{ bilanModule(m) }})
+                  </span>
+                </span>
+              </div>
+
+              @if (moduleOuvert() === m.id) {
+                <div class="fin-cycle-module-detail">
+                  <div class="fin-cycle-astronautes">
+                    @for (a of m.astronautes; track $index) {
+                      <span class="chip">{{ a }}</span>
+                    } @empty {
+                      <span class="aucun">Aucun astronaute</span>
+                    }
+                  </div>
+
+                  @if (m.astronautes.length > 0) {
+                    <p class="aucun">
+                      Inclut la consommation des astronautes : 3 nourriture, 3 eau et 2 oxygène chacun
+                    </p>
+                  }
+
+                  @if (m.flux.length > 0) {
+                    <table class="fin-cycle-table petite">
+                      <thead>
+                        <tr><th>Ressource</th><th>Consommée</th><th>Produite</th><th>Bilan</th></tr>
+                      </thead>
+                      <tbody>
+                        @for (f of m.flux; track f.ressource) {
+                          <tr>
+                            <td class="fin-cycle-ressource">
+                              <img [src]="icones[f.ressource]" [alt]="f.ressource" /> {{ f.ressource }}
+                            </td>
+                            <td class="conso">-{{ f.consommee }}</td>
+                            <td class="prod">+{{ f.produite }}</td>
+                            <td [class.positif]="bilan(f) >= 0" [class.negatif]="bilan(f) < 0">
+                              {{ bilan(f) >= 0 ? '+' : '' }}{{ bilan(f) }}
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  } @else {
+                    <span class="aucun">Aucune ressource consommée ou produite (module sans astronaute)</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+
+      <div class="fin-cycle-boutons">
+        <button class="fin-cycle-btn secondaire" (click)="sauvegarderEtQuitter()">Sauvegarder et quitter</button>
+        <button class="fin-cycle-btn principal" (click)="continuerCycle()">Cycle suivant</button>
+      </div>
+    </div>
+  </div>
+}
+
