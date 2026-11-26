@@ -357,7 +357,8 @@ export class GamePage implements OnInit {
 
 
 
-
+// ? "continue suelement si ca existe"
+// ?? "sinon"
 
  // ---- RAPPORT DE FIN DE CYCLE ----------
   finCycleVisible = signal(false);      // pop-up du rapport affichée ou non
@@ -389,7 +390,7 @@ export class GamePage implements OnInit {
           astronautes: presents.map((a) => (a.role ? `${a.nom} (${a.role})` : a.nom)), // liste de textes : "Yuri (Agriculteur)" ou juste "Yuri" si pas de rôle (je trouve pas pertinent de mettre "pas de rôle")
           flux: this.calculerFlux(emplacement?.type ?? m.nom, presents.length), // ce que le module consomme/produit, selon son type et son nb d'astronautes
         };
-      })
+      }) 
       .sort((a, b) => a.label.localeCompare(b.label)); // tri alphabétique pour avoir toujours le même ordre d'affichage (comme les modules je préfère mais facultatif)
   });
 
