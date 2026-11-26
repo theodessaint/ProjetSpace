@@ -8,6 +8,7 @@ public class BonusResponse {
     private Integer id;
     private RoleEnum role;
     private ModuleEnum module;
+    private String ressource;
     private Integer ressourceId;
     private Double multiplicateur;
 
@@ -18,6 +19,7 @@ public class BonusResponse {
         response.id = bonus.getId();
         response.role = bonus.getRole();
         response.module = bonus.getModule();
+        response.ressource = bonus.getRessource().getLibelle();
         response.ressourceId = bonus.getRessource().getId();
         response.multiplicateur = bonus.getMultiplicateur();
         
@@ -44,6 +46,10 @@ public class BonusResponse {
         return ressourceId;
     }
 
+
+    public String getRessource() { 
+        return ressource;
+        }
 
     public Double getMultiplicateur() {
         return multiplicateur;

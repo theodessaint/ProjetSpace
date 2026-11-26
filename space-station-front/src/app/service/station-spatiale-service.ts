@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Module } from '../model/module';
 import { Astronaute } from '../model/astronaute';
 import { Router } from '@angular/router';
+import { BonusResponse } from '../model/bonus';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +25,10 @@ export class StationSpatialeService {
 
   cycleSuivant(id: number): Observable<StationSpatiale> {
     return this.http.post<StationSpatiale>(`/station/${id}/cycle-suivant`, {});
+  }
+
+    findAllBonus() {
+    return this.http.get<BonusResponse[]>('/bonus');
   }
 
   debloquerTuto(id: number): Observable<StationSpatiale> {
