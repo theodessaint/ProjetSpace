@@ -4,6 +4,11 @@
     "freqCyclesArriveeAstro": 4,
     "freqCyclesDeblocageModule": 5,
     "coutEnergieDeblocageModule": 20,
+    "consoAstronauteParCycle" : {
+        "EAU": 3,
+        "NOURRITURE": 3,
+        "OXYGENE": 2
+    },
     "nbAstronautesMaxParRole": {
         "Agriculteur": 1,
         "Plombier": 1,
@@ -163,26 +168,26 @@
         {
             "type": "EAU",
             "start": 100,
-            "danger": 30,
-            "critique": 15
+            "danger": 55,
+            "critique": 45
         },
         {
             "type": "NOURRITURE",
             "start": 100,
-            "danger": 30,
-            "critique": 10
+            "danger": 55,
+            "critique": 45
         },
         {
             "type": "OXYGENE",
             "start": 100,
-            "danger": 40,
-            "critique": 20
+            "danger": 55,
+            "critique": 45
         },
         {
             "type": "ENERGIE",
             "start": 100,
-            "danger": 25,
-            "critique": 10
+            "danger": 55,
+            "critique": 45
         }
     ]
 }
