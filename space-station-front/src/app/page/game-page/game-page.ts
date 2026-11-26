@@ -1,10 +1,11 @@
-import { Component, OnInit, computed, inject, signal, ViewEncapsulation } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, computed, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { StationSpatialeService } from '../../service/station-spatiale-service';
-import { StationSpatiale } from '../../model/station-spatiale';
-import { Module } from '../../model/module';
 import { Astronaute } from '../../model/astronaute';
+import { Module } from '../../model/module';
+import { StationSpatiale } from '../../model/station-spatiale';
+import { StationSpatialeService } from '../../service/station-spatiale-service';
+import { RessourceEnum } from '../../model/ressource';
 
 
 type TypeModule = 'machines' | 'serre' | 'recyclage';
@@ -35,6 +36,10 @@ type FluxRessource = { ressource: string; consommee: number; produite: number };
 type RapportModule = { id: number; label: string; astronautes: string[]; flux: FluxRessource[]; bonus: string[] };
 const RESSOURCES = ['Oxygène', 'Eau', 'Nourriture', 'Énergie'];
 type Flux = Partial<Record<string, number>>; // ex : { 'Énergie': 5, 'Eau': 6 }
+const SEUILS_RESSOURCES: Record<string, number> = {
+  'danger': 55,
+  'critique': 45
+};
 
 // Un bonus de rôle (reçu du back via GET /bonus, puis traduit pour le front)
 type Bonus = { role: string; module: TypeModule; ressource: string; multiplicateur: number };
@@ -130,6 +135,30 @@ export class GamePage implements OnInit {
   enCours = signal(false); // une requête est en cours : on bloque les boutons
   erreur = signal('');// message d'erreur du back (ex : déblocage refusé)
 
+  protected stats_oxygene = computed(
+    () => this.station()?.stats.find(
+      r => r.type === RessourceEnum.OXYGENE
+    )
+  );
+
+  protected stats_eau = computed(
+    () => this.station()?.stats.find(
+      r => r.type === RessourceEnum.EAU
+    )
+  );
+
+  protected stats_nourriture = computed(
+    () => this.station()?.stats.find(
+      r => r.type === RessourceEnum.NOURRITURE
+    )
+  );
+
+  protected stats_energie = computed(
+    () => this.station()?.stats.find(
+      r => r.type === RessourceEnum.ENERGIE
+    )
+  );
+
   cycle = computed(() => this.station()?.cycle ?? 0);// cycle en cours, pour l'afficher dans le centre de commandement
   deblocagesDisponibles = computed(() => this.station()?.nbDeblocagesDisponibles ?? 0);// combien de modules le joueur peut encore débloquer avant le prochain palier genre 5, 10, 15…
   //?? 0 si le résultat est null ou undefined, on renvoie 0 par défaut.
@@ -144,25 +173,25 @@ export class GamePage implements OnInit {
     if (!s) return [];// pas encore reçu du back, on ne peut rien afficher
 
     return s.modules
-      .filter((m) => !m.debloque)// filtre les modules déjà débloqués
-      .map((m) => {
-        const cle = this.cle(m);
-        const emplacement = EMPLACEMENTS[cle];
-        return emplacement ? { ...m, ...emplacement, tuto: POSITIONS_TUTO.includes(cle) } : null;
-      }) //fabrique la clé m --> genre x y par ex 2,1 va chercher dans la table la position du ruban pour cette clé
-      //{} en gros ca fusionne dans un seul objet les données du back celles de la table et un booléen tuto. 
-      //POSITIONS_TUTO.includes(cle) vaut TRUE si c emodule est l'un des 3 du tutos
+    .filter((m) => !m.debloque)// filtre les modules déjà débloqués
+    .map((m) => {
+      const cle = this.cle(m);
+      const emplacement = EMPLACEMENTS[cle];
+      return emplacement ? { ...m, ...emplacement, tuto: POSITIONS_TUTO.includes(cle) } : null;
+    }) //fabrique la clé m --> genre x y par ex 2,1 va chercher dans la table la position du ruban pour cette clé
+    //{} en gros ca fusionne dans un seul objet les données du back celles de la table et un booléen tuto.
+    //POSITIONS_TUTO.includes(cle) vaut TRUE si c emodule est l'un des 3 du tutos
 
-      //le back m'envoie m = { id: 12, nom: 'Serre', debloque: false, positionX: 4, positionY: 1, stationId: 8, ... }
-      //et le front emplacement = { label: 'Serre 1', type: 'serre', left: 60.3, top: 17.6, width: 10.9, height: 19.9 }
-      //on les fusionne en un seul objet car sinon le back ne sait pas ou dessiner le ruban
+    //le back m'envoie m = { id: 12, nom: 'Serre', debloque: false, positionX: 4, positionY: 1, stationId: 8, ... }
+    //et le front emplacement = { label: 'Serre 1', type: 'serre', left: 60.3, top: 17.6, width: 10.9, height: 19.9 }
+    //on les fusionne en un seul objet car sinon le back ne sait pas ou dessiner le ruban
 
-      .filter((m): m is ModuleVue => m !== null) //on retire de snull sinon la partie m is modelvue croirait qu'il peut rester des null
-      .sort((a, b) => a.label.localeCompare(b.label));
+    .filter((m): m is ModuleVue => m !== null) //on retire de snull sinon la partie m is modelvue croirait qu'il peut rester des null
+    .sort((a, b) => a.label.localeCompare(b.label));
   });// tri alphabétique pour que les modules du tuto apparaissent en premier dans le menu (pas utile mais vas y )
 
 
-// ---------- AFFECTATION DES ASTRONAUTES ----------
+  // ---------- AFFECTATION DES ASTRONAUTES ----------
 
   // Le HTML ne peut pas lire les constantes du haut du fichier (CENTRE_COMMANDE),
   // on la copie dans un champ de la classe pour que le HTML puisse l'utiliser
@@ -194,20 +223,20 @@ export class GamePage implements OnInit {
     if (!s) return []; // pas de station reçue : aucune destination
 
     return s.modules
-      // On garde un module s'il est débloqué ET (c'est le Dortoir OU il a au moins 1 place)
-      .filter((m) => m.debloque && (m.nom === 'Dortoir' || m.nbAstroModuleMax > 0))
-      // map transforme chaque module en un petit objet {id, label, occupes, max}
-      .map((m) => ({
-        id: m.id,
-        // Nom affiché : "Dortoir", ou le label du tableau EMPLACEMENTS (ex : "Serre 1").
-        // Si le label n'existe pas, on prend le nom du back (m.nom)
-        label: m.nom === 'Dortoir' ? 'Dortoir' : (EMPLACEMENTS[this.cle(m)]?.label ?? m.nom),
-        // Nombre d'astronautes déjà dans ce module
-        occupes: this.astronautes().filter((a) => a.moduleId === m.id).length,
-        max: m.nom === 'Dortoir' ? null : m.nbAstroModuleMax, // le Dortoir n'a pas de limite : null
-      }))
-      // Tri alphabétique par nom pour que la liste soit toujours dans le même ordre
-      .sort((a, b) => a.label.localeCompare(b.label));
+    // On garde un module s'il est débloqué ET (c'est le Dortoir OU il a au moins 1 place)
+    .filter((m) => m.debloque && (m.nom === 'Dortoir' || m.nbAstroModuleMax > 0))
+    // map transforme chaque module en un petit objet {id, label, occupes, max}
+    .map((m) => ({
+      id: m.id,
+      // Nom affiché : "Dortoir", ou le label du tableau EMPLACEMENTS (ex : "Serre 1").
+      // Si le label n'existe pas, on prend le nom du back (m.nom)
+      label: m.nom === 'Dortoir' ? 'Dortoir' : (EMPLACEMENTS[this.cle(m)]?.label ?? m.nom),
+      // Nombre d'astronautes déjà dans ce module
+      occupes: this.astronautes().filter((a) => a.moduleId === m.id).length,
+      max: m.nom === 'Dortoir' ? null : m.nbAstroModuleMax, // le Dortoir n'a pas de limite : null
+    }))
+    // Tri alphabétique par nom pour que la liste soit toujours dans le même ordre
+    .sort((a, b) => a.label.localeCompare(b.label));
   });
 
   // Vrai si le module est plein, sauf pour l'astronaute qui s'y trouve déjà
@@ -301,13 +330,13 @@ export class GamePage implements OnInit {
     this.stationService.findAllBonus().subscribe({
       next: (liste) =>
         this.bonus.set(
-          liste.map((b) => ({
-            role: b.role, // comparé en minuscules dans meilleurBonus
-            module: MODULES_BACK[normaliser(b.module)], // 'SERRE' / 'Serre' → 'serre'
-            ressource: b.ressource, // déjà "Eau", "Oxygène"… (libellé envoyé par le back)
-            multiplicateur: b.multiplicateur,
-          })),
-        ),
+        liste.map((b) => ({
+          role: b.role, // comparé en minuscules dans meilleurBonus
+          module: MODULES_BACK[normaliser(b.module)], // 'SERRE' / 'Serre' → 'serre'
+          ressource: b.ressource, // déjà "Eau", "Oxygène"… (libellé envoyé par le back)
+          multiplicateur: b.multiplicateur,
+        })),
+      ),
       error: (e) => this.afficherErreur(e),
     });
   }
@@ -328,7 +357,7 @@ export class GamePage implements OnInit {
     return s.modules.some(
       (autre) =>
         autre.debloque &&
-        Math.abs(autre.positionX - m.positionX) + Math.abs(autre.positionY - m.positionY) === 1,
+      Math.abs(autre.positionX - m.positionX) + Math.abs(autre.positionY - m.positionY) === 1,
     );// ca c'est chat de a à z j'ai pas capté mais askip Deux modules sont voisins quand la distance entre eux vaut exactement 1 case.
     // Math.abs prend la valeur absolue, pour ignorer le signe.
     //On additionne l'écart en X et l'écart en Y.
@@ -346,7 +375,7 @@ export class GamePage implements OnInit {
     }
 
     if (m.tuto) return true; // modules du tuto : gratuits, sans condition de cycle
-    //en gros à l'étape des machines dans le tuto, on ne peut pas débloquer une serre 
+    //en gros à l'étape des machines dans le tuto, on ne peut pas débloquer une serre
     return this.deblocagesDisponibles() > 0;
   }
 
@@ -358,14 +387,14 @@ export class GamePage implements OnInit {
       next: () => {
         this.menuModulesOuvert.set(false);
         // On recharge l'état depuis le back, puis on prévient le tuto
-        this.recharger(() => this.actionFaite(m.type));//en cas de succès --> ferme le menu, recharge station d epuis le back, le callback () => this.actionFaite(m.type) 
+        this.recharger(() => this.actionFaite(m.type));//en cas de succès --> ferme le menu, recharge station d epuis le back, le callback () => this.actionFaite(m.type)
         // s'exécute ensuite et prévient le tuto qu'un module de ce type vient d'être débloqué, pour qu'il passe à l'étape suivante.
       },
       error: (e) => {
         this.enCours.set(false);
         this.afficherErreur(e);// en cas d'erreur --> les boutons sont débloquer (encours à false en gros) et on affiche le message d'erreur
       },
-    });// en cas de succès on ferme le succès puis on recharge la station depuis le back 
+    });// en cas de succès on ferme le succès puis on recharge la station depuis le back
   }
 
   private recharger(apres?: () => void) {
@@ -380,7 +409,7 @@ export class GamePage implements OnInit {
         this.afficherErreur(e);
       },//après est utile car il faut d'abord recharger la station puis prevenir le tuto (ne me demandé pas pq ca maeche que comme ca)
     });
-  }// quand on debloque un module permet d erechargez la page pour que le ruban ne soit plus la 
+  }// quand on debloque un module permet d erechargez la page pour que le ruban ne soit plus la
 
   private afficherErreur(e: HttpErrorResponse) {
     // Le back renvoie un message seulement si server.error.include-message=always est activé
@@ -390,10 +419,10 @@ export class GamePage implements OnInit {
 
 
 
-// ? "continue suelement si ca existe"
-// ?? "sinon"
+  // ? "continue suelement si ca existe"
+  // ?? "sinon"
 
- // ---- RAPPORT DE FIN DE CYCLE ----------
+  // ---- RAPPORT DE FIN DE CYCLE ----------
   finCycleVisible = signal(false);      // pop-up du rapport affichée ou non
   cycleTermine = signal(0);             // numéro du cycle qui vient de se terminer
   ongletRapport = signal<'global' | 'modules'>('global'); // onglet affiché dans le rapport
@@ -414,340 +443,340 @@ export class GamePage implements OnInit {
     if (!s) return []; // pas encore de station reçue : rapport vide
 
     return s.modules
-      .filter((m) => m.debloque) // on garde seulement les modules débloqués
-      .map((m) => {
-        const emplacement = EMPLACEMENTS[this.cle(m)]; // undefined pour Dortoir / Centre
-        const presents = this.astronautes().filter((a) => a.moduleId === m.id); // les astronautes de ce module
-        const calcul = this.calculerFlux(emplacement?.type ?? m.nom, presents); // conso/prod + bonus appliqués
-        return {
-          id: m.id, // sert pour le track du @for
-          label: emplacement?.label ?? LABELS_SPECIAUX[m.nom] ?? m.nom, // "Serre 1"… sinon "Centre de commandement" / "Dortoir"
-          astronautes: presents.map((a) => (a.role ? `${a.nom} (${a.role})` : a.nom)), // "Yuri (Agriculteur)" ou "Yuri"
-          flux: calcul.flux, // ce que le module consomme/produit, bonus compris
-          bonus: calcul.bonus, // les bonus appliqués, pour les afficher
-        };
-      })
-      .sort((a, b) => a.label.localeCompare(b.label)); // tri alphabétique
+    .filter((m) => m.debloque) // on garde seulement les modules débloqués
+    .map((m) => {
+      const emplacement = EMPLACEMENTS[this.cle(m)]; // undefined pour Dortoir / Centre
+      const presents = this.astronautes().filter((a) => a.moduleId === m.id); // les astronautes de ce module
+      const calcul = this.calculerFlux(emplacement?.type ?? m.nom, presents); // conso/prod + bonus appliqués
+      return {
+        id: m.id, // sert pour le track du @for
+        label: emplacement?.label ?? LABELS_SPECIAUX[m.nom] ?? m.nom, // "Serre 1"… sinon "Centre de commandement" / "Dortoir"
+        astronautes: presents.map((a) => (a.role ? `${a.nom} (${a.role})` : a.nom)), // "Yuri (Agriculteur)" ou "Yuri"
+        flux: calcul.flux, // ce que le module consomme/produit, bonus compris
+        bonus: calcul.bonus, // les bonus appliqués, pour les afficher
+      };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label)); // tri alphabétique
   });
 
   // Rapport global = somme de tous les modules, ressource par ressource
   rapportGlobal = computed<FluxRessource[]>(() =>
     RESSOURCES.map((r) => { // pour chaque ressource
-      let consommee = 0;
-      let produite = 0;
-      for (const m of this.rapportModules()) { // on passe sur chaque module du rapport
-        const f = m.flux.find((x) => x.ressource === r); // la ligne de cette ressource dans le module
-        if (f) {
-          consommee += f.consommee;
-          produite += f.produite;
+    let consommee = 0;
+    let produite = 0;
+    for (const m of this.rapportModules()) { // on passe sur chaque module du rapport
+      const f = m.flux.find((x) => x.ressource === r); // la ligne de cette ressource dans le module
+      if (f) {
+        consommee += f.consommee;
+        produite += f.produite;
+      }
+    }
+    return { ressource: r, consommee: Math.round(consommee * 100) / 100, produite: Math.round(produite * 100) / 100 };
+  }),
+);
+
+// Calcule ce qu'un module consomme et produit pendant un cycle, bonus de rôle compris
+// type = 'serre' | 'recyclage' | 'machines' | 'Dortoir' | 'CentreDeCommandement'
+private calculerFlux(type: string, presents: Astronaute[]): { flux: FluxRessource[]; bonus: string[] } {
+  const nbAstro = presents.length; // nombre d'astronautes dans le module
+  const roles = presents // rôles présents, en minuscules pour comparer sans souci de majuscules
+  .map((a) => a.role?.toLowerCase())
+  .filter((r): r is string => !!r); // on enlève les astronautes sans rôle
+  const bonusAppliques: string[] = []; // textes des bonus utilisés, pour l'affichage
+
+  const total: Record<string, FluxRessource> = {}; // un compteur par ressource
+  for (const r of RESSOURCES) total[r] = { ressource: r, consommee: 0, produite: 0 };
+
+  // ajoute un Flux dans les compteurs ; si sens est donné, on applique les bonus du module
+  const ajouter = (flux: Flux, champ: 'consommee' | 'produite', sens?: 'conso' | 'prod') => {
+    for (const [r, valeur] of Object.entries(flux)) {
+      let v = valeur ?? 0;
+      if (sens) {
+        const b = this.meilleurBonus(type, r, roles, sens); // le bonus le plus avantageux (ou undefined)
+        if (b) {
+          v = Math.round(v * b.multiplicateur * 100) / 100; // valeur avec bonus, arrondie à 2 décimales
+          const pourcent = Math.round((b.multiplicateur - 1) * 100); // 1.15 → +15 ; 0.80 → -20
+          bonusAppliques.push(`${b.role} : ${r} ${pourcent > 0 ? '+' : ''}${pourcent} %`);
         }
       }
-      return { ressource: r, consommee: Math.round(consommee * 100) / 100, produite: Math.round(produite * 100) / 100 };
-    }),
+      total[r][champ] += v;
+    }
+  };
+
+  // Centre, Dortoir : conso fixe (pas de bonus)
+  const fixe = CONSO_FIXE[type];
+  if (fixe) ajouter(fixe, 'consommee');
+
+  // Modules de production : palier selon le nb d'astronautes, avec bonus
+  const paliers = TABLE_MODULES[type as TypeModule];
+  if (paliers) {
+    const palier = paliers[Math.min(nbAstro, paliers.length - 1)];
+    ajouter(palier.conso, 'consommee', 'conso'); // bonus < 1 : moins de conso
+    ajouter(palier.prod, 'produite', 'prod');    // bonus > 1 : plus de prod
+  }
+
+  // Conso personnelle des astronautes (pas de bonus)
+  for (let i = 0; i < nbAstro; i++) ajouter(CONSO_ASTRONAUTE, 'consommee');
+
+  return {
+    flux: Object.values(total).filter((f) => f.consommee > 0 || f.produite > 0), // sans les lignes à 0/0
+    bonus: bonusAppliques,
+  };
+}
+
+// Parmi les bonus possibles pour ce module et cette ressource, renvoie le plus avantageux
+// (pas de cumul : un seul bonus par ressource)
+private meilleurBonus(type: string, ressource: string, roles: string[], sens: 'conso' | 'prod'): Bonus | undefined {
+  const candidats = this.bonus().filter(
+    (b) =>
+      b.module === type && // bon module
+    b.ressource === ressource && // bonne ressource
+    roles.includes(b.role.toLowerCase()) && // un astronaute de ce rôle est présent
+    (sens === 'conso' ? b.multiplicateur < 1 : b.multiplicateur > 1), // réduit la conso OU augmente la prod
   );
+  if (candidats.length === 0) return undefined; // aucun bonus applicable
 
-  // Calcule ce qu'un module consomme et produit pendant un cycle, bonus de rôle compris
-  // type = 'serre' | 'recyclage' | 'machines' | 'Dortoir' | 'CentreDeCommandement'
-  private calculerFlux(type: string, presents: Astronaute[]): { flux: FluxRessource[]; bonus: string[] } {
-    const nbAstro = presents.length; // nombre d'astronautes dans le module
-    const roles = presents // rôles présents, en minuscules pour comparer sans souci de majuscules
-      .map((a) => a.role?.toLowerCase())
-      .filter((r): r is string => !!r); // on enlève les astronautes sans rôle
-    const bonusAppliques: string[] = []; // textes des bonus utilisés, pour l'affichage
+  // conso : on garde le plus petit multiplicateur ; prod : le plus grand
+  return candidats.reduce((meilleur, b) =>
+    sens === 'conso'
+  ? (b.multiplicateur < meilleur.multiplicateur ? b : meilleur)
+  : (b.multiplicateur > meilleur.multiplicateur ? b : meilleur),
+);
+}
 
-    const total: Record<string, FluxRessource> = {}; // un compteur par ressource
-    for (const r of RESSOURCES) total[r] = { ressource: r, consommee: 0, produite: 0 };
+// Bilan d'une ressource : positif = on en a gagné, négatif = on en a perdu
+bilan(f: FluxRessource): number {
+  return Math.round((f.produite - f.consommee) * 100) / 100; // produit moins consommé, arrondi
+}
 
-    // ajoute un Flux dans les compteurs ; si sens est donné, on applique les bonus du module
-    const ajouter = (flux: Flux, champ: 'consommee' | 'produite', sens?: 'conso' | 'prod') => {
-      for (const [r, valeur] of Object.entries(flux)) {
-        let v = valeur ?? 0;
-        if (sens) {
-          const b = this.meilleurBonus(type, r, roles, sens); // le bonus le plus avantageux (ou undefined)
-          if (b) {
-            v = Math.round(v * b.multiplicateur * 100) / 100; // valeur avec bonus, arrondie à 2 décimales
-            const pourcent = Math.round((b.multiplicateur - 1) * 100); // 1.15 → +15 ; 0.80 → -20
-            bonusAppliques.push(`${b.role} : ${r} ${pourcent > 0 ? '+' : ''}${pourcent} %`);
-          }
-        }
-        total[r][champ] += v;
-      }
-    };
+// Bilan total d'un module : somme des bilans de toutes ses ressources
+bilanModule(m: RapportModule): number {
+  return Math.round(m.flux.reduce((total, f) => total + this.bilan(f), 0) * 100) / 100;
+}
 
-    // Centre, Dortoir : conso fixe (pas de bonus)
-    const fixe = CONSO_FIXE[type];
-    if (fixe) ajouter(fixe, 'consommee');
+// Clic sur un module dans l'onglet "Par module" : le déplie ou le replie
+toggleModule(id: number) {
+  this.moduleOuvert.update((actuel) => (actuel === id ? null : id)); // déjà ouvert → on ferme, sinon on ouvre
+}
 
-    // Modules de production : palier selon le nb d'astronautes, avec bonus
-    const paliers = TABLE_MODULES[type as TypeModule];
-    if (paliers) {
-      const palier = paliers[Math.min(nbAstro, paliers.length - 1)];
-      ajouter(palier.conso, 'consommee', 'conso'); // bonus < 1 : moins de conso
-      ajouter(palier.prod, 'produite', 'prod');    // bonus > 1 : plus de prod
-    }
+continuerCycle() {
+  this.finCycleVisible.set(false);
+  // Nouveau palier : on ouvre le menu des modules seulement maintenant
+  if (this.deblocageObligatoire()) this.menuModulesOuvert.set(true);
+}
 
-    // Conso personnelle des astronautes (pas de bonus)
-    for (let i = 0; i < nbAstro; i++) ajouter(CONSO_ASTRONAUTE, 'consommee');
+sauvegarderEtQuitter() {
+  this.finCycleVisible.set(false);
+  this.router.navigate(['/home-joueur']); //redirection home-joueur
+}
 
-    return {
-      flux: Object.values(total).filter((f) => f.consommee > 0 || f.produite > 0), // sans les lignes à 0/0
-      bonus: bonusAppliques,
-    };
+
+
+
+
+
+
+// ---------- ACTIONS DU JEU ----------
+
+cycleSuivant() {
+  if (this.enCours() || this.cycleBloque()) return; //on ignore le clic sur cyclesuivant si une requête est deja en cours
+
+  this.enCours.set(true);
+  this.stationService.cycleSuivant(this.stationId).subscribe({
+    next: (s) => {
+      this.station.set(s);
+      this.enCours.set(false);
+
+      this.actionFaite('cycle'); // ferme le tuto s'il attendait cette étape
+
+      // On ouvre le rapport du cycle qui vient de se terminer
+      // (le menu des modules s'ouvrira à la fermeture du rapport, voir continuerCycle)
+      this.cycleTermine.set(s.cycle);
+      this.ongletRapport.set('global');
+      this.moduleOuvert.set(null);
+      this.finCycleVisible.set(true);
+    },
+    error: (e) => {
+      this.enCours.set(false);
+      this.afficherErreur(e);
+    },
+  });
+}
+
+// ---------- MENU « ACHETER MODULES » ----------
+menuModulesOuvert = signal(false);
+
+toggleMenuModules() {
+  this.menuModulesOuvert.update((ouvert) => !ouvert);
+}
+
+// ---------- TUTO (le lore + cycle 1 (tuto joueur)) ----------
+// Pop-ups 1 à 4 : le lore, puis pop-ups 5 à 11 : le tuto du cycle 1
+etapes: Etape[] = [
+  {
+    // Pop-up 1
+    titre: 'L’appel',
+    sousTitre: 'Signal de détresse reçu',
+    texte:
+    'An 2187. La planète TPT, devenue inhabitable, est en train de s’éteindre. Ses habitants ont lancé un dernier appel avant que les communications ne soient coupées.',
+  },
+  {
+    // Pop-up 2
+    titre: 'La station',
+    sousTitre: 'Bienvenue à bord',
+    texte:
+    'Vous voilà aux commandes de la station Aurore, un vaisseau à l’abandon, mais encore debout. Il est devenu le dernier refuge pour les astronautes qui fuient TPT. Leurs navettes arrivent déjà, et la station est presque vide.',
+  },
+  {
+    // Pop-up 3
+    titre: 'La mission',
+    sousTitre: 'Votre mission, commandant',
+    texte:
+    'Chaque astronaute accueilli doit trouver sa place à bord. Pour la prospérité du vaisseau, vous allez devoir :',
+    liste: [
+      'construire des modules : salle des machines, serre…',
+      'gérer vos ressources : énergie, eau, oxygène, nourriture ;',
+      'accueillir les astronautes et les affecter là où on a besoin d’eux.',
+    ],
+  },
+  {
+    // Pop-up 4
+    titre: 'Le départ',
+    sousTitre: 'Le temps presse',
+    texte:
+    'Les ressources sont limitées et d’autres astronautes arrivent. Chaque décision compte : une ressource qui tombe à zéro, et c’est tout l’équipage qui est en danger. Saurez-vous les maintenir en vie jusqu’à ce qu’une nouvelle terre se présente ?',
+    bouton: 'Prendre le commandement',
+  },
+  {
+    // Pop-up 5
+    titre: 'Le tableau de bord',
+    sousTitre: 'Quatre ressources, une seule règle',
+    texte:
+    'Vos quatre ressources sont affichées en bas à gauche de l’écran : énergie, eau, oxygène et nourriture. Elles diminuent à chaque cycle, car l’équipage consomme. Gardez-les au-dessus de zéro et évitez d’avoir plus de trois seuils critiques détectés, sinon c’est la fin de la mission.',
+    cible: 'ressources',
+  },
+  {
+    // Pop-up 6
+    titre: 'Votre premier module',
+    sousTitre: 'Commençons par l’énergie',
+    texte:
+    'Sans énergie, la station s’éteint. Ouvrez « Débloquer modules » et débloquez la salle des machines : elle alimente le reste du vaisseau.',
+    action: 'machines',
+    cible: 'modules',
+  },
+  {
+    // Pop-up 7
+    titre: 'La serre',
+    sousTitre: 'De quoi nourrir l’équipage',
+    texte:
+    'La serre produit la nourriture dont votre équipage a besoin. Chaque astronaute en consomme à chaque cycle : sans serre, la faim s’installe vite. Débloquez votre première serre.',
+    action: 'serre',
+    cible: 'modules',
+  },
+  {
+    // Pop-up 8
+    titre: 'Le recyclage eau / air',
+    sousTitre: 'Respirer et boire',
+    texte:
+    'Le recyclage purifie l’air et récupère l’eau utilisée à bord : c’est lui qui fournit l’oxygène et l’eau de l’équipage. Débloquez votre premier module de recyclage.',
+    action: 'recyclage',
+    cible: 'modules',
+  },
+  {
+    // Pop-up 9
+    titre: 'Une navette arrive',
+    sousTitre: 'Ils comptent sur vous',
+    texte:
+    'Une navette de TPT vient de s’amarrer avec vos trois premiers astronautes. Cliquez sur le Centre de commandement pour les accueillir. Chaque astronaute peut posséder un rôle qui détermine là où il sera le plus utile. Par exemple, un agriculteur dans la serre produit davantage de nourriture.',
+    action: 'accueillir',
+    cible: 'centre',
+  },
+  {
+    // Pop-up 10
+    titre: 'Les affectations',
+    sousTitre: 'Chacun à sa place',
+    texte:
+    'Les astronautes arrivent au Dortoir. Depuis le Centre de commandement, envoyez-les dans vos modules débloqués : une serre accueille 2 astronautes, les autres modules un seul. Affectez au moins un astronaute pour continuer. Pensez-y au début de chaque cycle.',
+    action: 'affecter',
+  },
+  {
+    // Pop-up 11
+    titre: 'Fin du cycle',
+    sousTitre: 'Le temps passe',
+    texte:
+    'Vos choix sont faits. Cliquez sur « Cycle suivant » : les ressources seront consommées et produites selon vos modules et vos astronautes. Tous les 5 cycles, vous devrez débloquer un nouveau module. Bonne chance, commandant.',
+    action: 'cycle',
+    cible: 'cycle',
+  },
+];
+
+index = signal(0); // indique à quelle étape on est dans le tuto
+visible = signal(false); // le tuto s'affiche seulement sur une partie neuve (voir ngOnInit)
+etape = computed(() => this.etapes[this.index()]); // donne le pop-up en cours
+cycleBloque = computed(() => this.visible() && this.etape().action !== 'cycle');//cyclesuivant bloquer pdt tuto
+cible = computed(() => (this.visible() ? this.etape().cible : undefined));// element à mettre en surbrillance (seulement pendant le tuto)
+
+suivant() {
+  this.avancer();
+  this.sauterEtapesFaites();
+}
+
+private avancer() {
+  if (this.index() < this.etapes.length - 1) {
+    this.index.update((i) => i + 1);
+  } else {
+    this.visible.set(false); // dernier pop-up : le tuto se ferme
   }
+}
 
-  // Parmi les bonus possibles pour ce module et cette ressource, renvoie le plus avantageux
-  // (pas de cumul : un seul bonus par ressource)
-  private meilleurBonus(type: string, ressource: string, roles: string[], sens: 'conso' | 'prod'): Bonus | undefined {
-    const candidats = this.bonus().filter(
-      (b) =>
-        b.module === type && // bon module
-        b.ressource === ressource && // bonne ressource
-        roles.includes(b.role.toLowerCase()) && // un astronaute de ce rôle est présent
-        (sens === 'conso' ? b.multiplicateur < 1 : b.multiplicateur > 1), // réduit la conso OU augmente la prod
-    );
-    if (candidats.length === 0) return undefined; // aucun bonus applicable
-
-    // conso : on garde le plus petit multiplicateur ; prod : le plus grand
-    return candidats.reduce((meilleur, b) =>
-      sens === 'conso'
-        ? (b.multiplicateur < meilleur.multiplicateur ? b : meilleur)
-        : (b.multiplicateur > meilleur.multiplicateur ? b : meilleur),
-    );
-  }
-
-  // Bilan d'une ressource : positif = on en a gagné, négatif = on en a perdu
-  bilan(f: FluxRessource): number {
-    return Math.round((f.produite - f.consommee) * 100) / 100; // produit moins consommé, arrondi
-  }
-
-  // Bilan total d'un module : somme des bilans de toutes ses ressources
-  bilanModule(m: RapportModule): number {
-    return Math.round(m.flux.reduce((total, f) => total + this.bilan(f), 0) * 100) / 100;
-  }
-
-  // Clic sur un module dans l'onglet "Par module" : le déplie ou le replie
-  toggleModule(id: number) {
-    this.moduleOuvert.update((actuel) => (actuel === id ? null : id)); // déjà ouvert → on ferme, sinon on ouvre
-  }
- 
-  continuerCycle() {
-    this.finCycleVisible.set(false);
-    // Nouveau palier : on ouvre le menu des modules seulement maintenant
-    if (this.deblocageObligatoire()) this.menuModulesOuvert.set(true);
-  }
- 
-  sauvegarderEtQuitter() {
-    this.finCycleVisible.set(false);
-    this.router.navigate(['/home-joueur']); //redirection home-joueur 
-  }
-
-
-
-
-
-
-
-  // ---------- ACTIONS DU JEU ----------
-
-    cycleSuivant() {
-    if (this.enCours() || this.cycleBloque()) return; //on ignore le clic sur cyclesuivant si une requête est deja en cours
-
-    this.enCours.set(true);
-    this.stationService.cycleSuivant(this.stationId).subscribe({
-      next: (s) => {
-        this.station.set(s);
-        this.enCours.set(false);
-
-        this.actionFaite('cycle'); // ferme le tuto s'il attendait cette étape
-
-        // On ouvre le rapport du cycle qui vient de se terminer
-        // (le menu des modules s'ouvrira à la fermeture du rapport, voir continuerCycle)
-        this.cycleTermine.set(s.cycle);
-        this.ongletRapport.set('global');
-        this.moduleOuvert.set(null);
-        this.finCycleVisible.set(true);
-      },
-      error: (e) => {
-        this.enCours.set(false);
-        this.afficherErreur(e);
-      },
-    });
-  }
-
-  // ---------- MENU « ACHETER MODULES » ----------
-  menuModulesOuvert = signal(false);
-
-  toggleMenuModules() {
-    this.menuModulesOuvert.update((ouvert) => !ouvert);
-  }
-
-  // ---------- TUTO (le lore + cycle 1 (tuto joueur)) ----------
-  // Pop-ups 1 à 4 : le lore, puis pop-ups 5 à 11 : le tuto du cycle 1
-  etapes: Etape[] = [
-    {
-      // Pop-up 1
-      titre: 'L’appel',
-      sousTitre: 'Signal de détresse reçu',
-      texte:
-        'An 2187. La planète TPT, devenue inhabitable, est en train de s’éteindre. Ses habitants ont lancé un dernier appel avant que les communications ne soient coupées.',
-    },
-    {
-      // Pop-up 2
-      titre: 'La station',
-      sousTitre: 'Bienvenue à bord',
-      texte:
-        'Vous voilà aux commandes de la station Aurore, un vaisseau à l’abandon, mais encore debout. Il est devenu le dernier refuge pour les astronautes qui fuient TPT. Leurs navettes arrivent déjà, et la station est presque vide.',
-    },
-    {
-      // Pop-up 3
-      titre: 'La mission',
-      sousTitre: 'Votre mission, commandant',
-      texte:
-        'Chaque astronaute accueilli doit trouver sa place à bord. Pour la prospérité du vaisseau, vous allez devoir :',
-      liste: [
-        'construire des modules : salle des machines, serre…',
-        'gérer vos ressources : énergie, eau, oxygène, nourriture ;',
-        'accueillir les astronautes et les affecter là où on a besoin d’eux.',
-      ],
-    },
-    {
-      // Pop-up 4
-      titre: 'Le départ',
-      sousTitre: 'Le temps presse',
-      texte:
-        'Les ressources sont limitées et d’autres astronautes arrivent. Chaque décision compte : une ressource qui tombe à zéro, et c’est tout l’équipage qui est en danger. Saurez-vous les maintenir en vie jusqu’à ce qu’une nouvelle terre se présente ?',
-      bouton: 'Prendre le commandement',
-    },
-    {
-      // Pop-up 5
-      titre: 'Le tableau de bord',
-      sousTitre: 'Quatre ressources, une seule règle',
-      texte:
-        'Vos quatre ressources sont affichées en bas à gauche de l’écran : énergie, eau, oxygène et nourriture. Elles diminuent à chaque cycle, car l’équipage consomme. Gardez-les au-dessus de zéro et évitez d’avoir plus de trois seuils critiques détectés, sinon c’est la fin de la mission.',
-      cible: 'ressources',
-    },
-    {
-      // Pop-up 6
-      titre: 'Votre premier module',
-      sousTitre: 'Commençons par l’énergie',
-      texte:
-        'Sans énergie, la station s’éteint. Ouvrez « Débloquer modules » et débloquez la salle des machines : elle alimente le reste du vaisseau.',
-      action: 'machines',
-      cible: 'modules',
-    },
-    {
-      // Pop-up 7
-      titre: 'La serre',
-      sousTitre: 'De quoi nourrir l’équipage',
-      texte:
-        'La serre produit la nourriture dont votre équipage a besoin. Chaque astronaute en consomme à chaque cycle : sans serre, la faim s’installe vite. Débloquez votre première serre.',
-      action: 'serre',
-      cible: 'modules',
-    },
-    {
-      // Pop-up 8
-      titre: 'Le recyclage eau / air',
-      sousTitre: 'Respirer et boire',
-      texte:
-        'Le recyclage purifie l’air et récupère l’eau utilisée à bord : c’est lui qui fournit l’oxygène et l’eau de l’équipage. Débloquez votre premier module de recyclage.',
-      action: 'recyclage',
-      cible: 'modules',
-    },
-    {
-      // Pop-up 9
-      titre: 'Une navette arrive',
-      sousTitre: 'Ils comptent sur vous',
-      texte:
-        'Une navette de TPT vient de s’amarrer avec vos trois premiers astronautes. Cliquez sur le Centre de commandement pour les accueillir. Chaque astronaute peut posséder un rôle qui détermine là où il sera le plus utile. Par exemple, un agriculteur dans la serre produit davantage de nourriture.',
-      action: 'accueillir',
-      cible: 'centre',
-    },
-    {
-      // Pop-up 10
-      titre: 'Les affectations',
-      sousTitre: 'Chacun à sa place',
-      texte:
-        'Les astronautes arrivent au Dortoir. Depuis le Centre de commandement, envoyez-les dans vos modules débloqués : une serre accueille 2 astronautes, les autres modules un seul. Affectez au moins un astronaute pour continuer. Pensez-y au début de chaque cycle.',
-      action: 'affecter',
-    },
-    {
-      // Pop-up 11
-      titre: 'Fin du cycle',
-      sousTitre: 'Le temps passe',
-      texte:
-        'Vos choix sont faits. Cliquez sur « Cycle suivant » : les ressources seront consommées et produites selon vos modules et vos astronautes. Tous les 5 cycles, vous devrez débloquer un nouveau module. Bonne chance, commandant.',
-      action: 'cycle',
-      cible: 'cycle',
-    },
-  ];
-
-  index = signal(0); // indique à quelle étape on est dans le tuto
-  visible = signal(false); // le tuto s'affiche seulement sur une partie neuve (voir ngOnInit)
-  etape = computed(() => this.etapes[this.index()]); // donne le pop-up en cours
-  cycleBloque = computed(() => this.visible() && this.etape().action !== 'cycle');//cyclesuivant bloquer pdt tuto
-  cible = computed(() => (this.visible() ? this.etape().cible : undefined));// element à mettre en surbrillance (seulement pendant le tuto)
-
-  suivant() {
-    this.avancer();
-    this.sauterEtapesFaites();
-  }
-
-  private avancer() {
-    if (this.index() < this.etapes.length - 1) {
-      this.index.update((i) => i + 1);
+// Si le joueur a déjà débloqué le module demandé (tuto réaffiché avec « ? »), on passe l'étape
+private sauterEtapesFaites() {
+  while (this.visible()) {
+    const action = this.etape().action;
+    if (action && this.actionDejaAccomplie(action)) {
+      this.avancer();
     } else {
-      this.visible.set(false); // dernier pop-up : le tuto se ferme
+      break;
     }
   }
+}
 
-  // Si le joueur a déjà débloqué le module demandé (tuto réaffiché avec « ? »), on passe l'étape
-  private sauterEtapesFaites() {
-    while (this.visible()) {
-      const action = this.etape().action;
-      if (action && this.actionDejaAccomplie(action)) {
-        this.avancer();
-      } else {
-        break;
-      }
-    }
+private actionDejaAccomplie(action: string): boolean {
+  // Tuto réaffiché avec « ? » : on saute ces étapes si elles sont déjà faites
+  if (action === 'accueillir') return this.astronautes().length > 0;
+  if (action === 'affecter') {
+    const dortoirId = this.dortoir()?.id;
+    return this.astronautes().some((a) => a.moduleId !== null && a.moduleId !== dortoirId);
   }
+  if (action !== 'machines' && action !== 'serre' && action !== 'recyclage') return false;
 
-  private actionDejaAccomplie(action: string): boolean {
-    // Tuto réaffiché avec « ? » : on saute ces étapes si elles sont déjà faites
-    if (action === 'accueillir') return this.astronautes().length > 0;
-    if (action === 'affecter') {
-      const dortoirId = this.dortoir()?.id;
-      return this.astronautes().some((a) => a.moduleId !== null && a.moduleId !== dortoirId);
-    }
-    if (action !== 'machines' && action !== 'serre' && action !== 'recyclage') return false;
+  const s = this.station();
+  if (!s) return false;
 
-    const s = this.station();
-    if (!s) return false;
+  return s.modules.some((m) => {
+    const cle = this.cle(m);
+    return m.debloque && POSITIONS_TUTO.includes(cle) && EMPLACEMENTS[cle].type === action;
+  });
+}
 
-    return s.modules.some((m) => {
-      const cle = this.cle(m);
-      return m.debloque && POSITIONS_TUTO.includes(cle) && EMPLACEMENTS[cle].type === action;
-    });
+// Fait avancer le tuto si le joueur vient de faire l'action attendue. Sinon, ne fait rien.
+actionFaite(nom: string) {
+  if (this.visible() && this.etape().action === nom) {
+    this.suivant();
   }
+}
 
-  // Fait avancer le tuto si le joueur vient de faire l'action attendue. Sinon, ne fait rien.
-  actionFaite(nom: string) {
-    if (this.visible() && this.etape().action === nom) {
-      this.suivant();
-    }
-  }
+passer() {
+  // bouton « Passer le tuto » : on ferme le tuto et le back débloque les 3 modules gratuits
+  this.visible.set(false);
+  this.stationService.debloquerTuto(this.stationId).subscribe({
+    next: (s) => this.station.set(s),
+    error: (e) => this.afficherErreur(e),
+  });
+}
 
-  passer() {
-    // bouton « Passer le tuto » : on ferme le tuto et le back débloque les 3 modules gratuits
-    this.visible.set(false);
-    this.stationService.debloquerTuto(this.stationId).subscribe({
-      next: (s) => this.station.set(s),
-      error: (e) => this.afficherErreur(e),
-    });
-  }
-
-  afficherTuto() {
-    this.index.set(0);
-    this.visible.set(true);
-  }
+afficherTuto() {
+  this.index.set(0);
+  this.visible.set(true);
+}
 }

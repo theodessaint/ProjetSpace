@@ -14,10 +14,10 @@
 
   <!-- Les 4 jauges de ressources (surbrillance pendant l'étape du tuto qui en parle) -->
   <aside class="ressources" [class.surbrillance]="cible() === 'ressources'">
-    <div class="ressource"><img src="/Assets/Images/oxygene.png" alt="Oxygene" /> 100,00</div>
-    <div class="ressource"><img src="/Assets/Images/eau.png" alt="Eau" /> 100,00</div>
-    <div class="ressource"><img src="/Assets/Images/nourriture.png" alt="Nourriture" /> 100,00</div>
-    <div class="ressource"><img src="/Assets/Images/energie.png" alt="Électricité" /> 100,00</div>
+    <div class="ressource"><img src="/Assets/Images/oxygene.png" alt="Oxygene" /> {{stats_oxygene()?.quantite}}</div>
+    <div class="ressource"><img src="/Assets/Images/eau.png" alt="Eau" /> {{stats_eau()?.quantite}}</div>
+    <div class="ressource"><img src="/Assets/Images/nourriture.png" alt="Nourriture" /> {{stats_nourriture()?.quantite}}</div>
+    <div class="ressource"><img src="/Assets/Images/energie.png" alt="Électricité" /> {{stats_energie()?.quantite}}</div>
   </aside>
 
   <!-- La station (image + rubans + modules) sur le fond spatial -->
