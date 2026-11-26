@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FinDePartiePage } from './fin-de-partie-page';
+import { GameOverPage } from './game-over-page';
 
-describe('FinDePartiePage', () => {
-  let component: FinDePartiePage;
-  let fixture: ComponentFixture<FinDePartiePage>;
+describe('GameOverPage', () => {
+  let component: GameOverPage;
+  let fixture: ComponentFixture<GameOverPage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FinDePartiePage],
+      imports: [GameOverPage],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(FinDePartiePage);
+    fixture = TestBed.createComponent(GameOverPage);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -1,0 +1,78 @@
+.fin {
+  --fond: #070b1a;
+  --fond-cadre: rgba(10, 16, 40, 0.72);
+  --texte: #e8ecff;
+  --texte-discret: #b3bde3;
+  --accent: #9a1b0d;
+  --accent-doux: rgba(131, 26, 10, 0.915);
+  --police: 'Segoe UI', system-ui, sans-serif;
+
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  color: var(--texte);
+  font-family: var(--police);
+
+  /* voile sombre léger pour garder le texte lisible, puis l'image de fond */
+  background:
+    linear-gradient(rgba(7, 11, 26, 0.35), rgba(7, 11, 26, 0.6)),
+    url('/Assets/Images/fond-end-page.png') center / cover no-repeat,
+    var(--fond);
+}
+
+/* La station, posée au fond de la page, derrière la fenêtre */
+.station {
+  position: absolute;
+  right: -4%;
+  bottom: -6%;
+  width: min(62vw, 760px);
+  height: auto;
+  opacity: 0.92;
+  filter: drop-shadow(0 0 40px var(--accent-doux));
+  pointer-events: none;
+  z-index: 0;
+  animation: flotte 9s ease-in-out infinite;
+}
+
+@keyframes flotte {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-14px) rotate(1deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .station { animation: none; }
+}
+
+/* La fenêtre de victoire, au premier plan */
+.cadre {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 560px;
+  padding: 40px 32px;
+  text-align: center;
+  background: var(--fond-cadre);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  box-shadow: 0 0 40px var(--accent-doux);
+}
+
+.chargement {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 700px) {
+  .station {
+    width: 120vw;
+    right: -30%;
+    bottom: -4%;
+    opacity: 0.6;
+  }
+}

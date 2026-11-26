@@ -1,5 +1,6 @@
 import { Module } from "./module";
 import { Astronaute } from "./astronaute";
+import { StatutPartie } from "./StatutPartie";
 export interface StationSpatiale {
 
     id: number;
@@ -14,5 +15,6 @@ export interface StationSpatiale {
     astronautes: Astronaute[];
     idJoueur: number;
     loginJoueur: string;
+    statut: StatutPartie;
 
 }
