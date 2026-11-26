@@ -5,9 +5,10 @@ import { InscriptionPage } from './page/inscription-page/inscription-page';
 import { HomePageJoueur } from './page/home-page-joueur/home-page-joueur';
 import { HomePageAdmin } from './page/home-page-admin/home-page-admin';
 import { GamePage } from './page/game-page/game-page';
-import { FinDePartiePage } from './page/fin-de-partie-page/fin-de-partie-page';
 import { JordanPage } from './page/jordan-page/jordan-page';
 import { authGuard } from './guard/auth-guard';
+import { GameOverPage } from './page/game-over-page/game-over-page';
+import { VictoirePage } from './page/victoire-page/victoire-page';
 
 export const routes: Routes = [
     {
@@ -45,9 +46,17 @@ export const routes: Routes = [
     },
 
     {
-        path: 'fin-de-partie',
-        title: "Fin de partie",
-        component: FinDePartiePage,
+        path: 'victoire/:id',
+        title: "Victoire",
+        component: VictoirePage,
+        canActivate: [ authGuard ],
+        data: { role: 'JOUEUR' }
+    },
+
+    {
+        path: 'game-over/:id',
+        title: "Game over",
+        component: GameOverPage,
         canActivate: [ authGuard ],
         data: { role: 'JOUEUR' }
     },
