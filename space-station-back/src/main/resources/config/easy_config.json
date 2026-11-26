@@ -1,5 +1,9 @@
 {
     "cycleFin": 25,
+    "nbAstronautesDepart": 3,
+    "freqCyclesArriveeAstro": 4,
+    "freqCyclesDeblocageModule": 5,
+    "coutEnergieDeblocageModule": 20,
     "nbAstronautesMaxParRole": {
         "Agriculteur": 1,
         "Plombier": 1,
