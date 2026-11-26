@@ -32,17 +32,36 @@ type Emplacement = {
 
 // ---------- RAPPORT DE FIN DE CYCLE ----------
 type FluxRessource = { ressource: string; consommee: number; produite: number };
-type RapportModule = { id: number; label: string; astronautes: string[]; flux: FluxRessource[] };
+type RapportModule = { id: number; label: string; astronautes: string[]; flux: FluxRessource[]; bonus: string[] };
 const RESSOURCES = ['Oxygène', 'Eau', 'Nourriture', 'Énergie'];
 type Flux = Partial<Record<string, number>>; // ex : { 'Énergie': 5, 'Eau': 6 }
 
-// Consommation de chaque astronaute par cycle (peu importe ou il est)
+// Un bonus de rôle (reçu du back via GET /bonus, puis traduit pour le front)
+type Bonus = { role: string; module: TypeModule; ressource: string; multiplicateur: number };
+
+// Consommation de chaque astronaute par cycle (peu importe où il est)
 const CONSO_ASTRONAUTE: Flux = { 'Nourriture': 3, 'Eau': 3, 'Oxygène': 2 };
 
-// consommation fixe, sans astronaute (juste spawn et commandes)
+// Consommation fixe, sans astronaute (clés = nom du module dans le back)
 const CONSO_FIXE: Record<string, Flux> = {
-  'Centre de commandement': { 'Énergie': 2 }, 
+  'CentreDeCommandement': { 'Énergie': 2 },
   'Dortoir': { 'Énergie': 1 },
+};
+
+// Noms affichés pour les modules qui n'ont pas d'emplacement sur l'image
+const LABELS_SPECIAUX: Record<string, string> = {
+  CentreDeCommandement: 'Centre de commandement',
+  Dortoir: 'Dortoir',
+};
+
+// Met un nom d'enum sous une forme unique : 'SALLE_DES_MACHINES' et 'SalleDesMachines' → 'salledesmachines'
+const normaliser = (texte: string) => texte.toLowerCase().replace(/[^a-z]/g, '');
+
+// Module du back (normalisé) → type du front
+const MODULES_BACK: Record<string, TypeModule> = {
+  serre: 'serre',
+  salledesmachines: 'machines',
+  recyclageeauetoxygene: 'recyclage',
 };
 
 // Modules de production : l'index du tableau = nombre d'astronautes dans le module
@@ -269,12 +288,26 @@ export class GamePage implements OnInit {
   ngOnInit(): void {
     this.stationService.findById(this.stationId).subscribe({
       next: (s) => {
-        this.station.set(s);//
+        this.station.set(s);
 
         // Le tuto ne se lance que sur une partie toute nouvelle (neuve)(cycle 0 et aucun module du tuto débloqué)
-        const neuve = s.cycle === 0 && !this.modulesTutoDebloques(s); //
-        this.visible.set(neuve); //s=si on rafraichit la page, le tuto ne se relance pas
+        const neuve = s.cycle === 0 && !this.modulesTutoDebloques(s);
+        this.visible.set(neuve); //si on rafraichit la page, le tuto ne se relance pas
       },
+      error: (e) => this.afficherErreur(e),
+    });
+
+    // On charge les bonus du back une seule fois, et on traduit les noms pour le front
+    this.stationService.findAllBonus().subscribe({
+      next: (liste) =>
+        this.bonus.set(
+          liste.map((b) => ({
+            role: b.role, // comparé en minuscules dans meilleurBonus
+            module: MODULES_BACK[normaliser(b.module)], // 'SERRE' / 'Serre' → 'serre'
+            ressource: b.ressource, // déjà "Eau", "Oxygène"… (libellé envoyé par le back)
+            multiplicateur: b.multiplicateur,
+          })),
+        ),
       error: (e) => this.afficherErreur(e),
     });
   }
@@ -365,95 +398,136 @@ export class GamePage implements OnInit {
   cycleTermine = signal(0);             // numéro du cycle qui vient de se terminer
   ongletRapport = signal<'global' | 'modules'>('global'); // onglet affiché dans le rapport
   moduleOuvert = signal<number | null>(null); // id du module déplié dans l'onglet "Par module"
- 
+  bonus = signal<Bonus[]>([]);          // bonus de rôle reçus du back (GET /bonus)
+
   icones: Record<string, string> = {
     'Oxygène': 'Assets/Images/oxygene.png',
     'Eau': 'Assets/Images/eau.png',
     'Nourriture': 'Assets/Images/nourriture.png',
     'Énergie': 'Assets/Images/energie.png',
   };
- 
+
   // Un rapport par module débloqué, avec les astronautes qui sont dedans
-  // computed = se recalcule tout seul quand station() ou astronautes() changent
+  // computed = se recalcule tout seul quand station(), astronautes() ou bonus() changent
   rapportModules = computed<RapportModule[]>(() => {
     const s = this.station(); // on récupère la station actuelle (venue du back)
     if (!s) return []; // pas encore de station reçue : rapport vide
 
-    return s.modules // on part de la liste de tous les modules de la station
-      .filter((m) => m.debloque) // on garde seulement les modules débloqués (les verrouillés ne comptent pas)
-      .map((m) => { // pour chaque module, on fabrique une "fiche" de rapport (car on fait pa rmodule aussi)
-        const emplacement = EMPLACEMENTS[this.cle(m)]; // on cherche son emplacement grâce à sa clé "x,y" (undefined pour Dortoir / Centre)
-        const presents = this.astronautes().filter((a) => a.moduleId === m.id); // les astronautes qui sont dans ce module
-        return { // la fiche du module :
-          id: m.id, // l'id du module (sert pour le track du @for (html en gros))
-          label: emplacement?.label ?? m.nom, // nom affiché : "Serre 1"… sinon le nom du back ("Dortoir", "Centre de commandement")
-          astronautes: presents.map((a) => (a.role ? `${a.nom} (${a.role})` : a.nom)), // liste de textes : "Yuri (Agriculteur)" ou juste "Yuri" si pas de rôle (je trouve pas pertinent de mettre "pas de rôle")
-          flux: this.calculerFlux(emplacement?.type ?? m.nom, presents.length), // ce que le module consomme/produit, selon son type et son nb d'astronautes
+    return s.modules
+      .filter((m) => m.debloque) // on garde seulement les modules débloqués
+      .map((m) => {
+        const emplacement = EMPLACEMENTS[this.cle(m)]; // undefined pour Dortoir / Centre
+        const presents = this.astronautes().filter((a) => a.moduleId === m.id); // les astronautes de ce module
+        const calcul = this.calculerFlux(emplacement?.type ?? m.nom, presents); // conso/prod + bonus appliqués
+        return {
+          id: m.id, // sert pour le track du @for
+          label: emplacement?.label ?? LABELS_SPECIAUX[m.nom] ?? m.nom, // "Serre 1"… sinon "Centre de commandement" / "Dortoir"
+          astronautes: presents.map((a) => (a.role ? `${a.nom} (${a.role})` : a.nom)), // "Yuri (Agriculteur)" ou "Yuri"
+          flux: calcul.flux, // ce que le module consomme/produit, bonus compris
+          bonus: calcul.bonus, // les bonus appliqués, pour les afficher
         };
-      }) 
-      .sort((a, b) => a.label.localeCompare(b.label)); // tri alphabétique pour avoir toujours le même ordre d'affichage (comme les modules je préfère mais facultatif)
+      })
+      .sort((a, b) => a.label.localeCompare(b.label)); // tri alphabétique
   });
 
   // Rapport global = somme de tous les modules, ressource par ressource
-  rapportGlobal = computed<FluxRessource[]>(() => // se recalcule tout seul quand rapportModules() change
-    RESSOURCES.map((r) => { // pour chaque ressource 
-      let consommee = 0; // total consommé de cette ressource, on part de 0
-      let produite = 0; // total produit de cette ressource, on part de 0
+  rapportGlobal = computed<FluxRessource[]>(() =>
+    RESSOURCES.map((r) => { // pour chaque ressource
+      let consommee = 0;
+      let produite = 0;
       for (const m of this.rapportModules()) { // on passe sur chaque module du rapport
-        const f = m.flux.find((x) => x.ressource === r); // on cherche la ligne de cette ressource dans le module
-        if (f) { // si le module touche à cette ressource…
-          consommee += f.consommee; // … on ajoute sa consommation au total
-          produite += f.produite; // … et sa production au total
+        const f = m.flux.find((x) => x.ressource === r); // la ligne de cette ressource dans le module
+        if (f) {
+          consommee += f.consommee;
+          produite += f.produite;
         }
       }
-      return { ressource: r, consommee, produite }; // une ligne du tableau global pour cette ressource
+      return { ressource: r, consommee: Math.round(consommee * 100) / 100, produite: Math.round(produite * 100) / 100 };
     }),
   );
 
-  // Calcule ce qu'un module consomme et produit pendant un cycle
-  // (valeurs de base, sans les bonus de rôle pour l'instant)
-  // type = 'serre' | 'recyclage' | 'machines' | 'Dortoir' | 'Centre de commandement' (voir en haut du .ts)
-  private calculerFlux(type: string, nbAstro: number): FluxRessource[] {
-    const total: Record<string, FluxRessource> = {}; // un "compteur" par ressource, ex : total['Eau']
-    for (const r of RESSOURCES) total[r] = { ressource: r, consommee: 0, produite: 0 }; // on met tous les compteurs à 0
+  // Calcule ce qu'un module consomme et produit pendant un cycle, bonus de rôle compris
+  // type = 'serre' | 'recyclage' | 'machines' | 'Dortoir' | 'CentreDeCommandement'
+  private calculerFlux(type: string, presents: Astronaute[]): { flux: FluxRessource[]; bonus: string[] } {
+    const nbAstro = presents.length; // nombre d'astronautes dans le module
+    const roles = presents // rôles présents, en minuscules pour comparer sans souci de majuscules
+      .map((a) => a.role?.toLowerCase())
+      .filter((r): r is string => !!r); // on enlève les astronautes sans rôle
+    const bonusAppliques: string[] = []; // textes des bonus utilisés, pour l'affichage
 
-    // petite fonction interne : ajoute un Flux (ex : { 'Énergie': 5, 'Eau': 6 }) dans le bon compteur
-    const ajouter = (flux: Flux, champ: 'consommee' | 'produite') => { // champ = on ajoute en conso ou en prod
-      for (const [r, valeur] of Object.entries(flux)) total[r][champ] += valeur ?? 0; // pour chaque ressource du flux, on l'ajoute au total (0 si vide)
+    const total: Record<string, FluxRessource> = {}; // un compteur par ressource
+    for (const r of RESSOURCES) total[r] = { ressource: r, consommee: 0, produite: 0 };
+
+    // ajoute un Flux dans les compteurs ; si sens est donné, on applique les bonus du module
+    const ajouter = (flux: Flux, champ: 'consommee' | 'produite', sens?: 'conso' | 'prod') => {
+      for (const [r, valeur] of Object.entries(flux)) {
+        let v = valeur ?? 0;
+        if (sens) {
+          const b = this.meilleurBonus(type, r, roles, sens); // le bonus le plus avantageux (ou undefined)
+          if (b) {
+            v = Math.round(v * b.multiplicateur * 100) / 100; // valeur avec bonus, arrondie à 2 décimales
+            const pourcent = Math.round((b.multiplicateur - 1) * 100); // 1.15 → +15 ; 0.80 → -20
+            bonusAppliques.push(`${b.role} : ${r} ${pourcent > 0 ? '+' : ''}${pourcent} %`);
+          }
+        }
+        total[r][champ] += v;
+      }
     };
 
-    // pour les modules Centre, Dortoir : conso fixe
-    const fixe = CONSO_FIXE[type]; // on regarde si ce type a une conso fixe 
-    if (fixe) ajouter(fixe, 'consommee'); // si oui, on l'ajoute en consommation
+    // Centre, Dortoir : conso fixe (pas de bonus)
+    const fixe = CONSO_FIXE[type];
+    if (fixe) ajouter(fixe, 'consommee');
 
-    // Modules de production (les autres) : selon le nombre d'astronautes
-    const paliers = TABLE_MODULES[type as TypeModule]; // le tableau des paliers du type 
-    if (paliers) { // si c'est un module de production…
-      const palier = paliers[Math.min(nbAstro, paliers.length - 1)]; // on prend la ligne qui correspond au nb d'astronautes (sans dépasser la dernière)
-      ajouter(palier.conso, 'consommee'); // on ajoute ce que le module consomme
-      ajouter(palier.prod, 'produite'); // on ajoute ce que le module produit
+    // Modules de production : palier selon le nb d'astronautes, avec bonus
+    const paliers = TABLE_MODULES[type as TypeModule];
+    if (paliers) {
+      const palier = paliers[Math.min(nbAstro, paliers.length - 1)];
+      ajouter(palier.conso, 'consommee', 'conso'); // bonus < 1 : moins de conso
+      ajouter(palier.prod, 'produite', 'prod');    // bonus > 1 : plus de prod
     }
 
-    // Les astronautes présents dans le module consomment aussi
-    for (let i = 0; i < nbAstro; i++) ajouter(CONSO_ASTRONAUTE, 'consommee'); // chaque astronaute : +3 nourriture, +3 eau, +2 oxygène consommés
+    // Conso personnelle des astronautes (pas de bonus)
+    for (let i = 0; i < nbAstro; i++) ajouter(CONSO_ASTRONAUTE, 'consommee');
 
-    // on n'affiche que les ressources qui bougent
-    return Object.values(total).filter((f) => f.consommee > 0 || f.produite > 0); // on transforme les compteurs en liste, sans les lignes à 0/0
+    return {
+      flux: Object.values(total).filter((f) => f.consommee > 0 || f.produite > 0), // sans les lignes à 0/0
+      bonus: bonusAppliques,
+    };
+  }
+
+  // Parmi les bonus possibles pour ce module et cette ressource, renvoie le plus avantageux
+  // (pas de cumul : un seul bonus par ressource)
+  private meilleurBonus(type: string, ressource: string, roles: string[], sens: 'conso' | 'prod'): Bonus | undefined {
+    const candidats = this.bonus().filter(
+      (b) =>
+        b.module === type && // bon module
+        b.ressource === ressource && // bonne ressource
+        roles.includes(b.role.toLowerCase()) && // un astronaute de ce rôle est présent
+        (sens === 'conso' ? b.multiplicateur < 1 : b.multiplicateur > 1), // réduit la conso OU augmente la prod
+    );
+    if (candidats.length === 0) return undefined; // aucun bonus applicable
+
+    // conso : on garde le plus petit multiplicateur ; prod : le plus grand
+    return candidats.reduce((meilleur, b) =>
+      sens === 'conso'
+        ? (b.multiplicateur < meilleur.multiplicateur ? b : meilleur)
+        : (b.multiplicateur > meilleur.multiplicateur ? b : meilleur),
+    );
   }
 
   // Bilan d'une ressource : positif = on en a gagné, négatif = on en a perdu
   bilan(f: FluxRessource): number {
-    return f.produite - f.consommee; // produit moins consommé
+    return Math.round((f.produite - f.consommee) * 100) / 100; // produit moins consommé, arrondi
   }
 
   // Bilan total d'un module : somme des bilans de toutes ses ressources
   bilanModule(m: RapportModule): number {
-    return m.flux.reduce((total, f) => total + this.bilan(f), 0); //  additionne les bilans un par un, en partant de 0
+    return Math.round(m.flux.reduce((total, f) => total + this.bilan(f), 0) * 100) / 100;
   }
 
   // Clic sur un module dans l'onglet "Par module" : le déplie ou le replie
   toggleModule(id: number) {
-    this.moduleOuvert.update((actuel) => (actuel === id ? null : id)); // si ce module était déjà ouvert, on le ferme (null), sinon on l'ouvre
+    this.moduleOuvert.update((actuel) => (actuel === id ? null : id)); // déjà ouvert → on ferme, sinon on ouvre
   }
  
   continuerCycle() {
