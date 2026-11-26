@@ -138,7 +138,7 @@ public class StationSpatialeService {
                 
                 StationSpatiale station = this.findById(id);
                 station = this.save(station, request);
-                log.debug("St   ation {} modifiée !", id);
+                log.debug("Station {} modifiée !", id);
                 
                 return station;
             }
