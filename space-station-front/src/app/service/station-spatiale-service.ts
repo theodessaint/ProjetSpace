@@ -1,18 +1,19 @@
-import { inject, Injectable } from '@angular/core';
-import { StationSpatiale } from '../model/station-spatiale';
-import { Observable } from 'rxjs/internal/Observable';
 import { HttpClient } from '@angular/common/http';
-import { Module } from '../model/module';
-import { Astronaute } from '../model/astronaute';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs/internal/Observable';
+import { Astronaute } from '../model/astronaute';
 import { BonusResponse } from '../model/bonus';
+import { Module } from '../model/module';
+import { StationSpatiale } from '../model/station-spatiale';
+import { RessourceEnum } from '../model/ressource';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StationSpatialeService {
   private http = inject(HttpClient);
-  private router = inject(Router);             
+  private router = inject(Router);
   private apiUrl = '/station';
 
   findById(id: number): Observable<StationSpatiale> {
@@ -23,11 +24,15 @@ export class StationSpatialeService {
     return this.http.put<Module>(`/module/${moduleId}/debloquer`, {});
   }
 
-  cycleSuivant(id: number): Observable<StationSpatiale> {
-    return this.http.post<StationSpatiale>(`/station/${id}/cycle-suivant`, {});
+  cycleSuivant(id: number, stats: Record<RessourceEnum, number>): Observable<StationSpatiale> {
+
+    return this.http.post<StationSpatiale>(
+      `/station/${id}/cycle-suivant`,
+      { stats }
+    );
   }
 
-    findAllBonus() {
+  findAllBonus() {
     return this.http.get<BonusResponse[]>('/bonus');
   }
 
@@ -44,11 +49,11 @@ export class StationSpatialeService {
   getRouteFin(station: StationSpatiale): (string | number)[] | null {
     switch (station.statut) {
       case 'VICTOIRE':
-        return ['/victoire', station.id];
+      return ['/victoire', station.id];
       case 'DEFAITE':
-        return ['/game-over', station.id];
+      return ['/game-over', station.id];
       default:
-        return null;
+      return null;
     }
   }
 
