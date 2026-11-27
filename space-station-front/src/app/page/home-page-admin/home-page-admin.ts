@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/auth-service';
 import { FormsModule } from '@angular/forms';
@@ -35,6 +35,12 @@ export class HomePageAdmin implements OnInit {
   joueurChoisi = signal<number | null>(null);
   
   listeComptesOuverte = signal(false);
+
+  //Nombre de parties en cours
+  nbEnCours = computed(() => this.parties().filter(p => p.statut === 'EN_COURS').length);
+
+  //Nombre de parties finies
+  nbFinies = computed(() => this.parties().filter(p => p.statut === 'VICTOIRE' || p.statut === 'DEFAITE').length);
   
   
   ngOnInit(): void {
@@ -98,12 +104,6 @@ export class HomePageAdmin implements OnInit {
       error: (err) => console.error('Erreur lors de la suppression du compte', err),
     });
   }
-  
-  
-  // chargerNbParties() {
-  //   console.log('Nombre des parties');
-  //   for()
-  // }
   
   deconnexion(event: Event): void {
     event.preventDefault();
