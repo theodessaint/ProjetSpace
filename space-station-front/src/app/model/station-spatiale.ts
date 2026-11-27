@@ -1,12 +1,13 @@
-import { Module } from "./module";
 import { Astronaute } from "./astronaute";
-import { StatutPartie } from "./StatutPartie";
+import { Module } from "./module";
 import { Ressource } from "./ressource";
+import { StatutPartieEnum } from "./statut-partie";
 export interface StationSpatiale {
 
     id: number;
     nom: string;
     cycle: number;
+    statut: StatutPartieEnum;
     colonnes: number;
     lignes: number;
     peutDebloquer: boolean;
@@ -16,7 +17,6 @@ export interface StationSpatiale {
     astronautes: Astronaute[];
     idJoueur: number;
     loginJoueur: string;
-    statut: StatutPartie;
     stats: Ressource[];
 
 }

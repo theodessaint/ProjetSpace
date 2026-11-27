@@ -1,10 +1,10 @@
-import { StatutPartie } from "./StatutPartie";
+import { StatutPartieEnum } from "./statut-partie";
 
 export interface StationSpatialeResume {
-    
+
     id: number;
     nom: string;
     cycle: number;
     nbModulesDebloques: number;
-    statut: StatutPartie
+    statut: StatutPartieEnum
 }
