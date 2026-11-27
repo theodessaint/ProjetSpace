@@ -1,34 +1,50 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { StationSpatialeService } from '../../service/station-spatiale-service';
-import { StationSpatiale } from '../../model/station-spatiale';
+import { StationSpatiale } from '../../model/station-spatiale';                 // adapte le chemin
+import { StationSpatialeService } from '../../service/station-spatiale-service'; // adapte le chemin
 
 @Component({
-  imports: [RouterLink],
   selector: 'app-victoire-page',
-  styleUrl: './victoire-page.css',
+  standalone: true,
+  imports: [RouterLink],
   templateUrl: './victoire-page.html',
+  styleUrl: './victoire-page.css',
 })
-export class VictoirePage implements OnInit{
+export class VictoirePage implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private service = inject(StationSpatialeService);
 
-  station?: StationSpatiale;
-  erreur = false;
+  station = signal<StationSpatiale | null>(null);
+  erreur = signal(false);
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
+    console.log('[Victoire] chargement de la station', id);
 
     this.service.findById(id).subscribe({
       next: (station) => {
-        if (station.statut === 'VICTOIRE') {
-          this.station = station;                 // bonne page : on affiche le résumé
-        } else if (!this.service.redirigerSiTerminee(station)) {
-          this.router.navigate(['/game-page', station.id]);   // en cours : retour au jeu (adapte la route)
-        }                                          // sinon : redirigé vers game-over
+        console.log('[Victoire] station reçue :', station);
+
+        if (station.statut === undefined) {
+          console.warn('[Victoire] Le back ne renvoie pas de champ "statut" : vérifie le nom exact du champ dans le JSON.');
+        }
+
+        if (station.statut === 'DEFAITE') {
+          this.router.navigate(['/game-over', station.id]);   // mauvaise page : on va sur game over
+          return;
+        }
+        if (station.statut === 'EN_COURS') {
+          this.router.navigate(['/jeu', station.id]);         // partie pas finie : retour au jeu (adapte la route)
+          return;
+        }
+
+        this.station.set(station);   // VICTOIRE (ou statut inconnu) : on affiche la fenêtre
       },
-      error: () => (this.erreur = true),
+      error: (err) => {
+        console.error('[Victoire] erreur de chargement', err);
+        this.erreur.set(true);
+      },
     });
   }
 }
