@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import station.api.request.CreateOrUpdateStationSpatialeRequest;
+import station.api.request.CycleRequest;
 import station.api.response.EntityCreatedResponse;
 import station.api.response.EntityUpdatedResponse;
 import station.api.response.StationSpatialeResponse;
@@ -78,9 +79,9 @@ public class StationSpatialeApiController {
 
     // Bouton "Cycle suivant" : refusé (400) si un déblocage de module est obligatoire
     @PostMapping("/{id}/cycle-suivant")
-    public StationSpatialeResponse cycleSuivant(@PathVariable Integer id) {
+    public StationSpatialeResponse cycleSuivant(@PathVariable Integer id,  @RequestBody CycleRequest request) {
 
-        StationSpatiale station = this.service.cycleSuivant(id, this.getLoginConnecte());
+        StationSpatiale station = this.service.cycleSuivant(id, this.getLoginConnecte(), request);
 
         return StationSpatialeResponse.convert(station, this.moduleService);
     }

@@ -2,6 +2,7 @@ package station.api.response;
 
 import java.util.List;
 
+import station.enumerator.StatutPartieEnum;
 import station.model.Grille;
 import station.model.StationSpatiale;
 import station.service.ModuleService;
@@ -11,6 +12,7 @@ public class StationSpatialeResponse {
     private Integer id;
     private String nom;
     private int cycle;
+    private StatutPartieEnum statut;
     private int colonnes;
     private int lignes;
     private boolean peutDebloquer; // au moins un déblocage disponible
@@ -31,6 +33,7 @@ public class StationSpatialeResponse {
         response.id = station.getId();
         response.nom = station.getNom();
         response.cycle = station.getCycle();
+        response.statut = station.getStatut();
         response.loginJoueur = station.getJoueur().getLogin();
         response.idJoueur = station.getJoueur().getId();
         
@@ -69,6 +72,10 @@ public class StationSpatialeResponse {
     
     public int getCycle() {
         return cycle;
+    }
+
+    public StatutPartieEnum getStatut() {
+        return statut;
     }
     
     public int getColonnes() {
