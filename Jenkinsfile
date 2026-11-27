@@ -64,6 +64,25 @@ pipeline {
                 }
             }
         }
+
+        stage('Diagnostic frontend') {
+            steps {
+                sh '''
+                    echo "=== Sources Angular ==="
+                    grep -rnF 'localhost:8080' space-station-front/src/ || true
+
+                    echo "=== Compilation Angular ==="
+                    grep -rlF 'localhost:8080' space-station-front/dist/ || true
+
+                    echo "=== Frontend déployé ==="
+                    docker exec space-station-front \
+                        grep -rlF 'localhost:8080' /usr/share/nginx/html || true
+
+                    echo "=== Configuration Nginx ==="
+                    docker exec space-station-front nginx -T
+                '''
+            }
+        }
     }
 
     post {
