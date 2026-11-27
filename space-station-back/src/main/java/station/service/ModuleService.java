@@ -31,10 +31,11 @@ public class ModuleService {
     private final ModuleRepository repository;
     private final StationSpatialeRepository stationRepository;
     
+    @SuppressWarnings("unused")
     private final PartieConfig config;
     
     private final int CYCLES_AVANT_DEBLOCAGE_MODULE; // Combien de cycles avant de débloquer un nouveau module (a voir comment la rendre dynamique selon la difficulté ?)
-    private final int COUT_ENERGIE_DEBLOCAGE;
+    private final double COUT_ENERGIE_DEBLOCAGE;
     
     public ModuleService(ModuleRepository repository, StationSpatialeRepository stationRepository, PartieConfig config) {
         this.repository = repository;
@@ -137,8 +138,8 @@ public class ModuleService {
         
         // Toutes les vérifications sont passées : on fait payer (sauf les modules du tuto)
         if (!estTuto) {
-            // TODO ressources : à réactiver quand stats sera initialisé
-            // this.retirerEnergie(station, COUT_ENERGIE_DEBLOCAGE);
+
+            this.retirerEnergie(station, COUT_ENERGIE_DEBLOCAGE);
         }
         
         module.setDebloque(true);
