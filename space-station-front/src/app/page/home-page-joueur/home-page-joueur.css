@@ -21,7 +21,7 @@ html, body {
 body {
   background: var(--vide);
   color: var(--etoile); /* couleur du texte par défaut  */
-  font-family: system-ui, sans-serif; /* Juste une police (on verra plus tard) */
+  font-family: var(--police, sans-serif); /* Juste une police (on verra plus tard) */
   overflow-x: hidden;   /*  gère ce qui dépasse horizontalement (askip c bien poru un background dynamique*/
 }
 
@@ -52,7 +52,7 @@ body {
 }
 
 .titre { /* pour c egenr ede truc l'ia a fait le taff */
-  font-family: "Chakra Petch", sans-serif;
+  font-family: var(--police, sans-serif);  font-family: var(--police, sans-serif);
   font-weight: 700;
   font-size: clamp(2.8rem, 9vw, 6rem);
   line-height: 0.95;
@@ -86,7 +86,7 @@ body {
 }
 
 .btn {
-  font: 500 1.05rem "Chakra Petch", sans-serif;
+  font: 500 1.05rem var(--police, sans-serif);
   letter-spacing: 0.03em;
   color: var(--etoile);
   background: transparent;
@@ -150,7 +150,7 @@ body {
 
 .choix-partie h2 {
   margin: 0 0 4px;
-  font: 500 1.4rem "Chakra Petch", sans-serif;
+  font: 500 1.4rem var(--police, sans-serif);
 }
 
 .choix-partie h2,
@@ -167,7 +167,7 @@ body {
 .choix-partie .liste-contenu {
   max-height: none;
   text-align: left;   /* la fenêtre centre son titre, pas ses entrées */
-    flex: 0 1 auto;
+  flex: 0 1 auto;
   min-height: 0;
   overflow-y: auto;
 }
@@ -250,7 +250,7 @@ body {
 }
 
 .partie-nom {
-  font: 500 1rem "Chakra Petch", sans-serif;
+  font: 500 1rem var(--police, sans-serif);
   letter-spacing: 0.03em;
 }
 
@@ -311,7 +311,7 @@ body {
   border-radius: 14px;
 }
 .nouvelle-partie::backdrop { background: rgba(2, 4, 16, 0.75); }
-.nouvelle-partie h2 { margin: 0 0 1rem; font-family: "Chakra Petch", sans-serif; }
+.nouvelle-partie h2 { margin: 0 0 1rem;   font-family: var(--police, sans-serif); }
 .nouvelle-partie form { text-align: right; }
 
 .champ-nom {
@@ -320,7 +320,7 @@ body {
   box-sizing: border-box;      /* sinon le padding fait déborder le champ */
   margin-bottom: 1.4rem;
   padding: 0.7rem 0.9rem;
-  font: 1rem system-ui, sans-serif;
+  font: 1rem var(--police, sans-serif);
   color: var(--etoile);
   background: rgba(2, 4, 16, 0.6);
   border: 1px solid var(--trait);
@@ -339,7 +339,7 @@ body {
   border-radius: 14px;
 }
 .regles::backdrop { background: rgba(2, 4, 16, 0.75); }
-.regles h2 { margin: 0 0 1rem; font-family: "Chakra Petch", sans-serif; }
+.regles h2 { margin: 0 0 1rem;  font-family: var(--police, sans-serif); }
 .regles ul { margin: 0 0 1.4rem; padding-left: 1.2rem; line-height: 1.55; }
 .regles li { margin-bottom: 0.5rem; }
 .regles form { text-align: right; }

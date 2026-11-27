@@ -11,7 +11,7 @@
   --accent: #5ee6c4;
   --accent-doux: rgba(94, 230, 196, 0.28);
   --bleu: #4cc9ff;
-  --police: 'Segoe UI', system-ui, sans-serif;
+  /* --police: 'Segoe UI', system-ui, sans-serif; */
 
   position: relative;
   overflow: hidden;
@@ -24,7 +24,7 @@
   padding: 24px;
   box-sizing: border-box;
   color: var(--texte);
-  font-family: var(--police);
+  font-family: var(--police, sans-serif);
 
   /* Fond d'espace, sans la station */
   background: var(--fond) url('/Assets/Images/fond-end-page.png') right bottom / cover no-repeat;

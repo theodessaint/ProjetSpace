@@ -7,17 +7,17 @@ body {
 }
 
 /* ========================================
-   SCÈNE : l'image de fond contient les cadres.
-   On fixe le conteneur aux proportions de l'image
-   et on place chaque bloc en % par-dessus son cadre.
+SCÈNE : l'image de fond contient les cadres.
+On fixe le conteneur aux proportions de l'image
+et on place chaque bloc en % par-dessus son cadre.
 
-   --ratio : largeur / hauteur de TON image de fond
-   --u     : 1% de la largeur de la scène (sert aux tailles)
+--ratio : largeur / hauteur de TON image de fond
+--u     : 1% de la largeur de la scène (sert aux tailles)
 ======================================== */
 
 .admin {
   /* --ratio : proportions de l'image (largeur / hauteur), sert seulement à
-     dimensionner les textes pour qu'ils tiennent dans les cadres */
+  dimensionner les textes pour qu'ils tiennent dans les cadres */
   --ratio: 1.9;
   --u: min(1vw, calc(var(--ratio) * 1dvh));
 
@@ -32,7 +32,7 @@ body {
   background-repeat: no-repeat;
 
   color: #ffad45;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Orbitron', Arial, sans-serif;
 }
 
 /* Les wrappers ne comptent plus : leurs enfants se placent dans .admin */
@@ -74,8 +74,8 @@ body {
 }
 
 /* ========================================
-   ZONES (position de chaque cadre dans l'image, en %)
-   Astuce de réglage : décommente le bloc "debug" tout en bas.
+ZONES (position de chaque cadre dans l'image, en %)
+Astuce de réglage : décommente le bloc "debug" tout en bas.
 ======================================== */
 
 .entete,
@@ -227,7 +227,7 @@ body {
 }
 
 /* ========================================
-   CONTENU
+CONTENU
 ======================================== */
 
 .entete h1 {

@@ -1,1 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Exo+2:wght@400;500;600;700&display=swap');
+:root {
+  --police: 'Chakra Petch', system-ui, sans-serif;
+}

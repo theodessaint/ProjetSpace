@@ -32,7 +32,7 @@ body {
 }
 
 .titre {
-  font-family: "Chakra Petch", sans-serif;
+  font-family: var(--police, sans-serif);
   font-weight: 700;
   font-size: clamp(2.8rem, 9vw, 6rem);
   line-height: 0.95;
