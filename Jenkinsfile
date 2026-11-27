@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Diagnostic Docker') {
+        stage('Diagnostic Docker - AVANT') {
             steps {
                 sh '''
                     echo "=== Conteneurs existants ==="
@@ -91,7 +91,7 @@ pipeline {
                 '''
             }
         }
-        stage('Diagnostic Docker') {
+        stage('Diagnostic Docker - APRES') {
             steps {
                 sh '''
                     echo "=== Conteneurs existants ==="
