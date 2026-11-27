@@ -81,6 +81,14 @@ pipeline {
                     echo "=== Configuration Nginx ==="
                     docker exec space-station-front nginx -T
                 '''
+                sh '''
+                    echo "=== Adresse API dans le frontend déployé ==="
+                    docker exec space-station-front \
+                        grep -rlF 'localhost:8080' /usr/share/nginx/html || true
+
+                    echo "=== Configuration Nginx effective ==="
+                    docker exec space-station-front nginx -T
+                '''
             }
         }
     }
