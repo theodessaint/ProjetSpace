@@ -58,7 +58,7 @@ pipeline {
 
         stage('Docker Compose') {
             steps {
-                dir('DOCKER') {
+                dir('Docker') {
                     sh 'docker compose up -d'
                     sh 'docker compose ps'
                 }
