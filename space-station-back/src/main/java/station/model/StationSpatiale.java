@@ -19,18 +19,30 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.PositiveOrZero;
 import station.enumerator.RessourceEnum;
+import station.enumerator.StatutPartieEnum;
 import station.exception.RessourceNotFoundException;
 
 @Entity 
 @Table(name = "stations")
 public class StationSpatiale {
     
-    @Id
+   @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
     @Column(nullable = false)
     private String nom;
+    
+    @ManyToOne
+    @JoinColumn(name = "joueur_id", nullable = false)
+    private Joueur joueur;
+    
+    @Column(nullable = false)
+    private StatutPartieEnum statut;
+    
+    @PositiveOrZero
+    @Column(nullable = false)
+    private int cycle;
     
     @ElementCollection
     @CollectionTable (
@@ -41,15 +53,7 @@ public class StationSpatiale {
     @Column(name = "quantite")
     private Map<Ressource, Double> stats;
     
-    @PositiveOrZero
-    @Column(nullable = false)
-    private int cycle;
-    
-    @ManyToOne
-    @JoinColumn(name = "joueur_id", nullable = false)
-    private Joueur joueur;
-    
-    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL) // Ce qui est fait a la station est aussi fait aux astronautes (Delete)
+    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL) // Ce qui est fait a la station est aussi fait aux astronautes
     private List<Astronaute> astronautes = new ArrayList<Astronaute>();
     
     @OneToMany(mappedBy = "station", cascade = CascadeType.ALL) // Idem
@@ -57,12 +61,18 @@ public class StationSpatiale {
     
     public StationSpatiale() {}
     
-    public StationSpatiale(Integer id, String nom, Map<Ressource, Double> stats, int cycle, Joueur joueur) {
+    public StationSpatiale(Integer id, String nom, Joueur joueur, StatutPartieEnum statut, @PositiveOrZero int cycle,
+        Map<Ressource, Double> stats, List<Astronaute> astronautes, List<Module> modules
+    ) 
+    {
         this.id = id;
         this.nom = nom;
-        this.stats = stats;
-        this.cycle = cycle;
         this.joueur = joueur;
+        this.statut = statut;
+        this.cycle = cycle;
+        this.stats = stats;
+        this.astronautes = astronautes;
+        this.modules = modules;
     }
     
     public Integer getId() {
@@ -81,12 +91,20 @@ public class StationSpatiale {
         this.nom = nom;
     }
     
-    public Map<Ressource, Double> getStats() {
-        return stats;
+    public Joueur getJoueur() {
+        return joueur;
     }
     
-    public void setStats(Map<Ressource, Double> stats) {
-        this.stats = stats;
+    public void setJoueur(Joueur joueur) {
+        this.joueur = joueur;
+    }
+    
+    public StatutPartieEnum getStatut() {
+        return statut;
+    }
+    
+    public void setStatut(StatutPartieEnum statut) {
+        this.statut = statut;
     }
     
     public int getCycle() {
@@ -97,12 +115,12 @@ public class StationSpatiale {
         this.cycle = cycle;
     }
     
-    public Joueur getJoueur() {
-        return joueur;
+    public Map<Ressource, Double> getStats() {
+        return stats;
     }
     
-    public void setJoueur(Joueur joueur) {
-        this.joueur = joueur;
+    public void setStats(Map<Ressource, Double> stats) {
+        this.stats = stats;
     }
     
     public List<Astronaute> getAstronautes() {
@@ -143,105 +161,8 @@ public class StationSpatiale {
     
     
     public void executerCycle() {
-        
-        // DEROULEMENT DU CYCLE
-        
-        if (this.cycle == 0) {
-            // Découverte du jeu, constitution de l'équipage
-            // Appel d'une fonction spécifique ?
-        } else {
-            // Réorganisation de l'équipage
-            
-            // Ajout de modules
-            
-            // Affectation des astronautes aux modules
-        }
-        
-        
-        // CONSOMMATION DES RESSOURCES ET EVALUATION DES SEUILS
-        
-        List<Ressource> ressourcesCritique = new ArrayList<Ressource>();
-        List<Ressource> ressourcesDanger = new ArrayList<Ressource>();
-        
-        for (Ressource ressource : this.getStats().keySet()) {
-            double quantite = this.getStats().get(ressource);
-            
-            // Calcul de consommation de chaque ressource
-            
-            // CODE
-            
-            // Ajout des objets "Ressource" à des listes => si besoin de récupérer d'autres attributs que le nom.
-            
-            if (quantite <= ressource.getCritique()) {
-                ressourcesCritique.add(ressource);
-                
-            } else if (quantite <= ressource.getDanger()) {
-                ressourcesDanger.add(ressource);
-            }
-            
-            if (ressourcesCritique.size() > 0) {
-                List<String> nomsResCrit = ressourcesCritique.stream()
-                .map(r -> r.getNom())
-                .toList();
-                
-                switch (ressourcesCritique.size()) {
-                    case 1:
-                    System.out.println(nomsResCrit.getFirst() + " : seuil critique détecté !");
-                    break;
-                    
-                    case 2:
-                    System.out.println("Seuils critiques détectés pour les ressources " + nomsResCrit.toString().replaceAll("[\\[\\]]", "") +"\nÉvacuation recommandée !");
-                    break;
-                    
-                    default:
-                    System.out.println("Seuils critiques détectés pour les ressources " + nomsResCrit.toString().replaceAll("[\\[\\]]", "") +"\nÉvacuation immédiate !");
-                    
-                    //GAME OVER ?
-                    break;
-                }
-            }
-            
-            if (ressourcesDanger.size() > 0) {
-                System.out.println("Attention ! Vous avez " + ressourcesDanger.size() + " incohérences de ressources.");
-                
-            }
-            if (ressourcesCritique.size() > 0) {
-                List<String> nomsResCrit = ressourcesCritique.stream()
-                .map(r -> r.getNom())
-                .toList();
-                
-                switch (ressourcesCritique.size()) {
-                    case 1:
-                    System.out.println(nomsResCrit.getFirst() + " : seuil critique détecté !");
-                    break;
-                    
-                    case 2:
-                    System.out.println("Seuils critiques détectés pour les ressources "
-                    + nomsResCrit.toString().replaceAll("[\\[\\]]", "") + "\nÉvacuation recommandée !");
-                    break;
-                    
-                    default:
-                    System.out.println("Seuils critiques détectés pour les ressources "
-                    + nomsResCrit.toString().replaceAll("[\\[\\]]", "") + "\nÉvacuation immédiate !");
-                    
-                    // GAME OVER ?
-                    break;
-                }
-            }
-            
-            if (ressourcesDanger.size() > 0) {
-                System.out.println("Attention ! Vous avez " + ressourcesDanger.size() + " incohérences de ressources.");
-                
-            }
-            
-            
-            
-        }
-        
         this.cycle++;
     }
-    
-    public void afficherEtat(){}
     
     public void ajouterModule(Module module){
         module.setStation(this);
