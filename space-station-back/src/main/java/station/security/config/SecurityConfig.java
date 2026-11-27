@@ -11,6 +11,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,6 +59,7 @@ public class SecurityConfig {
         
         // Configuration CORS (personnalisée plus bas)
         // http.cors(cors -> cors.configurationSource(corsConfigurationSource));
+        http.cors(cors -> cors.disable());
         
         // Réactivation de l'authentification HTTP Basic
         http.httpBasic(Customizer.withDefaults());
@@ -120,7 +122,7 @@ public class SecurityConfig {
         
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("*"));
-        corsConfiguration.setAllowedOrigins(List.of("http://20.84.69.4:4500"));
+        corsConfiguration.setAllowedOrigins(List.of("*"));
         
         corsSource.registerCorsConfiguration("/**", corsConfiguration);
         
