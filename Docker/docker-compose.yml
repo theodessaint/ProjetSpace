@@ -81,7 +81,7 @@ services:
     container_name: space-station-front
 
     ports:
-      - 4200:80
+      - 4500:80
 
     networks:
       - space-station-network
