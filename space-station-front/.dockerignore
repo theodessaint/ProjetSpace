@@ -1,0 +1,7 @@
+**
+!Dockerfile
+!nginx.conf
+!dist/
+!dist/space-station-front/
+!dist/space-station-front/browser/
+!dist/space-station-front/browser/**
