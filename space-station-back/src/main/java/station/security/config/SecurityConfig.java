@@ -57,7 +57,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.ignoringRequestMatchers("/**")); // Debloque le csrf
         
         // Configuration CORS (personnalisée plus bas)
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource));
+        // http.cors(cors -> cors.configurationSource(corsConfigurationSource));
         
         // Réactivation de l'authentification HTTP Basic
         http.httpBasic(Customizer.withDefaults());
