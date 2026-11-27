@@ -1,6 +1,10 @@
 package station.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,7 +18,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import station.api.request.CreateOrUpdateBonusRequest;
 import station.config.PartieConfig;
+import station.enumerator.RessourceEnum;
+import station.enumerator.RoleEnum;
+import station.exception.BonusNotFoundException;
 import station.model.Bonus;
 import station.repo.BonusRepository;
 
@@ -47,6 +55,13 @@ public class BonusServiceTest {
 
         assertSame(bonus, service.findById(1));
     }
+    @Test
+    @DisplayName ("findById lance BonusNotFoundException si le bonus n'existe pas")
+    void findByIdBonusNotFoundException(){
+        when(repository.findById(88)).thenReturn(Optional.empty());
+
+        assertThrows(BonusNotFoundException.class, () -> service.findById(88));
+    }
     @Test 
     @DisplayName ("deleteById supprime le bonus dans le repository")
     void deleteById(){
@@ -54,6 +69,21 @@ public class BonusServiceTest {
 
         verify(repository).deleteById(5);
     }
+    // ------ save(request) / save(id, request) -------
+    @Test
+    @DisplayName("save(request) crée un bonus avec les valeurs de la requête")
+    void saveCreation() {
+        CreateOrUpdateBonusRequest request = mock(CreateOrUpdateBonusRequest.class);
+        when(request.getRole()).thenReturn(RoleEnum.Agriculteur);
+        when(request.getRessource()).thenReturn(RessourceEnum.NOURRITURE);
+        when(request.getMultiplicateur()).thenReturn(1.5);
+        when(repository.save(any(Bonus.class))).thenAnswer(i -> i.getArgument(0));
 
+        Bonus resultat = service.save(request);
+
+        assertEquals(RoleEnum.Agriculteur, resultat.getRole());
+        assertEquals(RessourceEnum.NOURRITURE, resultat.getRessource());
+        assertEquals(1.5, resultat.getMultiplicateur(), 0.001);
+    }
 
 }
