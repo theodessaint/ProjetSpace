@@ -47,5 +47,17 @@ public class PositionTest {
         assertEquals(new Position(3, 1), new Position(3, 1));
         assertEquals(new Position(3, 1).hashCode(), new Position(3, 1).hashCode());
     }
+
+    @Test 
+    @DisplayName ("Init et setters")
+    void initEtSetters(){
+        Position position = new Position();
+
+        position.setX(3);
+        position.setY(1);
+
+        assertEquals(3, position.getX());
+        assertEquals(1, position.getY());
+    }
     
 }
