@@ -64,9 +64,6 @@ services:
     volumes:
      - ../secrets/jwt.key:/secrets/jwt.key
 
-    ports:
-     - 8092:8080
-
     networks:
       - space-station-network
 

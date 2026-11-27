@@ -2,6 +2,20 @@ pipeline {
     agent any
 
     stages {
+        stage('Diagnostic Docker') {
+            steps {
+                sh '''
+                    echo "=== Conteneurs utilisant le port 8092 ==="
+                    docker ps --filter publish=8092
+
+                    echo "=== Conteneurs existants ==="
+                    docker ps -a
+
+                    echo "=== Projets Docker Compose ==="
+                    docker compose ls
+                '''
+            }
+        }
         stage('Backend - Maven & SonarQube') {
             agent {
                 docker {
