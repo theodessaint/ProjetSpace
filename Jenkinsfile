@@ -59,8 +59,7 @@ pipeline {
         stage('Docker Compose') {
             steps {
                 dir('DOCKER') {
-                    sh 'docker compose config --quiet'
-                    sh 'docker compose up -d --build springboot angular'
+                    sh 'docker compose up -d'
                     sh 'docker compose ps'
                 }
             }
