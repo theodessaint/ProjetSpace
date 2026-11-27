@@ -15,7 +15,7 @@ services:
 
     # Port où l'on pourra se connecter pour avoir la base MySQL
     ports:
-      - 3306:3306
+      - 3336:3306
 
     #Le chemin du fichier à executer
     volumes:
@@ -65,7 +65,7 @@ services:
      - ../secrets/jwt.key:/secrets/jwt.key
 
     ports:
-     - 8080:8080
+     - 8082:8080
 
     networks:
       - space-station-network
