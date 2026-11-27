@@ -977,3 +977,30 @@ body {
   top: 4.2rem;
 }
 
+/* ---------- Bonus de rôle dans la pop-up d'affectation ---------- */
+.astronaute .role {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.5rem;
+}
+
+.bonus-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--etoile);
+}
+
+.bonus-effet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  font-weight: 600;
+}
+
+.bonus-effet img {
+  width: 1rem;
+  height: 1rem;
+  object-fit: contain;
+}
