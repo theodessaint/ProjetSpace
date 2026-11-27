@@ -337,16 +337,14 @@ affecter(a: Astronaute, event: Event) {
 
 
 ngOnInit(): void {
-  this.stationService.findById(this.stationId).subscribe({
-    next: (s) => {
-      this.station.set(s);
+  const s = this.route.snapshot.data['station'] as StationSpatiale;
 
-      // Le tuto ne se lance que sur une partie toute nouvelle (neuve)(cycle 0 et aucun module du tuto débloqué)
-      const neuve = s.cycle === 0 && !this.modulesTutoDebloques(s);
-      this.visible.set(neuve); //si on rafraichit la page, le tuto ne se relance pas
-    },
-    error: (e) => this.afficherErreur(e),
-  });
+  this.stationId = s.id;
+  this.station.set(s);
+
+  // Le tuto ne se lance que sur une partie toute nouvelle (neuve)(cycle 0 et aucun module du tuto débloqué)
+  const neuve = s.cycle === 0 && !this.modulesTutoDebloques(s);
+  this.visible.set(neuve); //si on rafraichit la page, le tuto ne se relance pas
 
   // On charge les bonus du back une seule fois, et on traduit les noms pour le front
   this.stationService.findAllBonus().subscribe({
