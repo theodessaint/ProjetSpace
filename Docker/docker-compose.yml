@@ -65,7 +65,7 @@ services:
     volumes:
      - ../secrets/jwt.key:/secrets/jwt.key
 
-    ports:
+    # ports:
     #  - 7002:8080 # Pas besoin d'être accessible en dehors du réseau Docker par les utilisateurs
 
     networks:
