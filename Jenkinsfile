@@ -5,9 +5,6 @@ pipeline {
         stage('Diagnostic Docker') {
             steps {
                 sh '''
-                    echo "=== Conteneurs utilisant le port 8092 ==="
-                    docker ps --filter publish=8092
-
                     echo "=== Conteneurs existants ==="
                     docker ps -a
 
@@ -91,17 +88,17 @@ pipeline {
                     echo "=== Frontend déployé ==="
                     docker exec space-station-front \
                         grep -rlF 'localhost:8080' /usr/share/nginx/html || true
-
-                    echo "=== Configuration Nginx ==="
-                    docker exec space-station-front nginx -T
                 '''
+            }
+        }
+        stage('Diagnostic Docker') {
+            steps {
                 sh '''
-                    echo "=== Adresse API dans le frontend déployé ==="
-                    docker exec space-station-front \
-                        grep -rlF 'localhost:8080' /usr/share/nginx/html || true
+                    echo "=== Conteneurs existants ==="
+                    docker ps -a
 
-                    echo "=== Configuration Nginx effective ==="
-                    docker exec space-station-front nginx -T
+                    echo "=== Projets Docker Compose ==="
+                    docker compose ls
                 '''
             }
         }
