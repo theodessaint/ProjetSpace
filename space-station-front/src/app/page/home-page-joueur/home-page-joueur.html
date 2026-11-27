@@ -37,24 +37,43 @@
 
   <!-- Choix d'une partie à charger -->
   <dialog #dialogParties class="choix-partie">
-    <h2>Mes parties</h2>
-    <p class="sous-titre">Choisissez la partie à reprendre</p>
+  <h2>Mes parties</h2>
+  <p class="sous-titre">Choisissez la partie à reprendre</p>
 
-    <div class="liste-contenu">
-      @for (partie of parties(); track partie.id) {
-        <button class="partie" (click)="demarrerPartie(partie.id)">
-          <span class="partie-nom">{{ partie.nom }}</span>
-          <span class="partie-infos">cycle {{ partie.cycle }} - {{ partie.nbModulesDebloques }} modules debloqués</span>
-        </button>
-      } @empty {
-        <p class="aide">Aucune partie en cours, veuillez en créer une.</p>
-      }
-    </div>
+  <div class="liste-contenu">
+    @for (partie of parties(); track partie.id) {
 
-    <form method="dialog">
-      <button class="btn">Fermer</button>
-    </form>
-  </dialog>
+      <button
+        class="partie"
+        [disabled]="partie.statut !== 'EN_COURS'"
+        [class.partie-defaite]="partie.statut === 'DEFAITE'"
+        [class.partie-victoire]="partie.statut === 'VICTOIRE'"
+        (click)="demarrerPartie(partie.id)">
+
+        <span class="partie-nom">{{ partie.nom }}</span>
+
+        <span class="partie-infos">
+          Cycle {{ partie.cycle }} -
+          {{ partie.nbModulesDebloques }} modules débloqués
+        </span>
+
+        @if (partie.statut === 'DEFAITE') {
+          <span class="partie-statut">Partie terminée - Défaite</span>
+        } @else if (partie.statut === 'VICTOIRE') {
+          <span class="partie-statut">Partie terminée - Victoire</span>
+        }
+
+      </button>
+
+    } @empty {
+      <p class="aide">Aucune partie disponible, veuillez en créer une.</p>
+    }
+  </div>
+
+  <form method="dialog">
+    <button class="btn">Fermer</button>
+  </form>
+</dialog>
 
 
 </main>

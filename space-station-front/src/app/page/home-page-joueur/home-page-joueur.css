@@ -2,8 +2,8 @@
 /* Ma palette de couleur */
 
 :root { /* Utile pour declaré des propriétés CSS personnalisées globales */
-  
-/* fait avec color.adobe.com  */
+
+  /* fait avec color.adobe.com  */
 
   --vide: #050816;
   --nuit: #0c1233;
@@ -13,23 +13,23 @@
   --trait: rgba(160, 190, 255, 0.22); /* pour les bordures  */
 }
 
-html, body { 
-   height: 100%;
-   margin: 0;
-   }
- 
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
 body {
-  background: var(--vide);   
+  background: var(--vide);
   color: var(--etoile); /* couleur du texte par défaut  */
   font-family: system-ui, sans-serif; /* Juste une police (on verra plus tard) */
   overflow-x: hidden;   /*  gère ce qui dépasse horizontalement (askip c bien poru un background dynamique*/
 }
 
- 
+
 /* haut du haut */
 .haut {
   position: relative; /* permet d'utiliser z-index */
-  z-index: 3; /* fond d'écran dynamique donc on passe par exemple se déconnecter au premier plan pour éviter 
+  z-index: 3; /* fond d'écran dynamique donc on passe par exemple se déconnecter au premier plan pour éviter
   que des étoile snous empêchent de cliquer */
   display: flex;
   justify-content: space-between;
@@ -39,7 +39,7 @@ body {
 .haut-compte { color: var(--glace); }
 .haut-lien { color: var(--etoile); opacity: 0.75; text-decoration: none; } /* pas souligné de base */
 .haut-lien:hover { opacity: 1; text-decoration: underline; } /*hover : quand on passe la souris dessus active ça */
- 
+
 /* Contenu */
 .accueil {
   position: relative;
@@ -50,7 +50,7 @@ body {
   text-align: center;
   padding: 2vh 1.25rem 12vh;
 }
- 
+
 .titre { /* pour c egenr ede truc l'ia a fait le taff */
   font-family: "Chakra Petch", sans-serif;
   font-weight: 700;
@@ -64,14 +64,14 @@ body {
   color: transparent;
   filter: drop-shadow(0 0 22px rgba(120, 150, 255, 0.45));
 }
- 
+
 .accroche {
   max-width: 34ch;
   margin: 0 0 2rem;
   color: #b9c4ee;
   font-size: 1.05rem;
 }
- 
+
 /* Menu */
 .menu {
   display: flex;
@@ -84,7 +84,7 @@ body {
   border-radius: 14px;
   backdrop-filter: blur(6px);
 }
- 
+
 .btn {
   font: 500 1.05rem "Chakra Petch", sans-serif;
   letter-spacing: 0.03em;
@@ -97,7 +97,7 @@ body {
   transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 .btn:hover { background: rgba(160, 190, 255, 0.12); border-color: var(--glace); }
- 
+
 .btn-principal {
   color: #1a1100;
   background: var(--signal);
@@ -106,11 +106,11 @@ body {
   box-shadow: 0 0 22px rgba(255, 180, 84, 0.35);
 }
 .btn-principal:hover { background: #ffc473; border-color: #ffc473; box-shadow: 0 0 30px rgba(255, 180, 84, 0.55); }
- 
+
 /* Difficulté */
 .difficulte { margin: 0.4rem 0 0; padding: 0; border: 0; }
 .difficulte legend { padding: 0; margin-bottom: 0.5rem; font-size: 0.9rem; color: #b9c4ee; }
- 
+
 .btndiff { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--trait); border-radius: 8px; overflow: hidden; }
 .btndiff input { position: absolute; opacity: 0; pointer-events: none; }
 .btndiff label {
@@ -121,19 +121,29 @@ body {
 }
 .btndiff label:hover { background: rgba(160, 190, 255, 0.12); }
 .btndiff input:checked + label { background: var(--glace); color: #04202a; font-weight: 500; }
- 
+
 .aide { min-height: 2.6em; margin: 0.6rem 0 0; font-size: 0.85rem; color: #98a6d6; }
 
 /* ---------- Fenêtre de choix d'une partie ---------- */
 
 .choix-partie {
   width: min(460px, 90vw);
+  height: fit-content;
+  max-height: 70vh;
+  min-height: 0;
+  box-sizing: border-box;
   padding: 24px;
   color: #e8ecff;
   background: #0d1433;
   border: 1px solid #2a3566;
   border-radius: 16px;
   text-align: center;
+  overflow: hidden;
+}
+
+.choix-partie[open] {
+  display: flex;
+  flex-direction: column;
 }
 
 .choix-partie::backdrop { background: rgba(3, 6, 20, 0.7); }
@@ -143,6 +153,11 @@ body {
   font: 500 1.4rem "Chakra Petch", sans-serif;
 }
 
+.choix-partie h2,
+.choix-partie .sous-titre {
+  flex-shrink: 0;
+}
+
 .choix-partie .sous-titre {
   margin: 0 0 20px;
   font-size: 1rem;
@@ -150,8 +165,11 @@ body {
 }
 
 .choix-partie .liste-contenu {
-  max-height: 13rem;
+  max-height: none;
   text-align: left;   /* la fenêtre centre son titre, pas ses entrées */
+    flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .choix-partie .partie {
@@ -159,23 +177,31 @@ body {
   border-color: #2a3566;
 }
 
-.choix-partie .partie:hover {
+.choix-partie .partie:not(:disabled):hover {
   background: rgba(40, 56, 120, 0.7);
   border-color: #f59e0b;
 }
 
 /* Bouton discret, dans l'esprit de « Passer le tuto » */
-.choix-partie form { margin: 0; }
+.choix-partie form {
+  flex-shrink: 0;
+  margin: 15px 0 0;
+  padding: 0;
+}
 
 .choix-partie form .btn {
   display: block;
-  margin: 18px auto 0;
+  margin: 0 auto;
   padding: 0;
   border: none;
   background: none;
   color: #8f9acb;
   font-size: 0.85rem;
   text-decoration: underline;
+}
+
+.choix-partie form .btn:hover {
+  color: var(--etoile);
 }
 
 .choix-partie .aide {
@@ -187,8 +213,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-
-  max-height: 14rem;     /* environ quatre parties visibles */
+  /* max-height: 14rem;     environ quatre parties visibles */
   overflow-y: auto;
   padding-right: 0.4rem; /* évite que la barre colle aux boutons */
 }
@@ -219,7 +244,7 @@ body {
   transition: background 0.2s, border-color 0.2s;
 }
 
-.partie:hover {
+.partie:not(:disabled):hover {
   background: rgba(160, 190, 255, 0.12);
   border-color: var(--glace);
 }
@@ -238,7 +263,43 @@ body {
   min-height: auto;   /* le 2.6em du menu laisserait un trou ici */
   margin: 0;
 }
- 
+
+/* Parties terminées */
+.partie:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Message de fin de partie */
+.partie-statut {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Défaite */
+.partie.partie-defaite {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+.partie-defaite .partie-statut {
+  color: #ef4444;
+}
+
+/* Victoire */
+.partie.partie-victoire {
+  border-color: #4ade80;
+  background-color: rgba(74, 222, 128, 0.08);
+}
+
+.partie-victoire .partie-statut {
+  color: #4ade80;
+}
+
 /* Fenêtre de création d'une partie */
 
 .nouvelle-partie {
@@ -323,9 +384,9 @@ body {
   z-index: 2;               /* au-dessus des étoiles, sous ton contenu (z-index 3) */
   font-size: 3rem;
   pointer-events: none;     /* ne bloque pas les clics */
-  transition: transform 10s ease-in-out; 
+  transition: transform 10s ease-in-out;
   opacity: 0.8;
-    /* durée du trajet */
+  /* durée du trajet */
 }
 
 .astronaute:nth-of-type(2) {

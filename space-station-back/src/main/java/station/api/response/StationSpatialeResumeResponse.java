@@ -1,5 +1,6 @@
 package station.api.response;
 
+import station.enumerator.StatutPartieEnum;
 import station.model.StationSpatiale;
 
 public class StationSpatialeResumeResponse {
@@ -7,6 +8,7 @@ public class StationSpatialeResumeResponse {
     private Integer id;
     private String nom;
     private Integer cycle;
+    private StatutPartieEnum statut;
     private long nbModulesDebloques;
     
     public static StationSpatialeResumeResponse convert(StationSpatiale station){
@@ -15,6 +17,7 @@ public class StationSpatialeResumeResponse {
         response.id = station.getId();
         response.nom = station.getNom();
         response.cycle = station.getCycle();
+        response.statut = station.getStatut();
         
         response.nbModulesDebloques = station.getModules().stream()
         .filter(module -> module.isDebloque())
@@ -33,6 +36,10 @@ public class StationSpatialeResumeResponse {
 
     public Integer getCycle() {
         return cycle;
+    }
+
+    public StatutPartieEnum getStatut(){
+        return statut;
     }
 
     public long getNbModulesDebloques() {

@@ -16,35 +16,35 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
   private router = inject(Router);
   private authService = inject(AuthService);
   private joueurService = inject(JoueurService);
-  
+
   @ViewChildren('astronaute') astros!: QueryList<ElementRef<HTMLImageElement>>;
   @ViewChild('regles') regles!: ElementRef<HTMLDialogElement>;
   @ViewChild('dialogNom') dialogNom!: ElementRef<HTMLDialogElement>;
   @ViewChild('dialogParties') dialogParties!: ElementRef<HTMLDialogElement>;
   private timer?: ReturnType<typeof setInterval>;
-  
+
   nouveauNom = '';
-  
+
   username = this.authService.username;
-  
+
   difficulte = 'normal';
   aides: Record<string, string> = {
     facile:    'Ressources de départ généreuses / Les ressources sont consommées plus lentement et leurs créations sont augmentées.',
     normal:    'Ressources de départ standard / Les ressources sont consommées et produites de manière équilibrée.',
     difficile: 'Ressources de départ limitées / Les ressources sont consommées plus vite et leurs créations sont ralenties.',
   };
-  
+
   parties = signal<StationSpatialeResume[]>([]); // Permet de prévenir angular que la valeur change pour que la liste s'affiche avec un seul click et pas deux
-  
+
   ngAfterViewInit(): void {
     this.deplacer();
     this.timer = setInterval(() => this.deplacer(), 10000);
   }
-  
+
   ngOnDestroy(): void {
     clearInterval(this.timer);
   }
-  
+
   private deplacer(): void {
     this.astros.forEach(astros => {
       const x = Math.random() * (window.innerWidth - 200);
@@ -52,44 +52,52 @@ export class HomePageJoueur implements AfterViewInit, OnDestroy {
       const angle = Math.random() * 60 - 30;
       astros.nativeElement.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
     });
-    
+
   }
-  
+
   ouvrirRegles(): void {
     this.regles.nativeElement.showModal();
   }
-  
+
   nouvellePartie(): void {
     this.nouveauNom = '';
     this.dialogNom.nativeElement.showModal();
-    
+
   }
-  
+
   confirmerCreation(): void {
-    console.log('Créer une partie : ', this.nouveauNom,  ' | difficulté : ', this.difficulte);   
-    
+    console.log('Créer une partie : ', this.nouveauNom,  ' | difficulté : ', this.difficulte);
+
     this.joueurService.creerPartie(this.nouveauNom).subscribe(reponse => {
       console.log('Partie créée, id : ', reponse.id);
       this.router.navigate(['/game', reponse.id]);
     });
   }
-  
+
   chargerListeParties(): void {
-    console.log('Liste des parties');
-    
-    this.joueurService.findMesParties().subscribe(parties => {
-      console.log('Parties du joueur :', parties);
-      this.parties.set(parties);
-      this.dialogParties.nativeElement.showModal();
+  this.joueurService.findMesParties().subscribe(parties => {
+
+    const partiesTriees = [...parties].sort((a, b) => {
+
+      // Priorité aux parties en cours
+      if (a.statut === 'EN_COURS' && b.statut !== 'EN_COURS') return -1;
+      if (a.statut !== 'EN_COURS' && b.statut === 'EN_COURS') return 1;
+
+      // Tri par nombre de cycles décroissant
+      return b.cycle - a.cycle;
     });
-  }
-  
+
+    this.parties.set(partiesTriees);
+    this.dialogParties.nativeElement.showModal();
+  });
+}
+
   demarrerPartie(id: number): void {
     console.log('Chargement de la partie', id);
-    
+
     this.router.navigate(['/game/', id]);
   }
-  
+
   deconnexion(event: Event): void {
     event.preventDefault();
     this.authService.resetAuth();
