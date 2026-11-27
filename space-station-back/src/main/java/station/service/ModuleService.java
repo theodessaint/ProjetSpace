@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import station.api.request.CreateOrUpdateModuleRequest;
 import station.config.PartieConfig;
 import station.enumerator.RessourceEnum;
+import station.exception.PartieTermineeException;
 import station.exception.StationSpatialeNotFoundException;
 import station.model.Grille;
 import station.model.Module;
@@ -105,11 +106,15 @@ public class ModuleService {
         
         Module module = this.findById(id);
         
+        StationSpatiale station = module.getStation();
+        
+        if (!station.estEnCours()) {
+            throw new PartieTermineeException();
+        }
+        
         if (module.isDebloque()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ce module est déjà débloqué");
         }
-        
-        StationSpatiale station = module.getStation();
         
         // Les 3 premiers modules (tuto) sont gratuits et sans condition de cycle
         boolean estTuto = Grille.estPremierModule(module.getPosition());
@@ -138,7 +143,7 @@ public class ModuleService {
         
         // Toutes les vérifications sont passées : on fait payer (sauf les modules du tuto)
         if (!estTuto) {
-
+            
             this.retirerEnergie(station, COUT_ENERGIE_DEBLOCAGE);
         }
         
