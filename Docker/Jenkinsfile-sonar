@@ -1,0 +1,71 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git checkout') {
+            steps {
+                git credentialsId: 'github-g3',
+                    url: 'git@github.com:theodessaint/ProjetSpace.git',
+                    branch: 'main'
+            }
+        }
+
+        stage('Maven Package') {
+            agent {
+                docker {
+                    image 'maven:3.10.0-eclipse-temurin-21'
+                    args '''
+                        -v $HOME/.m2:/root/.m2:z
+                        -u root
+                    '''
+                    reuseNode true // Permet de partager l'espace de travail entre l'agent Jenkins et l'agent Docker
+                }
+            }
+
+            steps {
+                dir('space-station-back') {
+                    withSonarQubeEnv('sonar') {
+                        sh 'mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=space-station-back'
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+        
+        stage('NG Build') {
+            agent {
+                docker {
+                    image 'node:lts-bullseye'
+                    args '''
+                        -v $HOME/.npm:/root/.npm:z
+                        -u root
+                    '''
+                    reuseNode true
+                }
+            }
+            steps {
+                steps {
+                    dir('space-station-front') {
+                        sh 'npm ci'
+                        sh 'npm run build'
+                    }
+                }
+            }
+        }
+
+        stage('Docker Compose') {
+            steps {
+                dir('DOCKER') {
+                    sh 'docker compose up -d --build java'
+                }
+            }
+        }
+    }
+}
