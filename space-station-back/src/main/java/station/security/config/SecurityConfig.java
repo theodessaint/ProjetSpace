@@ -115,19 +115,19 @@ public class SecurityConfig {
     }
     
     // Configuration Cross-Origin Resource Sharing - permet à un serveur d'indiquer aux navigateurs quelles applications web peuvent accéder à ses ressources
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource corsSource = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
+    // @Bean
+    // CorsConfigurationSource corsConfigurationSource() {
+    //     UrlBasedCorsConfigurationSource corsSource = new UrlBasedCorsConfigurationSource();
+    //     CorsConfiguration corsConfiguration = new CorsConfiguration();
         
-        corsConfiguration.setAllowedHeaders(List.of("*"));
-        corsConfiguration.setAllowedMethods(List.of("*"));
-        corsConfiguration.setAllowedOrigins(List.of("*"));
+    //     corsConfiguration.setAllowedHeaders(List.of("*"));
+    //     corsConfiguration.setAllowedMethods(List.of("*"));
+    //     corsConfiguration.setAllowedOrigins(List.of("*"));
         
-        corsSource.registerCorsConfiguration("/**", corsConfiguration);
+    //     corsSource.registerCorsConfiguration("/**", corsConfiguration);
         
-        return corsSource;
-    }
+    //     return corsSource;
+    // }
     
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
