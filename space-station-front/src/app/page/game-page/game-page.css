@@ -329,13 +329,13 @@ body {
   border-radius: 8px;
   pointer-events: none;
 }
- 
+
 .travaux img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
- 
+
 /* ---------- Cycle, erreurs, alertes ---------- */
 .cycle-actuel {
   position: fixed;
@@ -348,7 +348,7 @@ body {
   border: 1px solid var(--trait);
   border-radius: 999px;
 }
- 
+
 .message-erreur {
   position: fixed;
   top: 1rem;
@@ -361,7 +361,7 @@ body {
   background: rgba(150, 30, 30, 0.95);
   border-radius: 10px;
 }
- 
+
 .alerte-deblocage {
   margin: 0;
   padding: 0.4rem 0.7rem;
@@ -370,14 +370,14 @@ body {
   font: 600 0.8rem 'Chakra Petch', system-ui, sans-serif;
   color: var(--signal);
 }
- 
+
 .btn-action:disabled,
 .module:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
 }
- 
+
 /* ---------- Menu des modules ---------- */
 .menu-modules-container {
   position: fixed;
@@ -389,7 +389,7 @@ body {
   align-items: flex-end;
   gap: 0.5rem;
 }
- 
+
 .panneau-modules {
   width: 17rem;
   padding: 0.8rem;
@@ -397,14 +397,14 @@ body {
   border: 1px solid var(--trait);
   border-radius: 12px;
 }
- 
+
 .panneau-entete {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font: 700 0.95rem 'Chakra Petch', system-ui, sans-serif;
 }
- 
+
 .fermer-panneau {
   background: none;
   border: none;
@@ -412,19 +412,19 @@ body {
   font-size: 1rem;
   cursor: pointer;
 }
- 
+
 .info-deblocage {
   margin: 0.5rem 0;
   font-size: 0.82rem;
   color: var(--glace);
 }
- 
+
 .liste-modules {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
- 
+
 .liste-modules .module {
   text-align: left;
 }
@@ -577,7 +577,7 @@ body {
   justify-content: center;
   z-index: 1000;
 }
- 
+
 .fin-cycle-popup {
   width: 620px;
   max-height: 85vh;
@@ -591,7 +591,7 @@ body {
   color: #e0f7ff;
   text-align: center;
 }
- 
+
 .fin-cycle-popup h2 {
   margin: 0;
   font-size: 1.8rem;
@@ -599,19 +599,46 @@ body {
   text-transform: uppercase;
   color: #4fc3f7;
 }
- 
+
 .fin-cycle-sous-titre {
   margin: 6px 0 20px;
   opacity: 0.8;
 }
- 
+
+.alerte-danger {
+  color: #e6a23c;
+  font-weight: 500;
+}
+
+.alerte-danger-ressources {
+  font-weight: bold;
+}
+
+.alerte-critique {
+  color: #ff4444;
+  font-weight: bold;
+  border: 1px solid #ff4444;
+  background-color: #ff444415;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.alerte-defaite {
+  color: #ff4444;
+  font-weight: bold;
+  border: 1px solid #ff4444;
+  background-color: #ff444415;
+  padding: 12px;
+  border-radius: 6px;
+}
+
 /* ---------- Onglets ---------- */
 .fin-cycle-onglets {
   display: flex;
   gap: 8px;
   margin-bottom: 15px;
 }
- 
+
 .fin-cycle-onglets button {
   flex: 1;
   padding: 8px;
@@ -621,61 +648,61 @@ body {
   color: #e0f7ff;
   cursor: pointer;
 }
- 
+
 .fin-cycle-onglets button.actif {
   background: rgba(79, 195, 247, 0.2);
   border-color: #4fc3f7;
   color: #4fc3f7;
   font-weight: bold;
 }
- 
+
 /* zone qui défile s'il y a beaucoup de modules */
 .fin-cycle-contenu {
   overflow-y: auto;
   margin-bottom: 20px;
   padding-right: 4px;
 }
- 
+
 /* ---------- Tableaux ---------- */
 .fin-cycle-table {
   width: 100%;
   border-collapse: collapse;
 }
- 
+
 .fin-cycle-table th,
 .fin-cycle-table td {
   padding: 10px;
   border-bottom: 1px solid rgba(79, 195, 247, 0.25);
 }
- 
+
 .fin-cycle-table th {
   color: #4fc3f7;
   font-weight: normal;
   text-transform: uppercase;
   font-size: 0.85rem;
 }
- 
+
 .fin-cycle-table.petite th,
 .fin-cycle-table.petite td {
   padding: 6px;
   font-size: 0.9rem;
 }
- 
+
 .fin-cycle-ressource {
   display: flex;
   align-items: center;
   gap: 10px;
   text-align: left;
 }
- 
+
 .fin-cycle-ressource img {
   width: 28px;
   height: 28px;
 }
- 
+
 .conso, .negatif { color: #ff6b6b; }
 .prod, .positif  { color: #69f0ae; }
- 
+
 /* ---------- Onglet "Par module" ---------- */
 .fin-cycle-module {
   border: 1px solid rgba(79, 195, 247, 0.25);
@@ -683,34 +710,34 @@ body {
   margin-bottom: 8px;
   text-align: left;
 }
- 
+
 .fin-cycle-module.ouvert {
   border-color: #4fc3f7;
   background: rgba(79, 195, 247, 0.06);
 }
- 
+
 .fin-cycle-module-entete {
   display: flex;
   justify-content: space-between;
   padding: 10px 14px;
   cursor: pointer;
 }
- 
+
 .fin-cycle-module-entete:hover {
   background: rgba(79, 195, 247, 0.1);
 }
- 
+
 .fin-cycle-module-detail {
   padding: 0 14px 12px;
 }
- 
+
 .fin-cycle-astronautes {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 10px;
 }
- 
+
 .chip {
   background: rgba(105, 240, 174, 0.15);
   border: 1px solid #69f0ae;
@@ -718,21 +745,21 @@ body {
   padding: 3px 10px;
   font-size: 0.85rem;
 }
- 
+
 .aucun {
   opacity: 0.6;
   font-style: italic;
   font-size: 0.85rem;
   margin: 0 0 8px;
 }
- 
+
 /* ---------- Boutons ---------- */
 .fin-cycle-boutons {
   display: flex;
   justify-content: space-between;
   gap: 15px;
 }
- 
+
 .fin-cycle-btn {
   flex: 1;
   padding: 12px;
@@ -741,21 +768,61 @@ body {
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
 }
- 
+
 .fin-cycle-btn:hover {
   transform: scale(1.04);
   box-shadow: 0 0 12px rgba(79, 195, 247, 0.7);
 }
- 
+
 .fin-cycle-btn.principal {
   background: #4fc3f7;
   border: none;
   color: #0b1630;
   font-weight: bold;
 }
- 
+
 .fin-cycle-btn.secondaire {
   background: transparent;
   border: 1px solid #4fc3f7;
   color: #4fc3f7;
+}
+
+.fin-cycle-btn.evacuation {
+  background-color: #b91c1c;
+  border: 1px solid #ef4444;
+  color: #ffffff;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+}
+
+.fin-cycle-btn.evacuation:hover {
+  background-color: #dc2626;
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.5);
+}
+
+.fin-cycle-btn.victoire {
+  background-color: #15803d;
+  border: 1px solid #4ade80;
+  color: #ffffff;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
+}
+
+.fin-cycle-btn.victoire:hover {
+  background-color: #16a34a;
+  box-shadow: 0 0 18px rgba(74, 222, 128, 0.5);
+}
+
+.fin-cycle-btn.evacuation,
+.fin-cycle-btn.victoire {
+  min-width: 220px;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.fin-cycle-btn.evacuation:active,
+.fin-cycle-btn.victoire:active {
+  transform: scale(0.98);
 }

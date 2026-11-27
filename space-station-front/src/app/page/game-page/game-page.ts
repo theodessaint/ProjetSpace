@@ -3,9 +3,11 @@ import { Component, computed, inject, OnInit, signal, ViewEncapsulation } from '
 import { ActivatedRoute, Router } from '@angular/router';
 import { Astronaute } from '../../model/astronaute';
 import { Module } from '../../model/module';
+import { RessourceEnum } from '../../model/ressource';
 import { StationSpatiale } from '../../model/station-spatiale';
 import { StationSpatialeService } from '../../service/station-spatiale-service';
-import { RessourceEnum } from '../../model/ressource';
+import { DecimalPipe } from '@angular/common';
+import { StatutPartieEnum } from '../../model/statut-partie';
 
 
 type TypeModule = 'machines' | 'serre' | 'recyclage';
@@ -33,13 +35,13 @@ type Emplacement = {
 
 // ---------- RAPPORT DE FIN DE CYCLE ----------
 type FluxRessource = { ressource: string; consommee: number; produite: number };
-type RapportModule = { id: number; label: string; astronautes: string[]; flux: FluxRessource[]; bonus: string[] };
+type RapportModule = { id: number; label: string; actif: boolean, astronautes: string[]; flux: FluxRessource[]; bonus: string[] };
 const RESSOURCES = ['Oxygène', 'Eau', 'Nourriture', 'Énergie'];
 type Flux = Partial<Record<string, number>>; // ex : { 'Énergie': 5, 'Eau': 6 }
-const SEUILS_RESSOURCES: Record<string, number> = {
-  'danger': 55,
-  'critique': 45
-};
+const SEUILS_RESSOURCES = {
+  danger: 55,
+  critique: 45
+} as const;
 
 // Un bonus de rôle (reçu du back via GET /bonus, puis traduit pour le front)
 type Bonus = { role: string; module: TypeModule; ressource: string; multiplicateur: number };
@@ -117,7 +119,7 @@ type ModuleVue = Module & Emplacement & { tuto: boolean };
 type Destination = { id: number; label: string; occupes: number; max: number | null };
 
 @Component({
-  imports: [],
+  imports: [DecimalPipe],
   selector: 'app-game-page',
   styleUrl: './game-page.css',
   templateUrl: './game-page.html',
@@ -134,6 +136,18 @@ export class GamePage implements OnInit {
   station = signal<StationSpatiale | null>(null); // rappel : un signal continient une valeur, quand elle change angular met à jour direct dans html
   enCours = signal(false); // une requête est en cours : on bloque les boutons
   erreur = signal('');// message d'erreur du back (ex : déblocage refusé)
+
+  protected readonly partiePerdue = computed(
+    () => this.station()?.statut === StatutPartieEnum.DEFAITE
+  );
+
+  protected readonly partieGagnee = computed(
+    () => this.station()?.statut === StatutPartieEnum.VICTOIRE
+  );
+
+  protected readonly partieTerminee = computed(
+    () => this.partiePerdue() || this.partieGagnee()
+  );
 
   protected stats_oxygene = computed(
     () => this.station()?.stats.find(
@@ -159,325 +173,367 @@ export class GamePage implements OnInit {
     )
   );
 
-  cycle = computed(() => this.station()?.cycle ?? 0);// cycle en cours, pour l'afficher dans le centre de commandement
-  deblocagesDisponibles = computed(() => this.station()?.nbDeblocagesDisponibles ?? 0);// combien de modules le joueur peut encore débloquer avant le prochain palier genre 5, 10, 15…
-  //?? 0 si le résultat est null ou undefined, on renvoie 0 par défaut.
-  deblocageObligatoire = computed(() => this.station()?.deblocageObligatoire ?? false);// le joueur doit débloquer un module avant de passer au cycle suivant
-  prochainDeblocage = computed(
-    () => (Math.floor(this.cycle() / CYCLES_PAR_DEBLOCAGE) + 1) * CYCLES_PAR_DEBLOCAGE,
-  );// le cycle où le joueur devra débloquer un module (ex : 5, 10, 15…)
+  protected readonly SEUILS_RESSOURCES = SEUILS_RESSOURCES;
 
-  // Modules encore verrouillés, avec leur emplacement sur l'image (rubans « travaux » + menu)
-  modulesVerrouilles = computed<ModuleVue[]>(() => { // on ne peut pas faire de computed<ModuleVue[]> car on retourne null pour les modules sans emplacement, donc on doit filtrer après
-    const s = this.station();
-    if (!s) return [];// pas encore reçu du back, on ne peut rien afficher
+  protected readonly COUT_DEBLOCAGE_ENERGIE = 20;
+  protected readonly energieSuffisante = computed(() =>
+    (this.stats_energie()?.quantite ?? 0)
+  >= this.COUT_DEBLOCAGE_ENERGIE
+);
 
-    return s.modules
-    .filter((m) => !m.debloque)// filtre les modules déjà débloqués
-    .map((m) => {
-      const cle = this.cle(m);
-      const emplacement = EMPLACEMENTS[cle];
-      return emplacement ? { ...m, ...emplacement, tuto: POSITIONS_TUTO.includes(cle) } : null;
-    }) //fabrique la clé m --> genre x y par ex 2,1 va chercher dans la table la position du ruban pour cette clé
-    //{} en gros ca fusionne dans un seul objet les données du back celles de la table et un booléen tuto.
-    //POSITIONS_TUTO.includes(cle) vaut TRUE si c emodule est l'un des 3 du tutos
+cycle = computed(() => this.station()?.cycle ?? 0);// cycle en cours, pour l'afficher dans le centre de commandement
+deblocagesDisponibles = computed(() => this.station()?.nbDeblocagesDisponibles ?? 0);// combien de modules le joueur peut encore débloquer avant le prochain palier genre 5, 10, 15…
+//?? 0 si le résultat est null ou undefined, on renvoie 0 par défaut.
+deblocageObligatoire = computed(() => this.station()?.deblocageObligatoire ?? false);// le joueur doit débloquer un module avant de passer au cycle suivant
+prochainDeblocage = computed(
+  () => (Math.floor(this.cycle() / CYCLES_PAR_DEBLOCAGE) + 1) * CYCLES_PAR_DEBLOCAGE,
+);// le cycle où le joueur devra débloquer un module (ex : 5, 10, 15…)
 
-    //le back m'envoie m = { id: 12, nom: 'Serre', debloque: false, positionX: 4, positionY: 1, stationId: 8, ... }
-    //et le front emplacement = { label: 'Serre 1', type: 'serre', left: 60.3, top: 17.6, width: 10.9, height: 19.9 }
-    //on les fusionne en un seul objet car sinon le back ne sait pas ou dessiner le ruban
+// Modules encore verrouillés, avec leur emplacement sur l'image (rubans « travaux » + menu)
+modulesVerrouilles = computed<ModuleVue[]>(() => { // on ne peut pas faire de computed<ModuleVue[]> car on retourne null pour les modules sans emplacement, donc on doit filtrer après
+  const s = this.station();
+  if (!s) return [];// pas encore reçu du back, on ne peut rien afficher
 
-    .filter((m): m is ModuleVue => m !== null) //on retire de snull sinon la partie m is modelvue croirait qu'il peut rester des null
-    .sort((a, b) => a.label.localeCompare(b.label));
-  });// tri alphabétique pour que les modules du tuto apparaissent en premier dans le menu (pas utile mais vas y )
+  return s.modules
+  .filter((m) => !m.debloque)// filtre les modules déjà débloqués
+  .map((m) => {
+    const cle = this.cle(m);
+    const emplacement = EMPLACEMENTS[cle];
+    return emplacement ? { ...m, ...emplacement, tuto: POSITIONS_TUTO.includes(cle) } : null;
+  }) //fabrique la clé m --> genre x y par ex 2,1 va chercher dans la table la position du ruban pour cette clé
+  //{} en gros ca fusionne dans un seul objet les données du back celles de la table et un booléen tuto.
+  //POSITIONS_TUTO.includes(cle) vaut TRUE si c emodule est l'un des 3 du tutos
+
+  //le back m'envoie m = { id: 12, nom: 'Serre', debloque: false, positionX: 4, positionY: 1, stationId: 8, ... }
+  //et le front emplacement = { label: 'Serre 1', type: 'serre', left: 60.3, top: 17.6, width: 10.9, height: 19.9 }
+  //on les fusionne en un seul objet car sinon le back ne sait pas ou dessiner le ruban
+
+  .filter((m): m is ModuleVue => m !== null) //on retire de snull sinon la partie m is modelvue croirait qu'il peut rester des null
+  .sort((a, b) => a.label.localeCompare(b.label));
+});// tri alphabétique pour que les modules du tuto apparaissent en premier dans le menu (pas utile mais vas y )
 
 
-  // ---------- AFFECTATION DES ASTRONAUTES ----------
+// ---------- AFFECTATION DES ASTRONAUTES ----------
 
-  // Le HTML ne peut pas lire les constantes du haut du fichier (CENTRE_COMMANDE),
-  // on la copie dans un champ de la classe pour que le HTML puisse l'utiliser
-  centre = CENTRE_COMMANDE;
+// Le HTML ne peut pas lire les constantes du haut du fichier (CENTRE_COMMANDE),
+// on la copie dans un champ de la classe pour que le HTML puisse l'utiliser
+centre = CENTRE_COMMANDE;
 
-  // signal = une valeur que Angular surveille. true : la pop-up est affichée, false : elle est cachée (au cas ou on sait plus ce qu'est un signal=)
-  affectationOuverte = signal(false);
+// signal = une valeur que Angular surveille. true : la pop-up est affichée, false : elle est cachée (au cas ou on sait plus ce qu'est un signal=)
+affectationOuverte = signal(false);
 
-  // Liste des astronautes de la station, recalculée (automatique en somme) toute seule quand la station change.
-  // station()?.astronautes : le ?. évite une erreur si la station n'est pas encore arrivée du back.
-  // ?? [] : si on n'a rien (null), on prend une liste vide
-  astronautes = computed(() => this.station()?.astronautes ?? []);
+// Liste des astronautes de la station, recalculée (automatique en somme) toute seule quand la station change.
+// station()?.astronautes : le ?. évite une erreur si la station n'est pas encore arrivée du back.
+// ?? [] : si on n'a rien (null), on prend une liste vide
+astronautes = computed(() => this.station()?.astronautes ?? []);
 
-  // Cherche dans les modules celui qui s'appelle 'Dortoir' (find renvoie le premier trouvé, ou undefined)
-  dortoir = computed(() => this.station()?.modules.find((m) => m.nom === 'Dortoir'));
+// Cherche dans les modules celui qui s'appelle 'Dortoir' (find renvoie le premier trouvé, ou undefined)
+dortoir = computed(() => this.station()?.modules.find((m) => m.nom === 'Dortoir'));
 
-  // Astronautes arrivés mais pas encore envoyés dans un module : ils attendent au Dortoir
-  // (sert à afficher la pastille orange sur le bouton)
-  nbEnAttente = computed(() => {
-    const dortoirId = this.dortoir()?.id; // l'id du Dortoir (undefined si pas encore chargé)
-    // filter garde les astronautes dont le module est le Dortoir, .length les compte
-    return this.astronautes().filter((a) => a.moduleId === dortoirId).length;
-  });
+// Astronautes arrivés mais pas encore envoyés dans un module : ils attendent au Dortoir
+// (sert à afficher la pastille orange sur le bouton)
+nbEnAttente = computed(() => {
+  const dortoirId = this.dortoir()?.id; // l'id du Dortoir (undefined si pas encore chargé)
+  // filter garde les astronautes dont le module est le Dortoir, .length les compte
+  return this.astronautes().filter((a) => a.moduleId === dortoirId).length;
+});
 
-  // Liste des modules proposés dans les listes déroulantes :
-  // débloqués, avec de la place (le Centre est exclu car il a 0 place)
-  destinations = computed<Destination[]>(() => {
-    const s = this.station();
-    if (!s) return []; // pas de station reçue : aucune destination
+// Liste des modules proposés dans les listes déroulantes :
+// débloqués, avec de la place (le Centre est exclu car il a 0 place)
+destinations = computed<Destination[]>(() => {
+  const s = this.station();
+  if (!s) return []; // pas de station reçue : aucune destination
 
-    return s.modules
-    // On garde un module s'il est débloqué ET (c'est le Dortoir OU il a au moins 1 place)
-    .filter((m) => m.debloque && (m.nom === 'Dortoir' || m.nbAstroModuleMax > 0))
-    // map transforme chaque module en un petit objet {id, label, occupes, max}
-    .map((m) => ({
-      id: m.id,
-      // Nom affiché : "Dortoir", ou le label du tableau EMPLACEMENTS (ex : "Serre 1").
-      // Si le label n'existe pas, on prend le nom du back (m.nom)
-      label: m.nom === 'Dortoir' ? 'Dortoir' : (EMPLACEMENTS[this.cle(m)]?.label ?? m.nom),
-      // Nombre d'astronautes déjà dans ce module
-      occupes: this.astronautes().filter((a) => a.moduleId === m.id).length,
-      max: m.nom === 'Dortoir' ? null : m.nbAstroModuleMax, // le Dortoir n'a pas de limite : null
-    }))
-    // Tri alphabétique par nom pour que la liste soit toujours dans le même ordre
-    .sort((a, b) => a.label.localeCompare(b.label));
-  });
+  return s.modules
+  // On garde un module s'il est débloqué ET (c'est le Dortoir OU il a au moins 1 place)
+  .filter((m) => m.debloque && (m.nom === 'Dortoir' || m.nbAstroModuleMax > 0))
+  // map transforme chaque module en un petit objet {id, label, occupes, max}
+  .map((m) => ({
+    id: m.id,
+    // Nom affiché : "Dortoir", ou le label du tableau EMPLACEMENTS (ex : "Serre 1").
+    // Si le label n'existe pas, on prend le nom du back (m.nom)
+    label: m.nom === 'Dortoir' ? 'Dortoir' : (EMPLACEMENTS[this.cle(m)]?.label ?? m.nom),
+    // Nombre d'astronautes déjà dans ce module
+    occupes: this.astronautes().filter((a) => a.moduleId === m.id).length,
+    max: m.nom === 'Dortoir' ? null : m.nbAstroModuleMax, // le Dortoir n'a pas de limite : null
+  }))
+  // Tri alphabétique par nom pour que la liste soit toujours dans le même ordre
+  .sort((a, b) => a.label.localeCompare(b.label));
+});
 
-  // Vrai si le module est plein, sauf pour l'astronaute qui s'y trouve déjà
-  // (sinon il ne pourrait pas rester sélectionné dans sa propre liste)
-  complet(d: Destination, a: Astronaute): boolean {
-    // d.max !== null : le module a une limite (pas le Dortoir)
-    // d.occupes >= d.max : il n'y a plus de place
-    // a.moduleId !== d.id : l'astronaute n'est pas déjà dans ce module
-    return d.max !== null && d.occupes >= d.max && a.moduleId !== d.id;
-  }
+// Vrai si le module est plein, sauf pour l'astronaute qui s'y trouve déjà
+// (sinon il ne pourrait pas rester sélectionné dans sa propre liste)
+complet(d: Destination, a: Astronaute): boolean {
+  // d.max !== null : le module a une limite (pas le Dortoir)
+  // d.occupes >= d.max : il n'y a plus de place
+  // a.moduleId !== d.id : l'astronaute n'est pas déjà dans ce module
+  return d.max !== null && d.occupes >= d.max && a.moduleId !== d.id;
+}
 
-  // Bouton du Centre de commandement : ouvre la pop-up d'affectation.
-  // Si aucun astronaute n'est encore arrivé, on fait d'abord arriver les 3 premiers.
-  ouvrirAffectation() {
-    if (this.enCours()) return; // une requête est déjà en cours : on ignore le clic
+// Bouton du Centre de commandement : ouvre la pop-up d'affectation.
+// Si aucun astronaute n'est encore arrivé, on fait d'abord arriver les 3 premiers.
+ouvrirAffectation() {
+  if (this.enCours()) return; // une requête est déjà en cours : on ignore le clic
 
-    // Aucun astronaute : on demande au back de faire arriver les 3 premiers
-    if (this.astronautes().length === 0) {
-      this.enCours.set(true); // on bloque les boutons pendant la requête
-      this.stationService.accueillirAstronaute(this.stationId).subscribe({
-        next: (s) => { // succès : le back renvoie la station avec ses 3 astronautes
-          this.station.set(s); // on met à jour l'écran avec la nouvelle station
-          this.enCours.set(false); // on débloque les boutons
-          this.affectationOuverte.set(true); // on ouvre la pop-up
-          this.actionFaite('accueillir'); // on prévient le tuto : l'étape « accueillir » est faite
-        },
-        error: (e) => { // échec : on débloque les boutons et on affiche le message d'erreur
-          this.enCours.set(false);
-          this.afficherErreur(e);
-        },
-      });
-      return; // on s'arrête là : la pop-up s'ouvrira quand le back aura répondu
-    }
-
-    // Il y a déjà des astronautes : on ouvre simplement la pop-up
-    this.affectationOuverte.set(true);
-    this.actionFaite('accueillir'); // utile si le tuto attend encore cette étape
-  }
-
-  // Ferme la pop-up (appelée par la croix ✕ ou par un clic sur le fond sombre)
-  fermerAffectation() {
-    this.affectationOuverte.set(false);
-  }
-
-  // Appelée quand le joueur choisit un autre module dans la liste déroulante d'un astronaute
-  affecter(a: Astronaute, event: Event) {
-    // event.target est la liste déroulante cliquée. On la convertit en HTMLSelectElement
-    // pour pouvoir lire sa valeur
-    const select = event.target as HTMLSelectElement;
-    // select.value est un texte (« 9 »), on le transforme en nombre
-    const moduleId = Number(select.value);
-    // On ne fait rien si une requête est en cours ou si le joueur a choisi le module où l'astronaute est déjà
-    if (this.enCours() || moduleId === a.moduleId) return;
-
+  // Aucun astronaute : on demande au back de faire arriver les 3 premiers
+  if (this.astronautes().length === 0) {
     this.enCours.set(true); // on bloque les boutons pendant la requête
-    // Envoie le PUT /astronaute/{id}/affecter au back avec le module choisi
-    this.stationService.affecterAstronaute(a.id, moduleId).subscribe({
-      next: () => { // le back a accepté l'affectation
-        // Vrai si le joueur a envoyé l'astronaute vers le Dortoir
-        const versDortoir = moduleId === this.dortoir()?.id;
-        // Pour le tuto : seule une affectation hors Dortoir compte.
-        // recharger() redemande la station au back, puis exécute la fonction fournie
-        this.recharger(() => {
-          if (!versDortoir) this.actionFaite('affecter'); // prévient le tuto que l'étape « affecter » est faite
-        });
-      },
-      error: (e) => { // le back a refusé (module plein, pas débloqué...)
+    this.stationService.accueillirAstronaute(this.stationId).subscribe({
+      next: (s) => { // succès : le back renvoie la station avec ses 3 astronautes
+        this.station.set(s); // on met à jour l'écran avec la nouvelle station
         this.enCours.set(false); // on débloque les boutons
-        this.afficherErreur(e); // on affiche le message d'erreur du back
-        // La liste déroulante affiche encore le mauvais choix : on la remet sur le vrai module
-        select.value = String(a.moduleId ?? '');
+        this.affectationOuverte.set(true); // on ouvre la pop-up
+        this.actionFaite('accueillir'); // on prévient le tuto : l'étape « accueillir » est faite
       },
-    });
-  }
-
-
-
-  ngOnInit(): void {
-    this.stationService.findById(this.stationId).subscribe({
-      next: (s) => {
-        this.station.set(s);
-
-        // Le tuto ne se lance que sur une partie toute nouvelle (neuve)(cycle 0 et aucun module du tuto débloqué)
-        const neuve = s.cycle === 0 && !this.modulesTutoDebloques(s);
-        this.visible.set(neuve); //si on rafraichit la page, le tuto ne se relance pas
-      },
-      error: (e) => this.afficherErreur(e),
-    });
-
-    // On charge les bonus du back une seule fois, et on traduit les noms pour le front
-    this.stationService.findAllBonus().subscribe({
-      next: (liste) =>
-        this.bonus.set(
-        liste.map((b) => ({
-          role: b.role, // comparé en minuscules dans meilleurBonus
-          module: MODULES_BACK[normaliser(b.module)], // 'SERRE' / 'Serre' → 'serre'
-          ressource: b.ressource, // déjà "Eau", "Oxygène"… (libellé envoyé par le back)
-          multiplicateur: b.multiplicateur,
-        })),
-      ),
-      error: (e) => this.afficherErreur(e),
-    });
-  }
-
-  private cle(m: Module): string {
-    return `${m.positionX},${m.positionY}`;
-  }//fabrique la clé texte à partir de la position. Pour x=2 et y=1, ça donne "2,1"
-
-  private modulesTutoDebloques(s: StationSpatiale): boolean {
-    return s.modules.some((m) => m.debloque && POSITIONS_TUTO.includes(this.cle(m)));
-  }//some répond true si au moins un module vérifie la condition. Ici : un module débloqué dont la position est dans la liste du tuto.
-
-  // Même règle que le back : il faut un module voisin déjà débloqué (ce qui impose l'ordre serre 1 → 2 → 3)
-  private aVoisinDebloque(m: Module): boolean {
-    const s = this.station();
-    if (!s) return false;
-
-    return s.modules.some(
-      (autre) =>
-        autre.debloque &&
-      Math.abs(autre.positionX - m.positionX) + Math.abs(autre.positionY - m.positionY) === 1,
-    );// ca c'est chat de a à z j'ai pas capté mais askip Deux modules sont voisins quand la distance entre eux vaut exactement 1 case.
-    // Math.abs prend la valeur absolue, pour ignorer le signe.
-    //On additionne l'écart en X et l'écart en Y.
-    //Serre 2 en (5,1) et Serre 1 en (4,1) : 1 + 0 = 1, donc voisines.
-    //Serre 3 en (6,1) et Serre 1 en (4,1) : 2 + 0 = 2, donc pas voisines.
-  }
-
-  peutDebloquer(m: ModuleVue): boolean {
-    if (this.enCours() || !this.aVoisinDebloque(m)) return false;//peut pas si requête deja en cours ou si module voisin pas débloqué
-
-    // Pendant une étape du tuto qui demande un module, seul celui-là est possible
-    const action = this.visible() ? this.etape().action : undefined; //Si le tuto est affiché, on regarde l'action que l'étape demande. Sinon il n'y a pas d'action.
-    if (action === 'machines' || action === 'serre' || action === 'recyclage') {
-      return m.tuto && m.type === action;
-    }
-
-    if (m.tuto) return true; // modules du tuto : gratuits, sans condition de cycle
-    //en gros à l'étape des machines dans le tuto, on ne peut pas débloquer une serre
-    return this.deblocagesDisponibles() > 0;
-  }
-
-  debloquerModule(m: ModuleVue) {
-    if (!this.peutDebloquer(m)) return; //si on peut on peut lol
-
-    this.enCours.set(true);
-    this.stationService.debloquerModule(m.id).subscribe({ //nvoie le PUT /module/{id}/debloquer au back
-      next: () => {
-        this.menuModulesOuvert.set(false);
-        // On recharge l'état depuis le back, puis on prévient le tuto
-        this.recharger(() => this.actionFaite(m.type));//en cas de succès --> ferme le menu, recharge station d epuis le back, le callback () => this.actionFaite(m.type)
-        // s'exécute ensuite et prévient le tuto qu'un module de ce type vient d'être débloqué, pour qu'il passe à l'étape suivante.
-      },
-      error: (e) => {
-        this.enCours.set(false);
-        this.afficherErreur(e);// en cas d'erreur --> les boutons sont débloquer (encours à false en gros) et on affiche le message d'erreur
-      },
-    });// en cas de succès on ferme le succès puis on recharge la station depuis le back
-  }
-
-  private recharger(apres?: () => void) {
-    this.stationService.findById(this.stationId).subscribe({
-      next: (s) => {
-        this.station.set(s);
-        this.enCours.set(false);
-        apres?.();
-      },
-      error: (e) => {
+      error: (e) => { // échec : on débloque les boutons et on affiche le message d'erreur
         this.enCours.set(false);
         this.afficherErreur(e);
-      },//après est utile car il faut d'abord recharger la station puis prevenir le tuto (ne me demandé pas pq ca maeche que comme ca)
+      },
     });
-  }// quand on debloque un module permet d erechargez la page pour que le ruban ne soit plus la
+    return; // on s'arrête là : la pop-up s'ouvrira quand le back aura répondu
+  }
 
-  private afficherErreur(e: HttpErrorResponse) {
-    // Le back renvoie un message seulement si server.error.include-message=always est activé
-    this.erreur.set(e.error?.message || `Action impossible (erreur ${e.status})`);
-    setTimeout(() => this.erreur.set(''), 4000);
-  }//en gros pour chaque erreur débloqué, on renvoie la réponse de l'erreur programmé dans le back ex : « Aucun déblocage disponible… »
+  // Il y a déjà des astronautes : on ouvre simplement la pop-up
+  this.affectationOuverte.set(true);
+  this.actionFaite('accueillir'); // utile si le tuto attend encore cette étape
+}
+
+// Ferme la pop-up (appelée par la croix ✕ ou par un clic sur le fond sombre)
+fermerAffectation() {
+  this.affectationOuverte.set(false);
+}
+
+// Appelée quand le joueur choisit un autre module dans la liste déroulante d'un astronaute
+affecter(a: Astronaute, event: Event) {
+  // event.target est la liste déroulante cliquée. On la convertit en HTMLSelectElement
+  // pour pouvoir lire sa valeur
+  const select = event.target as HTMLSelectElement;
+  // select.value est un texte (« 9 »), on le transforme en nombre
+  const moduleId = Number(select.value);
+  // On ne fait rien si une requête est en cours ou si le joueur a choisi le module où l'astronaute est déjà
+  if (this.enCours() || moduleId === a.moduleId) return;
+
+  this.enCours.set(true); // on bloque les boutons pendant la requête
+  // Envoie le PUT /astronaute/{id}/affecter au back avec le module choisi
+  this.stationService.affecterAstronaute(a.id, moduleId).subscribe({
+    next: () => { // le back a accepté l'affectation
+      // Vrai si le joueur a envoyé l'astronaute vers le Dortoir
+      const versDortoir = moduleId === this.dortoir()?.id;
+      // Pour le tuto : seule une affectation hors Dortoir compte.
+      // recharger() redemande la station au back, puis exécute la fonction fournie
+      this.recharger(() => {
+        if (!versDortoir) this.actionFaite('affecter'); // prévient le tuto que l'étape « affecter » est faite
+      });
+    },
+    error: (e) => { // le back a refusé (module plein, pas débloqué...)
+      this.enCours.set(false); // on débloque les boutons
+      this.afficherErreur(e); // on affiche le message d'erreur du back
+      // La liste déroulante affiche encore le mauvais choix : on la remet sur le vrai module
+      select.value = String(a.moduleId ?? '');
+    },
+  });
+}
 
 
 
-  // ? "continue suelement si ca existe"
-  // ?? "sinon"
+ngOnInit(): void {
+  this.stationService.findById(this.stationId).subscribe({
+    next: (s) => {
+      this.station.set(s);
 
-  // ---- RAPPORT DE FIN DE CYCLE ----------
-  finCycleVisible = signal(false);      // pop-up du rapport affichée ou non
-  cycleTermine = signal(0);             // numéro du cycle qui vient de se terminer
-  ongletRapport = signal<'global' | 'modules'>('global'); // onglet affiché dans le rapport
-  moduleOuvert = signal<number | null>(null); // id du module déplié dans l'onglet "Par module"
-  bonus = signal<Bonus[]>([]);          // bonus de rôle reçus du back (GET /bonus)
-
-  icones: Record<string, string> = {
-    'Oxygène': 'Assets/Images/oxygene.png',
-    'Eau': 'Assets/Images/eau.png',
-    'Nourriture': 'Assets/Images/nourriture.png',
-    'Énergie': 'Assets/Images/energie.png',
-  };
-
-  // Un rapport par module débloqué, avec les astronautes qui sont dedans
-  // computed = se recalcule tout seul quand station(), astronautes() ou bonus() changent
-  rapportModules = computed<RapportModule[]>(() => {
-    const s = this.station(); // on récupère la station actuelle (venue du back)
-    if (!s) return []; // pas encore de station reçue : rapport vide
-
-    return s.modules
-    .filter((m) => m.debloque) // on garde seulement les modules débloqués
-    .map((m) => {
-      const emplacement = EMPLACEMENTS[this.cle(m)]; // undefined pour Dortoir / Centre
-      const presents = this.astronautes().filter((a) => a.moduleId === m.id); // les astronautes de ce module
-      const calcul = this.calculerFlux(emplacement?.type ?? m.nom, presents); // conso/prod + bonus appliqués
-      return {
-        id: m.id, // sert pour le track du @for
-        label: emplacement?.label ?? LABELS_SPECIAUX[m.nom] ?? m.nom, // "Serre 1"… sinon "Centre de commandement" / "Dortoir"
-        astronautes: presents.map((a) => (a.role ? `${a.nom} (${a.role})` : a.nom)), // "Yuri (Agriculteur)" ou "Yuri"
-        flux: calcul.flux, // ce que le module consomme/produit, bonus compris
-        bonus: calcul.bonus, // les bonus appliqués, pour les afficher
-      };
-    })
-    .sort((a, b) => a.label.localeCompare(b.label)); // tri alphabétique
+      // Le tuto ne se lance que sur une partie toute nouvelle (neuve)(cycle 0 et aucun module du tuto débloqué)
+      const neuve = s.cycle === 0 && !this.modulesTutoDebloques(s);
+      this.visible.set(neuve); //si on rafraichit la page, le tuto ne se relance pas
+    },
+    error: (e) => this.afficherErreur(e),
   });
 
-  // Rapport global = somme de tous les modules, ressource par ressource
-  rapportGlobal = computed<FluxRessource[]>(() =>
-    RESSOURCES.map((r) => { // pour chaque ressource
-    let consommee = 0;
-    let produite = 0;
-    for (const m of this.rapportModules()) { // on passe sur chaque module du rapport
-      const f = m.flux.find((x) => x.ressource === r); // la ligne de cette ressource dans le module
-      if (f) {
-        consommee += f.consommee;
-        produite += f.produite;
-      }
+  // On charge les bonus du back une seule fois, et on traduit les noms pour le front
+  this.stationService.findAllBonus().subscribe({
+    next: (liste) =>
+      this.bonus.set(
+      liste.map((b) => ({
+        role: b.role, // comparé en minuscules dans meilleurBonus
+        module: MODULES_BACK[normaliser(b.module)], // 'SERRE' / 'Serre' → 'serre'
+        ressource: b.ressource, // déjà "Eau", "Oxygène"… (libellé envoyé par le back)
+        multiplicateur: b.multiplicateur,
+      })),
+    ),
+    error: (e) => this.afficherErreur(e),
+  });
+}
+
+private cle(m: Module): string {
+  return `${m.positionX},${m.positionY}`;
+}//fabrique la clé texte à partir de la position. Pour x=2 et y=1, ça donne "2,1"
+
+private modulesTutoDebloques(s: StationSpatiale): boolean {
+  return s.modules.some((m) => m.debloque && POSITIONS_TUTO.includes(this.cle(m)));
+}//some répond true si au moins un module vérifie la condition. Ici : un module débloqué dont la position est dans la liste du tuto.
+
+// Même règle que le back : il faut un module voisin déjà débloqué (ce qui impose l'ordre serre 1 → 2 → 3)
+private aVoisinDebloque(m: Module): boolean {
+  const s = this.station();
+  if (!s) return false;
+
+  return s.modules.some(
+    (autre) =>
+      autre.debloque &&
+    Math.abs(autre.positionX - m.positionX) + Math.abs(autre.positionY - m.positionY) === 1,
+  );// ca c'est chat de a à z j'ai pas capté mais askip Deux modules sont voisins quand la distance entre eux vaut exactement 1 case.
+  // Math.abs prend la valeur absolue, pour ignorer le signe.
+  //On additionne l'écart en X et l'écart en Y.
+  //Serre 2 en (5,1) et Serre 1 en (4,1) : 1 + 0 = 1, donc voisines.
+  //Serre 3 en (6,1) et Serre 1 en (4,1) : 2 + 0 = 2, donc pas voisines.
+}
+
+peutDebloquer(m: ModuleVue): boolean {
+  if (this.enCours() || !this.aVoisinDebloque(m)) return false;//peut pas si requête deja en cours ou si module voisin pas débloqué
+
+  if (!this.energieSuffisante()) return false;
+
+  // Pendant une étape du tuto qui demande un module, seul celui-là est possible
+  const action = this.visible() ? this.etape().action : undefined; //Si le tuto est affiché, on regarde l'action que l'étape demande. Sinon il n'y a pas d'action.
+  if (action === 'machines' || action === 'serre' || action === 'recyclage') {
+    return m.tuto && m.type === action;
+  }
+
+  if (m.tuto) return true; // modules du tuto : gratuits, sans condition de cycle
+  //en gros à l'étape des machines dans le tuto, on ne peut pas débloquer une serre
+  return this.deblocagesDisponibles() > 0;
+}
+
+debloquerModule(m: ModuleVue) {
+  if (!this.peutDebloquer(m)) return; //si on peut on peut lol
+
+  this.enCours.set(true);
+  this.stationService.debloquerModule(m.id).subscribe({ //nvoie le PUT /module/{id}/debloquer au back
+    next: () => {
+      this.menuModulesOuvert.set(false);
+      // On recharge l'état depuis le back, puis on prévient le tuto
+      this.recharger(() => this.actionFaite(m.type));//en cas de succès --> ferme le menu, recharge station d epuis le back, le callback () => this.actionFaite(m.type)
+      // s'exécute ensuite et prévient le tuto qu'un module de ce type vient d'être débloqué, pour qu'il passe à l'étape suivante.
+    },
+    error: (e) => {
+      this.enCours.set(false);
+      this.afficherErreur(e);// en cas d'erreur --> les boutons sont débloquer (encours à false en gros) et on affiche le message d'erreur
+    },
+  });// en cas de succès on ferme le succès puis on recharge la station depuis le back
+}
+
+private recharger(apres?: () => void) {
+  this.stationService.findById(this.stationId).subscribe({
+    next: (s) => {
+      this.station.set(s);
+      this.enCours.set(false);
+      apres?.();
+    },
+    error: (e) => {
+      this.enCours.set(false);
+      this.afficherErreur(e);
+    },//après est utile car il faut d'abord recharger la station puis prevenir le tuto (ne me demandé pas pq ca maeche que comme ca)
+  });
+}// quand on debloque un module permet d erechargez la page pour que le ruban ne soit plus la
+
+private afficherErreur(e: HttpErrorResponse) {
+  // Le back renvoie un message seulement si server.error.include-message=always est activé
+  this.erreur.set(e.error?.message || `Action impossible (erreur ${e.status})`);
+  setTimeout(() => this.erreur.set(''), 4000);
+}//en gros pour chaque erreur débloqué, on renvoie la réponse de l'erreur programmé dans le back ex : « Aucun déblocage disponible… »
+
+
+
+// ? "continue suelement si ca existe"
+// ?? "sinon"
+
+// ---- RAPPORT DE FIN DE CYCLE ----------
+finCycleVisible = signal(false);      // pop-up du rapport affichée ou non
+cycleTermine = signal(0);             // numéro du cycle qui vient de se terminer
+ongletRapport = signal<'global' | 'modules'>('global'); // onglet affiché dans le rapport
+moduleOuvert = signal<number | null>(null); // id du module déplié dans l'onglet "Par module"
+bonus = signal<Bonus[]>([]);          // bonus de rôle reçus du back (GET /bonus)
+alertesDanger = signal<string[]>([]);
+alertesCritique = signal<string[]>([]);
+alertesEpuisement = signal<string[]>([]);
+
+defaite = computed(
+  () => this.alertesEpuisement().length > 0 ||
+  this.alertesCritique().length >= 3
+);
+
+icones: Record<string, string> = {
+  'Oxygène': 'Assets/Images/oxygene.png',
+  'Eau': 'Assets/Images/eau.png',
+  'Nourriture': 'Assets/Images/nourriture.png',
+  'Énergie': 'Assets/Images/energie.png',
+};
+
+private moduleActif(type: string, presents: Astronaute[]): boolean {
+  return presents.length > 0 ||
+  type === 'Dortoir' ||
+  type === 'CentreDeCommandement';
+}
+
+nbModulesActifs = computed(() =>
+  this.rapportModules().filter(m => m.actif).length
+);
+
+// Un rapport par module débloqué, avec les astronautes qui sont dedans
+// computed = se recalcule tout seul quand station(), astronautes() ou bonus() changent
+rapportModules = computed<RapportModule[]>(() => {
+  const s = this.station(); // on récupère la station actuelle (venue du back)
+  if (!s) return []; // pas encore de station reçue : rapport vide
+
+  return s.modules
+  .filter((m) => m.debloque) // on garde seulement les modules débloqués
+  .map((m) => {
+    const emplacement = EMPLACEMENTS[this.cle(m)]; // undefined pour Dortoir / Centre
+    const presents = this.astronautes().filter((a) => a.moduleId === m.id); // les astronautes de ce module
+    const calcul = this.calculerFlux(emplacement?.type ?? m.nom, presents); // conso/prod + bonus appliqués
+    return {
+      id: m.id, // sert pour le track du @for
+      label: emplacement?.label ?? LABELS_SPECIAUX[m.nom] ?? m.nom, // "Serre 1"… sinon "Centre de commandement" / "Dortoir"
+      actif: this.moduleActif(emplacement?.type ?? m.nom, presents),
+      astronautes: presents.map((a) => (a.role ? `${a.nom} (${a.role})` : a.nom)), // "Yuri (Agriculteur)" ou "Yuri"
+      flux: calcul.flux, // ce que le module consomme/produit, bonus compris, si astronautes présents
+      bonus: calcul.bonus, // les bonus appliqués, pour les afficher
+    };
+  })
+  .sort((a, b) => a.label.localeCompare(b.label)); // tri alphabétique
+});
+
+// Rapport global = somme de tous les modules, ressource par ressource
+rapportGlobal = computed<FluxRessource[]>(() =>
+  RESSOURCES.map((r) => { // pour chaque ressource
+  let consommee = 0;
+  let produite = 0;
+  for (const m of this.rapportModules()) { // on passe sur chaque module du rapport
+    const f = m.flux.find((x) => x.ressource === r); // la ligne de cette ressource dans le module
+    if (f) {
+      consommee += f.consommee;
+      produite += f.produite;
     }
-    return { ressource: r, consommee: Math.round(consommee * 100) / 100, produite: Math.round(produite * 100) / 100 };
-  }),
+  }
+  return { ressource: r, consommee: Math.round(consommee * 100) / 100, produite: Math.round(produite * 100) / 100 };
+}),
 );
 
 // Calcule ce qu'un module consomme et produit pendant un cycle, bonus de rôle compris
 // type = 'serre' | 'recyclage' | 'machines' | 'Dortoir' | 'CentreDeCommandement'
 private calculerFlux(type: string, presents: Astronaute[]): { flux: FluxRessource[]; bonus: string[] } {
+
+  // Définit la conso et la production des modules sans astronaute hors Dortoir et Centre de commandement
+  if (!this.moduleActif(type, presents)) {
+    return {
+      flux: RESSOURCES.map(r => ({
+        ressource: r,
+        consommee: 0,
+        produite: 0
+      })),
+      bonus: []
+    };
+  }
+
   const nbAstro = presents.length; // nombre d'astronautes dans le module
   const roles = presents // rôles présents, en minuscules pour comparer sans souci de majuscules
   .map((a) => a.role?.toLowerCase())
@@ -554,12 +610,72 @@ bilanModule(m: RapportModule): number {
   return Math.round(m.flux.reduce((total, f) => total + this.bilan(f), 0) * 100) / 100;
 }
 
+// Met à jour les valeurs des stats affichées en bas à gauche dans la page
+private actualiserStats(): void {
+
+  const rapport = this.rapportGlobal();
+
+  this.station.update(station => {
+
+    if (!station) return null;
+
+    return {
+      ...station,
+      stats: station.stats.map(ressource => {
+
+        const flux = rapport.find(
+          r => r.ressource === ressource.type
+        );
+
+        if (!flux) return ressource;
+
+        return {
+          ...ressource,
+          quantite: ressource.quantite
+          + flux.produite
+          - flux.consommee
+        };
+      })
+    };
+  });
+}
+
+private verifierSeuilsRessources(): void {
+
+  const stats = this.station()?.stats ?? [];
+
+  this.alertesDanger.set(
+    stats
+    .filter(r =>
+      r.quantite <= SEUILS_RESSOURCES.danger &&
+      r.quantite > SEUILS_RESSOURCES.critique
+    )
+    .map(r => r.type)
+  );
+
+  this.alertesCritique.set(
+    stats
+    .filter(r => r.quantite <= SEUILS_RESSOURCES.critique)
+    .map(r => r.type)
+  );
+
+  this.alertesEpuisement.set(
+    stats
+    .filter(r => r.quantite <= 0)
+    .map(r => r.type)
+  );
+}
+
 // Clic sur un module dans l'onglet "Par module" : le déplie ou le replie
 toggleModule(id: number) {
   this.moduleOuvert.update((actuel) => (actuel === id ? null : id)); // déjà ouvert → on ferme, sinon on ouvre
 }
 
 continuerCycle() {
+  if (this.partieTerminee()) {
+    this.terminerPartie();
+    return;
+  }
   this.finCycleVisible.set(false);
   // Nouveau palier : on ouvre le menu des modules seulement maintenant
   if (this.deblocageObligatoire()) this.menuModulesOuvert.set(true);
@@ -579,10 +695,23 @@ sauvegarderEtQuitter() {
 // ---------- ACTIONS DU JEU ----------
 
 cycleSuivant() {
-  if (this.enCours() || this.cycleBloque()) return; //on ignore le clic sur cyclesuivant si une requête est deja en cours
+  if (this.enCours() || this.cycleBloque() || this.partieTerminee() ) return; //on ignore le clic sur cyclesuivant si une requête est deja en cours
 
   this.enCours.set(true);
-  this.stationService.cycleSuivant(this.stationId).subscribe({
+
+  // Calcul et actualisation des ressources côté front
+  this.actualiserStats();
+
+
+  // Vérification des nouvelles quantités
+  this.verifierSeuilsRessources();
+
+  // Préparation des données à envoyer
+  const stats = Object.fromEntries(
+    this.station()!.stats.map(r => [r.type, r.quantite])
+  ) as Record<RessourceEnum, number>;
+
+  this.stationService.cycleSuivant(this.stationId, stats).subscribe({
     next: (s) => {
       this.station.set(s);
       this.enCours.set(false);
@@ -779,4 +908,15 @@ afficherTuto() {
   this.index.set(0);
   this.visible.set(true);
 }
+
+
+terminerPartie(): void {
+  const station = this.station();
+
+  if (station) {
+    this.stationService.redirigerSiTerminee(station);
+  }
+}
+
+
 }
