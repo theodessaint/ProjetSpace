@@ -1,7 +1,9 @@
 package station.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,5 +55,43 @@ public class StationSpatialeTest {
         // 100 au départ, + 25 de variation : setQuantite ajoute, elle ne remplace pas
         assertEquals(125.0, station.getQuantite(RessourceEnum.EAU));
     }
-}
     
+    @Test
+    @DisplayName("executerCycle incrémente le cycle de 1")
+    void executerCycle() {
+        StationSpatiale s = new StationSpatiale();
+        
+        s.executerCycle();
+        s.executerCycle();
+        
+        assertEquals(2, s.getCycle());
+    }
+    
+    @Test
+    @DisplayName("ajouterModule ajoute le module à la liste et lui assigne la station")
+    void ajouterModule() {
+        StationSpatiale s = new StationSpatiale();
+        Module module = new Module();
+        
+        s.ajouterModule(module);
+        
+        assertEquals(1, s.getModules().size());
+        assertSame(module, s.getModules().get(0));
+        assertSame(s, module.getStation());
+    }
+    
+    @Test
+    @DisplayName("estEnCours est vrai uniquement pour le statut EN_COURS")
+    void estEnCours() {
+        StationSpatiale s = new StationSpatiale();
+        
+        s.setStatut(StatutPartieEnum.EN_COURS);
+        assertTrue(s.estEnCours());
+        
+        s.setStatut(StatutPartieEnum.VICTOIRE);
+        assertFalse(s.estEnCours());
+        
+        s.setStatut(StatutPartieEnum.DEFAITE);
+        assertFalse(s.estEnCours());
+    }
+}
