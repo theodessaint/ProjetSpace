@@ -11,24 +11,24 @@
   @if (erreur()) {
   <div class="message-erreur" role="alert">{{ erreur() }}</div>
   }
-  
-<!-- Compteurs en haut au centre -->
-<div class="compteurs">
-  @if (modulesVerrouilles().length > 0) {
+
+  <!-- Compteurs en haut au centre -->
+  <div class="compteurs">
+    @if (modulesVerrouilles().length > 0) {
     <div class="compteur">
       <span class="compteur-icone">🔧</span>
       @if (deblocageObligatoire() || deblocagesDisponibles() > 0) {
-        <span class="compteur-dispo">Déblocage de module disponible !</span>
+      <span class="compteur-dispo">Déblocage de module disponible !</span>
       } @else {
-        <span>
-          <strong>{{ cyclesAvantDeblocage() }}</strong>
-          cycle{{ cyclesAvantDeblocage() > 1 ? 's' : '' }} avant le déblocage d'un module
-        </span>
+      <span>
+        <strong>{{ cyclesAvantDeblocage() }}</strong>
+        cycle{{ cyclesAvantDeblocage() > 1 ? 's' : '' }} avant le déblocage d'un module
+      </span>
       }
     </div>
-  }
+    }
 
-  @if (astronautes().length > 0) {
+    @if (astronautes().length > 0) {
     <div class="compteur">
       <span class="compteur-icone">👨‍🚀</span>
       <span>
@@ -36,8 +36,8 @@
         cycle{{ cyclesAvantAstronaute() > 1 ? 's' : '' }} avant l'arrivée d'un astronaute
       </span>
     </div>
-  }
-</div>
+    }
+  </div>
 
   <!-- Les 4 jauges de ressources (surbrillance pendant l'étape du tuto qui en parle) -->
   <aside class="ressources" [class.surbrillance]="cible() === 'ressources'">
@@ -151,7 +151,20 @@
         <div class="astronaute-infos">
           <strong>{{ a.nom }}</strong>
           <!-- ?? : si l'astronaute n'a pas de rôle (null), on affiche « Sans rôle » en vrai c'est logique-->
-          <span class="role">{{ a.role ?? 'Sans rôle' }}</span>
+          <span class="role">
+            {{ a.role ?? 'Sans rôle' }}
+            @for (b of bonusDuRole(a.role); track b.module) {
+            <span class="bonus-role">
+              • {{ b.module }} :
+              @for (e of b.effets; track e.ressource) {
+              <span class="bonus-effet">
+                {{ e.pourcent > 0 ? '+' : '' }}{{ e.pourcent }} %
+                <img [src]="icones[e.ressource]" [alt]="e.ressource" />
+              </span>
+              }
+            </span>
+            }
+          </span>
         </div>
 
         <!-- Liste déroulante des modules. (change) se déclenche quand le joueur choisit un autre module :

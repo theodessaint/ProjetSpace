@@ -49,6 +49,16 @@ type Bonus = { role: string; module: TypeModule; ressource: string; multiplicate
 // Consommation de chaque astronaute par cycle (peu importe où il est)
 const CONSO_ASTRONAUTE: Flux = { 'Nourriture': 3, 'Eau': 3, 'Oxygène': 2 };
 
+//affichage bonus
+const NOMS_MODULES: Record<TypeModule, string> = {
+  serre: 'Serre',
+  machines: 'Machines',
+  recyclage: 'Recyclage',
+};
+
+type EffetBonus = { ressource: string; pourcent: number };
+type BonusAffiche = { module: string; effets: EffetBonus[] };
+
 // Consommation fixe, sans astronaute (clés = nom du module dans le back)
 const CONSO_FIXE: Record<string, Flux> = {
   'CentreDeCommandement': { 'Énergie': 2 },
@@ -278,6 +288,26 @@ complet(d: Destination, a: Astronaute): boolean {
   // d.occupes >= d.max : il n'y a plus de place
   // a.moduleId !== d.id : l'astronaute n'est pas déjà dans ce module
   return d.max !== null && d.occupes >= d.max && a.moduleId !== d.id;
+}
+
+// Bonus d'un rôle
+// ex : Mécanicien → [{ module: 'Machines', effets: [+10 % Énergie] }
+bonusDuRole(role: string | null | undefined): BonusAffiche[] {
+  if (!role) return []; // sans rôle : pas de bonus
+
+  const parModule = new Map<string, EffetBonus[]>();
+
+  for (const b of this.bonus()) {
+    if (b.role.toLowerCase() !== role.toLowerCase()) continue; // pas ce rôle : on passe
+
+    const nom = NOMS_MODULES[b.module] ?? b.module;
+    const pourcent = Math.round((b.multiplicateur - 1) * 100); // 1.15 → +15 ; 0.95 → -5
+
+    if (!parModule.has(nom)) parModule.set(nom, []);
+    parModule.get(nom)!.push({ ressource: b.ressource, pourcent });
+  }
+
+  return [...parModule].map(([module, effets]) => ({ module, effets }));
 }
 
 // Bouton du Centre de commandement : ouvre la pop-up d'affectation.
