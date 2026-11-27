@@ -10,6 +10,17 @@ import org.junit.jupiter.api.Test;
 public class GrilleTest {
     
     @Test 
+    @DisplayName ("Init")
+    void init(){
+        Grille grille = new Grille();
+
+        assertEquals(7, grille.nb_Colonnes);
+        assertEquals(5, grille.nb_Lignes);
+    }
+
+
+
+    @Test 
     @DisplayName ("Les quatre coins sont dans la grille")
     void contientLesCoins(){
         assertTrue(Grille.contient(new Position(0, 0)));
