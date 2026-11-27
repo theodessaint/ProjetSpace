@@ -15,7 +15,7 @@ services:
 
     # Port où l'on pourra se connecter pour avoir la base MySQL
     ports:
-      - 3356:3306
+      - 7000:3306
 
     #Le chemin du fichier à executer
     volumes:
@@ -40,7 +40,7 @@ services:
       PMA_HOST: mysql
 
     ports:
-     - 95:80
+     - 7001:80
 
     networks:
      - space-station-network
@@ -64,12 +64,15 @@ services:
     volumes:
      - ../secrets/jwt.key:/secrets/jwt.key
 
+    ports:
+     - 7002:8080
+
     networks:
       - space-station-network
 
     depends_on:
      - mysql
-  
+
 
   # Créer un service "springboot", qui deviendra un container Docker
   angular:
@@ -86,22 +89,6 @@ services:
     depends_on:
       - springboot
 
-  # Serveur Jenkins
-  # jenkins:
-  #   image: jenkins/jenkins:lts-jdk21
-  #   container_name: space-station-jenkins
-  #   restart: unless-stopped
-
-  #   ports:
-  #     - 8081:8080
-
-  #   volumes:
-  #     - jenkins_data:/var/jenkins_home
-
-  #   networks:
-  #     - space-station-network
-
-
 # Déclaration du réseau personnalisé
 networks:
   space-station-network:
@@ -111,4 +98,3 @@ networks:
 volumes:
   space-station-data:
     name: space-station-data
-  # jenkins_data:
