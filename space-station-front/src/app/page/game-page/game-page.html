@@ -11,6 +11,33 @@
   @if (erreur()) {
   <div class="message-erreur" role="alert">{{ erreur() }}</div>
   }
+  
+<!-- Compteurs en haut au centre -->
+<div class="compteurs">
+  @if (modulesVerrouilles().length > 0) {
+    <div class="compteur">
+      <span class="compteur-icone">🔧</span>
+      @if (deblocageObligatoire() || deblocagesDisponibles() > 0) {
+        <span class="compteur-dispo">Déblocage de module disponible !</span>
+      } @else {
+        <span>
+          <strong>{{ cyclesAvantDeblocage() }}</strong>
+          cycle{{ cyclesAvantDeblocage() > 1 ? 's' : '' }} avant le déblocage d'un module
+        </span>
+      }
+    </div>
+  }
+
+  @if (astronautes().length > 0) {
+    <div class="compteur">
+      <span class="compteur-icone">👨‍🚀</span>
+      <span>
+        <strong>{{ cyclesAvantAstronaute() }}</strong>
+        cycle{{ cyclesAvantAstronaute() > 1 ? 's' : '' }} avant l'arrivée d'un astronaute
+      </span>
+    </div>
+  }
+</div>
 
   <!-- Les 4 jauges de ressources (surbrillance pendant l'étape du tuto qui en parle) -->
   <aside class="ressources" [class.surbrillance]="cible() === 'ressources'">

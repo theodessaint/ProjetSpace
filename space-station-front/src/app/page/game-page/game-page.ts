@@ -114,6 +114,7 @@ const EMPLACEMENTS: Record<string, Emplacement> = {
 const POSITIONS_TUTO = ['2,1', '3,2', '4,1'];
 
 const CYCLES_PAR_DEBLOCAGE = 5;
+const CYCLES_PAR_ARRIVEE_ASTRONAUTE = 4;
 
 type ModuleVue = Module & Emplacement & { tuto: boolean };
 type Destination = { id: number; label: string; occupes: number; max: number | null };
@@ -188,7 +189,16 @@ deblocageObligatoire = computed(() => this.station()?.deblocageObligatoire ?? fa
 prochainDeblocage = computed(
   () => (Math.floor(this.cycle() / CYCLES_PAR_DEBLOCAGE) + 1) * CYCLES_PAR_DEBLOCAGE,
 );// le cycle où le joueur devra débloquer un module (ex : 5, 10, 15…)
+// Nombre de cycles restants avant le prochain déblocage de module
+cyclesAvantDeblocage = computed(() => this.prochainDeblocage() - this.cycle());
 
+// Le cycle où le prochain astronaute arrivera (même calcul que prochainDeblocage)
+prochainAstronaute = computed(
+  () => (Math.floor(this.cycle() / CYCLES_PAR_ARRIVEE_ASTRONAUTE) + 1) * CYCLES_PAR_ARRIVEE_ASTRONAUTE,
+);
+
+// Nombre de cycles restants avant l'arrivée d'un astronaute
+cyclesAvantAstronaute = computed(() => this.prochainAstronaute() - this.cycle());
 // Modules encore verrouillés, avec leur emplacement sur l'image (rubans « travaux » + menu)
 modulesVerrouilles = computed<ModuleVue[]>(() => { // on ne peut pas faire de computed<ModuleVue[]> car on retourne null pour les modules sans emplacement, donc on doit filtrer après
   const s = this.station();
