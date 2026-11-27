@@ -483,9 +483,10 @@ body {
 .affectation-fond {
   position: fixed;
   inset: 0;
-  z-index: 900; /* sous le tuto (1000) pour qu'on voie encore ses consignes */
+  z-index: 900;
   display: flex;
   align-items: center;
+  padding-bottom: 14rem;   /* ajouté : remonte la pop-up */
   justify-content: center;
   background: rgba(3, 6, 20, 0.6);
 }
@@ -931,3 +932,48 @@ body {
   font-size: 0.95rem;
   padding: 0.45rem 0.6rem;
 }
+
+/* ---------- Compteurs (haut centre) ---------- */
+.compteurs {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.compteur {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  font: 500 0.95rem 'Exo 2', system-ui, sans-serif;
+  color: var(--etoile);
+  background: rgba(10, 16, 48, 0.88);
+  border: 1px solid rgba(111, 214, 238, 0.45);
+  border-radius: 999px;
+  box-shadow: 0 0 14px rgba(111, 214, 238, 0.15);
+  white-space: nowrap;
+}
+
+.compteur strong {
+  font: 700 1.15rem 'Chakra Petch', system-ui, sans-serif;
+  color: var(--glace);
+}
+
+.compteur-icone {
+  font-size: 1.1rem;
+}
+
+.compteur-dispo {
+  font-weight: 700;
+  color: var(--signal);
+}
+
+/* Le message d'erreur était aussi en haut au centre : on le descend sous les compteurs */
+.message-erreur {
+  top: 4.2rem;
+}
+
