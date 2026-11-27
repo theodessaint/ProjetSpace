@@ -2,14 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Git checkout') {
-            steps {
-                git credentialsId: 'github-g3',
-                    url: 'git@github.com:theodessaint/ProjetSpace.git',
-                    branch: 'main'
-            }
-        }
-
         stage('Maven Package') {
             agent {
                 docker {
@@ -17,6 +9,7 @@ pipeline {
                     args '''
                         -v $HOME/.m2:/root/.m2:z
                         -u root
+                        --network space-station-network
                     '''
                     reuseNode true // Permet de partager l'espace de travail entre l'agent Jenkins et l'agent Docker
                 }
@@ -25,7 +18,7 @@ pipeline {
             steps {
                 dir('space-station-back') {
                     withSonarQubeEnv('sonar') {
-                        sh 'mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=space-station-back'
+                        sh 'mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=space-station'
                     }
                 }
             }
