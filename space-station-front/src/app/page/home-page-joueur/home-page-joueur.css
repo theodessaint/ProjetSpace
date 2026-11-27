@@ -1,30 +1,10 @@
-
-/* Ma palette de couleur */
-
-:root { /* Utile pour declaré des propriétés CSS personnalisées globales */
-
-  /* fait avec color.adobe.com  */
-
-  --vide: #050816;
-  --nuit: #0c1233;
-  --etoile: #e8ecff;
-  --signal: #ffb454;
-  --glace: #6fd6ee;
-  --trait: rgba(160, 190, 255, 0.22); /* pour les bordures  */
-}
-
-html, body {
-  height: 100%;
-  margin: 0;
-}
-
-body {
+:host {
+  display: block;
+  min-height: 100vh;
   background: var(--vide);
-  color: var(--etoile); /* couleur du texte par défaut  */
-  font-family: var(--police, sans-serif); /* Juste une police (on verra plus tard) */
-  overflow-x: hidden;   /*  gère ce qui dépasse horizontalement (askip c bien poru un background dynamique*/
+  color: var(--etoile);
+  overflow-x: clip;
 }
-
 
 /* haut du haut */
 .haut {
@@ -52,7 +32,7 @@ body {
 }
 
 .titre { /* pour c egenr ede truc l'ia a fait le taff */
-  font-family: var(--police, sans-serif);  font-family: var(--police, sans-serif);
+  font-family: var(--police);
   font-weight: 700;
   font-size: clamp(2.8rem, 9vw, 6rem);
   line-height: 0.95;
@@ -86,7 +66,7 @@ body {
 }
 
 .btn {
-  font: 500 1.05rem var(--police, sans-serif);
+  font: 500 1.05rem var(--police);
   letter-spacing: 0.03em;
   color: var(--etoile);
   background: transparent;
@@ -150,7 +130,7 @@ body {
 
 .choix-partie h2 {
   margin: 0 0 4px;
-  font: 500 1.4rem var(--police, sans-serif);
+  font: 500 1.4rem var(--police);
 }
 
 .choix-partie h2,
@@ -169,7 +149,6 @@ body {
   text-align: left;   /* la fenêtre centre son titre, pas ses entrées */
   flex: 0 1 auto;
   min-height: 0;
-  overflow-y: auto;
 }
 
 .choix-partie .partie {
@@ -213,9 +192,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  /* max-height: 14rem;     environ quatre parties visibles */
   overflow-y: auto;
   padding-right: 0.4rem; /* évite que la barre colle aux boutons */
+}
+
+/* Barre de défilement (Firefox et navigateurs modernes) */
+.liste-contenu {
+  scrollbar-width: thin;
+  scrollbar-color: var(--trait) transparent;
 }
 
 /* Barre de défilement accordée au thème plutôt qu'au gris du système */
@@ -250,7 +234,7 @@ body {
 }
 
 .partie-nom {
-  font: 500 1rem var(--police, sans-serif);
+  font: 500 1rem var(--police);
   letter-spacing: 0.03em;
 }
 
@@ -281,6 +265,7 @@ body {
 }
 
 /* Défaite */
+.choix-partie .partie.partie-defaite,
 .partie.partie-defaite {
   border-color: #ef4444;
   background-color: rgba(239, 68, 68, 0.08);
@@ -291,6 +276,7 @@ body {
 }
 
 /* Victoire */
+.choix-partie .partie.partie-victoire,
 .partie.partie-victoire {
   border-color: #4ade80;
   background-color: rgba(74, 222, 128, 0.08);
@@ -300,19 +286,30 @@ body {
   color: #4ade80;
 }
 
-/* Fenêtre de création d'une partie */
-
-.nouvelle-partie {
-  width: min(92vw, 26rem);
+/* Base commune des fenêtres de création et de règles */
+.nouvelle-partie,
+.regles {
   padding: 1.6rem;
   color: var(--etoile);
   background: var(--nuit);
   border: 1px solid var(--trait);
   border-radius: 14px;
 }
-.nouvelle-partie::backdrop { background: rgba(2, 4, 16, 0.75); }
-.nouvelle-partie h2 { margin: 0 0 1rem;   font-family: var(--police, sans-serif); }
-.nouvelle-partie form { text-align: right; }
+
+.nouvelle-partie::backdrop,
+.regles::backdrop { background: rgba(2, 4, 16, 0.75); }
+
+.nouvelle-partie h2,
+.regles h2 { margin: 0 0 1rem; font-family: var(--police); }
+
+.nouvelle-partie form,
+.regles form { text-align: right; }
+
+/* Fenêtre de création d'une partie */
+
+.nouvelle-partie {
+  width: min(92vw, 26rem);
+}
 
 .champ-nom {
   display: block;
@@ -320,7 +317,7 @@ body {
   box-sizing: border-box;      /* sinon le padding fait déborder le champ */
   margin-bottom: 1.4rem;
   padding: 0.7rem 0.9rem;
-  font: 1rem var(--police, sans-serif);
+  font: 1rem var(--police);
   color: var(--etoile);
   background: rgba(2, 4, 16, 0.6);
   border: 1px solid var(--trait);
@@ -332,21 +329,12 @@ body {
 
 .regles {
   width: min(92vw, 34rem);
-  padding: 1.6rem;
-  color: var(--etoile);
-  background: var(--nuit);
-  border: 1px solid var(--trait);
-  border-radius: 14px;
 }
-.regles::backdrop { background: rgba(2, 4, 16, 0.75); }
-.regles h2 { margin: 0 0 1rem;  font-family: var(--police, sans-serif); }
+
 .regles ul { margin: 0 0 1.4rem; padding-left: 1.2rem; line-height: 1.55; }
 .regles li { margin-bottom: 0.5rem; }
-.regles form { text-align: right; }
-
 
 /* Background étoilé trouvé sur codeopen.io :  https://codepen.io/NazarAzhar/pen/zqXMqP*/
-
 
 .stars, .twinkling {
   position: fixed;          /*  fixed évite que ça se décale au scroll (si besoin) */
@@ -368,12 +356,10 @@ body {
   animation: move-twink-back 200s linear infinite;
 }
 
-
 @keyframes move-twink-back {
   from { background-position: 0 0; }
   to   { background-position: -10000px 5000px; }
 }
-
 
 /* Petit astronautes jordan */
 

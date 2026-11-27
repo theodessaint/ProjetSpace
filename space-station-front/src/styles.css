@@ -1,4 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Exo+2:wght@400;500;600;700&display=swap');
+/* Thème global — src/styles.css (fusionner avec les styles globaux existants) */
 :root {
   --police: 'Chakra Petch', system-ui, sans-serif;
+  --police-rapport: 'Exo 2', system-ui, sans-serif;
+  --police-admin: 'Orbitron', Arial, sans-serif;
+  --vide: #050816;
+  --nuit: #0c1233;
+  --etoile: #e8ecff;
+  --signal: #ffb454;
+  --glace: #6fd6ee;
+  --trait: rgba(160, 190, 255, 0.22);
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: var(--police);
+}
+
+button, input, select, textarea, dialog {
+  font-family: inherit;
 }
