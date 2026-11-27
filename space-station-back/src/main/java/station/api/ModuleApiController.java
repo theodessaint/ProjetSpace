@@ -19,17 +19,14 @@ import station.api.response.EntityCreatedResponse;
 import station.api.response.EntityUpdatedResponse;
 import station.api.response.ModuleResponse;
 import station.service.ModuleService;
-import station.service.StationSpatialeService;
  
 @RestController
 @RequestMapping("/module")
 public class ModuleApiController {
     private final ModuleService service;
-    private final StationSpatialeService stationService;
  
-    public ModuleApiController(ModuleService service, StationSpatialeService stationService) {
+    public ModuleApiController(ModuleService service) {
         this.service = service;
-        this.stationService = stationService;
     }
  
     @GetMapping

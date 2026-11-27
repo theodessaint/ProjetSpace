@@ -1,10 +1,10 @@
 import { Component, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../service/auth-service';
 
 @Component({
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   selector: 'app-inscription-page',
   styleUrl: './inscription-page.css',
   templateUrl: './inscription-page.html',
