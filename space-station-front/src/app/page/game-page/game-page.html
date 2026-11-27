@@ -80,7 +80,7 @@
       }
       <button class="btn-action" (click)="cycleSuivant()"
         [disabled]="deblocageObligatoire() || enCours() || cycleBloque()">
-        Cycle suivant
+        Fin de cycle
       </button>
     </div>
 
@@ -391,7 +391,7 @@
       </button>
       } @else {
       <button class="fin-cycle-btn secondaire" (click)="sauvegarderEtQuitter()">Sauvegarder et quitter</button>
-      <button class="fin-cycle-btn principal" (click)="continuerCycle()">Cycle suivant</button>
+      <button class="fin-cycle-btn principal" (click)="continuerCycle()">Fin de cycle</button>
       }
     </div>
   </div>

@@ -802,7 +802,7 @@ etapes: Etape[] = [
     'Chaque astronaute accueilli doit trouver sa place à bord. Pour la prospérité du vaisseau, vous allez devoir :',
     liste: [
       'construire des modules : salle des machines, serre…',
-      'gérer vos ressources : énergie, eau, oxygène, nourriture ;',
+      'gérer vos ressources : énergie, eau, oxygène, nourriture ',
       'accueillir les astronautes et les affecter là où on a besoin d’eux.',
     ],
   },
@@ -811,7 +811,7 @@ etapes: Etape[] = [
     titre: 'Le départ',
     sousTitre: 'Le temps presse',
     texte:
-    'Les ressources sont limitées et d’autres astronautes arrivent. Chaque décision compte : une ressource qui tombe à zéro, et c’est tout l’équipage qui est en danger. Saurez-vous les maintenir en vie jusqu’à ce qu’une nouvelle terre se présente ?',
+    'Les ressources sont limitées et d’autres astronautes arrivent. Chaque décision compte : une ressource qui tombe à zéro (ou trois seuils critiques déclenchés simultanément), et c’est tout l’équipage qui est en danger. Saurez-vous les maintenir en vie jusqu’à ce qu’une nouvelle terre se présente ?',
     bouton: 'Prendre le commandement',
   },
   {
@@ -863,7 +863,7 @@ etapes: Etape[] = [
     titre: 'Les affectations',
     sousTitre: 'Chacun à sa place',
     texte:
-    'Les astronautes arrivent au Dortoir. Depuis le Centre de commandement, envoyez-les dans vos modules débloqués : une serre accueille 2 astronautes, les autres modules un seul. Affectez au moins un astronaute pour continuer. Pensez-y au début de chaque cycle.',
+    'Les astronautes arrivent au Dortoir. Depuis le Centre de commandement, envoyez-les dans vos modules débloqués : une serre accueille 2 astronautes, les autres modules un seul. Un astronaute arrive tous les 4 cycles.',
     action: 'affecter',
   },
   {
@@ -871,7 +871,7 @@ etapes: Etape[] = [
     titre: 'Fin du cycle',
     sousTitre: 'Le temps passe',
     texte:
-    'Vos choix sont faits. Cliquez sur « Cycle suivant » : les ressources seront consommées et produites selon vos modules et vos astronautes. Tous les 5 cycles, vous devrez débloquer un nouveau module. Bonne chance, commandant.',
+    'Vos choix sont faits. Cliquez sur « Fin de cycle » : les ressources seront consommées et produites selon vos modules et vos astronautes. Tous les 5 cycles, vous devrez débloquer un nouveau module. Bonne chance, commandant.',
     action: 'cycle',
     cible: 'cycle',
   },
