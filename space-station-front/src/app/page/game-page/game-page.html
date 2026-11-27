@@ -9,15 +9,19 @@
 
   <!-- message d'erreur du back en mode le déblocage refusé-->
   @if (erreur()) {
-    <div class="message-erreur" role="alert">{{ erreur() }}</div>
+  <div class="message-erreur" role="alert">{{ erreur() }}</div>
   }
 
   <!-- Les 4 jauges de ressources (surbrillance pendant l'étape du tuto qui en parle) -->
   <aside class="ressources" [class.surbrillance]="cible() === 'ressources'">
-    <div class="ressource"><img src="/Assets/Images/oxygene.png" alt="Oxygene" /> {{stats_oxygene()?.quantite | number:'1.0-2' }}</div>
-    <div class="ressource"><img src="/Assets/Images/eau.png" alt="Eau" /> {{stats_eau()?.quantite | number:'1.0-2'}}</div>
-    <div class="ressource"><img src="/Assets/Images/nourriture.png" alt="Nourriture" /> {{stats_nourriture()?.quantite | number:'1.0-2'}}</div>
-    <div class="ressource"><img src="/Assets/Images/energie.png" alt="Électricité" /> {{stats_energie()?.quantite | number:'1.0-2' }}</div>
+    <div class="ressource"><img src="/Assets/Images/oxygene.png" alt="Oxygene" /> {{stats_oxygene()?.quantite |
+      number:'1.0-2' }}</div>
+    <div class="ressource"><img src="/Assets/Images/eau.png" alt="Eau" /> {{stats_eau()?.quantite | number:'1.0-2'}}
+    </div>
+    <div class="ressource"><img src="/Assets/Images/nourriture.png" alt="Nourriture" /> {{stats_nourriture()?.quantite |
+      number:'1.0-2'}}</div>
+    <div class="ressource"><img src="/Assets/Images/energie.png" alt="Électricité" /> {{stats_energie()?.quantite |
+      number:'1.0-2' }}</div>
   </aside>
 
   <!-- La station (image + rubans + modules) sur le fond spatial -->
@@ -26,320 +30,330 @@
       <img src="/Assets/Images/vaisseau.png" alt="Plan de la station spatiale" class="image-vaisseau" />
 
       @for (m of modulesVerrouilles(); track m.id) {
-        <div class="travaux" [style.left.%]="m.left" [style.top.%]="m.top" [style.width.%]="m.width"
+      <div class="travaux" [style.left.%]="m.left" [style.top.%]="m.top" [style.width.%]="m.width"
         [style.height.%]="m.height">
         <img src="/Assets/Images/travaux.png" alt="Module verrouillé : {{ m.label }}" />
       </div>
-    }
-    <!-- Bouton du Centre de commandement : affecter les astronautes -->
-    <button type="button" class="centre-commande" [class.surbrillance]="cible() === 'centre'"
-    [style.left.%]="centre.left" [style.top.%]="centre.top" [style.width.%]="centre.width"
-    [style.height.%]="centre.height" [disabled]="enCours()" (click)="ouvrirAffectation()"
-    aria-label="Centre de commandement : affecter les astronautes">
-    <img src="/Assets/Images/ecran_commande.png" alt="" />
-    @if (nbEnAttente() > 0) {
-      <span class="pastille">{{ nbEnAttente() }}</span>
-    }
-  </button>
-</div>
-<!-- Actions rapides (surbrillance pendant l'étape du tuto qui parle de « Cycle suivant ») -->
-<div class="actions-rapides" [class.surbrillance]="cible() === 'cycle'">
-  @if (deblocageObligatoire()) {
-    <p class="alerte-deblocage">Choisissez un module à débloquer pour continuer</p>
-  }
-  <button class="btn-action" (click)="cycleSuivant()"
-  [disabled]="deblocageObligatoire() || enCours() || cycleBloque()">
-  Cycle suivant
-</button>
-</div>
+      }
+      <!-- Bouton du Centre de commandement : affecter les astronautes -->
+      <button type="button" class="centre-commande" [class.surbrillance]="cible() === 'centre'"
+        [style.left.%]="centre.left" [style.top.%]="centre.top" [style.width.%]="centre.width"
+        [style.height.%]="centre.height" [disabled]="enCours()" (click)="ouvrirAffectation()"
+        aria-label="Centre de commandement : affecter les astronautes">
+        <img src="/Assets/Images/ecran_commande.png" alt="" />
+        @if (nbEnAttente() > 0) {
+        <span class="pastille">{{ nbEnAttente() }}</span>
+        }
+      </button>
+    </div>
+    <!-- Actions rapides (surbrillance pendant l'étape du tuto qui parle de « Cycle suivant ») -->
+    <div class="actions-rapides" [class.surbrillance]="cible() === 'cycle'">
+      @if (deblocageObligatoire()) {
+      <p class="alerte-deblocage">Choisissez un module à débloquer pour continuer</p>
+      }
+      <button class="btn-action" (click)="cycleSuivant()"
+        [disabled]="deblocageObligatoire() || enCours() || cycleBloque()">
+        Cycle suivant
+      </button>
+    </div>
 
-<!-- Bouton unique + menu déroulant des modules en bas à droite (surbrillance pendant les étapes de déblocage) -->
-<div class="menu-modules-container" [class.surbrillance]="cible() === 'modules'">
-  @if (menuModulesOuvert()) {
-    <div class="panneau-modules">
-      <div class="panneau-entete">
-        <span>Débloquer un module</span>
-        <button type="button" class="fermer-panneau" (click)="toggleMenuModules()" aria-label="Fermer">✕</button>
-      </div>
+    <!-- Bouton unique + menu déroulant des modules en bas à droite (surbrillance pendant les étapes de déblocage) -->
+    <div class="menu-modules-container" [class.surbrillance]="cible() === 'modules'">
+      @if (menuModulesOuvert()) {
+      <div class="panneau-modules">
+        <div class="panneau-entete">
+          <span>Débloquer un module</span>
+          <button type="button" class="fermer-panneau" (click)="toggleMenuModules()" aria-label="Fermer">✕</button>
+        </div>
 
-      @if (modulesVerrouilles().length > 0) {
+        @if (modulesVerrouilles().length > 0) {
         <p class="info-deblocage">
-          @if (deblocagesDisponibles() <= 0) {
-            Prochain déblocage au cycle {{ prochainDeblocage() }}
-          } @else if (!energieSuffisante()) {
-            <span class="erreur-deblocage">Énergie insuffisante</span>
-          } @else {
+          @if (deblocagesDisponibles() <= 0) { Prochain déblocage au cycle {{ prochainDeblocage() }} } @else if
+            (!energieSuffisante()) { <span class="erreur-deblocage">Énergie insuffisante</span>
+            } @else {
             Déblocage disponible (coût : 20 énergie)
-          }
+            }
         </p>
+        }
+
+        <div class="liste-modules">
+          @for (m of modulesVerrouilles(); track m.id) {
+          <button type="button" [class]="'module ' + m.type" [disabled]="!peutDebloquer(m)"
+            (click)="debloquerModule(m)">
+            {{ m.label }}
+          </button>
+          } @empty {
+          <p class="info-deblocage">Tous les modules sont débloqués.</p>
+          }
+        </div>
+      </div>
       }
 
-      <div class="liste-modules">
-        @for (m of modulesVerrouilles(); track m.id) {
-          <button type="button" [class]="'module ' + m.type" [disabled]="!peutDebloquer(m)"
-          (click)="debloquerModule(m)">
-          {{ m.label }}
-        </button>
-      } @empty {
-        <p class="info-deblocage">Tous les modules sont débloqués.</p>
-      }
+      <button type="button" class="btn-acheter-modules" (click)="toggleMenuModules()">
+        Débloquer modules
+      </button>
     </div>
   </div>
-}
-
-<button type="button" class="btn-acheter-modules" (click)="toggleMenuModules()">
-  Débloquer modules
-</button>
-</div>
-</div>
 </main>
 
 <!-- -------------------- AFFECTATION DES ASTRONAUTES --------------------------- -->
 <!-- La pop-up n'existe dans la page que si affectationOuverte() vaut true (ouverte par le bouton du Centre) -->
 @if (affectationOuverte()) {
 
-  <!-- Fond sombre : un clic dessus ferme la pop-up -->
-  <div class="affectation-fond" (click)="fermerAffectation()">
+<!-- Fond sombre : un clic dessus ferme la pop-up -->
+<div class="affectation-fond" (click)="fermerAffectation()">
 
-    <!-- $event.stopPropagation() : un clic dans la pop-up ne remonte pas jusqu'au fond,
+  <!-- $event.stopPropagation() : un clic dans la pop-up ne remonte pas jusqu'au fond,
     sinon la pop-up se fermerait dès qu'on clique sur un astronaute ou sur une liste -->
-    <div class="affectation-popup" (click)="$event.stopPropagation()" role="dialog" aria-label="Affecter les astronautes">
-      <div class="panneau-entete">
-        <span>Centre de commandement</span>
-        <button type="button" class="fermer-panneau" (click)="fermerAffectation()" aria-label="Fermer">✕</button>
-      </div>
+  <div class="affectation-popup" (click)="$event.stopPropagation()" role="dialog" aria-label="Affecter les astronautes">
+    <div class="panneau-entete">
+      <span>Centre de commandement</span>
+      <button type="button" class="fermer-panneau" (click)="fermerAffectation()" aria-label="Fermer">✕</button>
+    </div>
 
-      <p class="info-deblocage">
-        Les nouveaux astronautes attendent au Dortoir. Envoyez-les dans vos modules débloqués.
-      </p>
+    <p class="info-deblocage">
+      Les nouveaux astronautes attendent au Dortoir. Envoyez-les dans vos modules débloqués.
+    </p>
 
-      <ul class="liste-astronautes">
+    <ul class="liste-astronautes">
 
-        <!-- Une ligne par astronaute de la station. track a.id : Angular identifie chaque ligne
+      <!-- Une ligne par astronaute de la station. track a.id : Angular identifie chaque ligne
         par l'id de l'astronaute, il ne reconstruit que les lignes qui changent -->
-        @for (a of astronautes(); track a.id) {
-          <li class="astronaute">
-            <div class="astronaute-infos">
-              <strong>{{ a.nom }}</strong>
-              <!-- ?? : si l'astronaute n'a pas de rôle (null), on affiche « Sans rôle » en vrai c'est logique-->
-              <span class="role">{{ a.role ?? 'Sans rôle' }}</span>
-            </div>
+      @for (a of astronautes(); track a.id) {
+      <li class="astronaute">
+        <div class="astronaute-infos">
+          <strong>{{ a.nom }}</strong>
+          <!-- ?? : si l'astronaute n'a pas de rôle (null), on affiche « Sans rôle » en vrai c'est logique-->
+          <span class="role">{{ a.role ?? 'Sans rôle' }}</span>
+        </div>
 
-            <!-- Liste déroulante des modules. (change) se déclenche quand le joueur choisit un autre module :
+        <!-- Liste déroulante des modules. (change) se déclenche quand le joueur choisit un autre module :
             affecter(a, $event) envoie le choix au back. [disabled] bloque la liste pendant une requête -->
-            <select (change)="affecter(a, $event)" [disabled]="enCours()">
+        <select (change)="affecter(a, $event)" [disabled]="enCours()">
 
-              <!-- Une option par module accessible (Dortoir + modules débloqués avec de la place) -->
-              @for (d of destinations(); track d.id) {
+          <!-- Une option par module accessible (Dortoir + modules débloqués avec de la place) -->
+          @for (d of destinations(); track d.id) {
 
-                <!-- [value]="d.id" : l'id du module, c'est lui que affecter() lit dans la liste.
+          <!-- [value]="d.id" : l'id du module, c'est lui que affecter() lit dans la liste.
                 [selected] : la liste s'ouvre sur le module où se trouve déjà l'astronaute.
                 [disabled]="complet(d, a)" : grise les modules pleins (sauf celui où il est déjà) -->
-                <option [value]="d.id" [selected]="d.id === a.moduleId" [disabled]="complet(d, a)">
+          <option [value]="d.id" [selected]="d.id === a.moduleId" [disabled]="complet(d, a)">
 
-                  <!-- Affiche par ex. « Serre 1 (1/2) » : occupés / maximum.
+            <!-- Affiche par ex. « Serre 1 (1/2) » : occupés / maximum.
                   d.max est null pour le Dortoir (illimité), alors on affiche seulement « Dortoir (3) » -->
-                  {{ d.label }} ({{ d.occupes }}{{ d.max !== null ? '/' + d.max : '' }})
-                </option>
-              }
-            </select>
-          </li>
-        } @empty {
-          <!-- Affiché quand la liste d'astronautes est vide -->
-          <li class="info-deblocage">Aucun astronaute à bord.</li>
-        }
-      </ul>
-    </div>
+            {{ d.label }} ({{ d.occupes }}{{ d.max !== null ? '/' + d.max : '' }})
+          </option>
+          }
+        </select>
+      </li>
+      } @empty {
+      <!-- Affiché quand la liste d'astronautes est vide -->
+      <li class="info-deblocage">Aucun astronaute à bord.</li>
+      }
+    </ul>
   </div>
+</div>
 }
 
 <!-- -------------------- TUTO --------------------------- -->
 @if (visible()) {
-  <!-- libre : le joueur doit faire une action, le fond ne bloque plus les clics.
+<!-- libre : le joueur doit faire une action, le fond ne bloque plus les clics.
   cible : une surbrillance est active, le fond du tuto ne doit pas assombrir en plus -->
-  <div class="tuto-fond" [class.libre]="etape().action" [class.cible]="etape().cible">
-    <div class="tuto-popup">
-      <h2>{{ etape().titre }}</h2>
-      <h3>{{ etape().sousTitre }}</h3>
-      <p>{{ etape().texte }}</p>
+<div class="tuto-fond" [class.libre]="etape().action" [class.cible]="etape().cible">
+  <div class="tuto-popup">
+    <h2>{{ etape().titre }}</h2>
+    <h3>{{ etape().sousTitre }}</h3>
+    <p>{{ etape().texte }}</p>
 
-      @if (etape().liste) {
-        <ul>
-          @for (ligne of etape().liste; track ligne) {
-            <li>{{ ligne }}</li>
-          }
-        </ul>
+    @if (etape().liste) {
+    <ul>
+      @for (ligne of etape().liste; track ligne) {
+      <li>{{ ligne }}</li>
       }
+    </ul>
+    }
 
-      @if (etape().action) {
-        <p class="consigne">Faites cette action pour continuer.</p>
-      } @else {
-        <button class="suivant" (click)="suivant()">
-          {{ etape().bouton ?? 'Suivant' }}
-        </button>
-      }
+    @if (etape().action) {
+    <p class="consigne">Faites cette action pour continuer.</p>
+    } @else {
+    <button class="suivant" (click)="suivant()">
+      {{ etape().bouton ?? 'Suivant' }}
+    </button>
+    }
 
-      <button class="passer" (click)="passer()">Passer le tuto</button>
-    </div>
+    <button class="passer" (click)="passer()">Passer le tuto</button>
   </div>
+</div>
 }
 
 <!-- ========== RAPPORT DE FIN DE CYCLE ========== -->
 <!-- ton bouton "Cycle suivant" de la page reste avec (click)="cycleSuivant()" -->
 
 @if (finCycleVisible()) {
-  <div class="fin-cycle-overlay">
-    <div class="fin-cycle-popup">
-      <h2>Rapport de fin du cycle {{ cycleTermine() }}</h2>
-      <p class="fin-cycle-sous-titre">
-        {{ nbModulesActifs() }}/{{ rapportModules().length }} modules actifs
-· {{ astronautes().length }} astronautes
+<div class="fin-cycle-overlay">
+  <div class="fin-cycle-popup">
+    <h2>Rapport de fin du cycle {{ cycleTermine() }}</h2>
+    <p class="fin-cycle-sous-titre">
+      {{ nbModulesActifs() }}/{{ rapportModules().length }} modules actifs
+      · {{ astronautes().length }} astronautes
+    </p>
+
+    <div class="alertes-ressources">
+
+      @if (alertesDanger().length > 0) {
+      <p class="alerte-danger">
+        Attention ! Vous avez <span class="alerte-danger-ressources ">{{ alertesDanger().join(', ') }}</span> en dessous
+        de {{ SEUILS_RESSOURCES.danger }} !
       </p>
+      }
 
-      <div class="alertes-ressources">
+      @if (alertesCritique().length >= 3) {
+      <p class="alerte-critique">
+        Seuils critiques pour
+        {{ alertesCritique().join(', ') }}
+        détectés ! Abandonnez la station !
+      </p>
+      } @else if (alertesCritique().length === 2) {
+      <p class="alerte-critique">
+        Seuils critiques pour
+        {{ alertesCritique().join(', ') }}
+        détectés !
+      </p>
+      } @else if (alertesCritique().length === 1) {
+      <p class="alerte-critique">
+        Seuil critique pour
+        {{ alertesCritique()[0] }}
+        détecté !
+      </p>
+      }
 
-        @if (alertesDanger().length > 0) {
-          <p class="alerte-danger">
-            Attention ! Vous avez <span class="alerte-danger-ressources ">{{ alertesDanger().join(', ') }}</span> en dessous de {{ SEUILS_RESSOURCES.danger }} !
+      @if (alertesEpuisement().length > 0) {
+      <p class="alerte-defaite">
+        Épuisement des ressources :
+        {{ alertesEpuisement().join(', ') }}.
+        Abandonnez la station !
+      </p>
+      }
+
+    </div>
+
+    <!-- Onglets -->
+    <div class="fin-cycle-onglets">
+      <button [class.actif]="ongletRapport() === 'global'" (click)="ongletRapport.set('global')">Global</button>
+      <button [class.actif]="ongletRapport() === 'modules'" (click)="ongletRapport.set('modules')">Par module</button>
+    </div>
+
+    <div class="fin-cycle-contenu">
+      <!-- Onglet GLOBAL -->
+      @if (ongletRapport() === 'global') {
+      <table class="fin-cycle-table">
+        <thead>
+          <tr>
+            <th>Ressource</th>
+            <th>Consommée</th>
+            <th>Produite</th>
+            <th>Bilan</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of rapportGlobal(); track f.ressource) {
+          <tr>
+            <td class="fin-cycle-ressource">
+              <img [src]="icones[f.ressource]" [alt]="f.ressource" /> {{ f.ressource }}
+            </td>
+            <td class="conso">-{{ f.consommee | number:'1.0-2'}}</td>
+            <td class="prod">+{{ f.produite | number:'1.0-2'}}</td>
+            <td [class.positif]="bilan(f) >= 0" [class.negatif]="bilan(f) < 0">
+              {{ bilan(f) >= 0 ? '+' : '' }}{{ bilan(f) | number:'1.0-2'}}
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+      }
+
+      <!-- Onglet PAR MODULE -->
+      @if (ongletRapport() === 'modules') {
+      @for (m of rapportModules(); track m.id) {
+      <div class="fin-cycle-module" [class.ouvert]="moduleOuvert() === m.id">
+        <div class="fin-cycle-module-entete" (click)="toggleModule(m.id)">
+          <span>{{ moduleOuvert() === m.id ? '▾' : '▸' }} {{ m.label }}</span>
+          <span>
+            👨‍🚀 {{ m.astronautes.length }}
+            <!--
+          <span [class.positif]="bilanModule(m) >= 0" [class.negatif]="bilanModule(m) < 0">
+               ({{ bilanModule(m) >= 0 ? '+' : '' }}{{ bilanModule(m) }})
+            </span>
+             -->
+          </span>
+        </div>
+
+        @if (moduleOuvert() === m.id) {
+        <div class="fin-cycle-module-detail">
+          <div class="fin-cycle-astronautes">
+            @for (a of m.astronautes; track $index) {
+            <span class="chip">{{ a }}</span>
+            } @empty {
+            <span class="aucun">Aucun astronaute</span>
+            }
+          </div>
+
+          @if (m.astronautes.length > 0) {
+          <p class="aucun">
+            Inclut la consommation des astronautes : 3 nourriture, 3 eau et 2 oxygène chacun
           </p>
-        }
+          }
 
-        @if (alertesCritique().length >= 3) {
-          <p class="alerte-critique">
-            Seuils critiques pour
-            {{ alertesCritique().join(', ') }}
-            détectés ! Abandonnez la station !
-          </p>
-        } @else if (alertesCritique().length === 2) {
-          <p class="alerte-critique">
-            Seuils critiques pour
-            {{ alertesCritique().join(', ') }}
-            détectés !
-          </p>
-        } @else if (alertesCritique().length === 1) {
-          <p class="alerte-critique">
-            Seuil critique pour
-            {{ alertesCritique()[0] }}
-            détecté !
-          </p>
-        }
-
-        @if (alertesEpuisement().length > 0) {
-          <p class="alerte-defaite">
-            Épuisement des ressources :
-            {{ alertesEpuisement().join(', ') }}.
-            Abandonnez la station !
-          </p>
-        }
-
-      </div>
-
-      <!-- Onglets -->
-      <div class="fin-cycle-onglets">
-        <button [class.actif]="ongletRapport() === 'global'" (click)="ongletRapport.set('global')">Global</button>
-        <button [class.actif]="ongletRapport() === 'modules'" (click)="ongletRapport.set('modules')">Par module</button>
-      </div>
-
-      <div class="fin-cycle-contenu">
-        <!-- Onglet GLOBAL -->
-        @if (ongletRapport() === 'global') {
-          <table class="fin-cycle-table">
+          @if (m.flux.length > 0) {
+          <table class="fin-cycle-table petite">
             <thead>
-              <tr><th>Ressource</th><th>Consommée</th><th>Produite</th><th>Bilan</th></tr>
+              <tr>
+                <th>Ressource</th>
+                <th>Consommée</th>
+                <th>Produite</th>
+                <th>Bilan</th>
+              </tr>
             </thead>
             <tbody>
-              @for (f of rapportGlobal(); track f.ressource) {
-                <tr>
-                  <td class="fin-cycle-ressource">
-                    <img [src]="icones[f.ressource]" [alt]="f.ressource" /> {{ f.ressource }}
-                  </td>
-                  <td class="conso">-{{ f.consommee | number:'1.0-2'}}</td>
-                  <td class="prod">+{{ f.produite | number:'1.0-2'}}</td>
-                  <td [class.positif]="bilan(f) >= 0" [class.negatif]="bilan(f) < 0">
-                    {{ bilan(f) >= 0 ? '+' : '' }}{{ bilan(f) | number:'1.0-2'}}
-                  </td>
-                </tr>
+              @for (f of m.flux; track f.ressource) {
+              <tr>
+                <td class="fin-cycle-ressource">
+                  <img [src]="icones[f.ressource]" [alt]="f.ressource" /> {{ f.ressource }}
+                </td>
+                <td class="conso">-{{ f.consommee | number:'1.0-2'}}</td>
+                <td class="prod">+{{ f.produite | number:'1.0-2'}}</td>
+                <td [class.positif]="bilan(f) >= 0" [class.negatif]="bilan(f) < 0">
+                  {{ bilan(f) >= 0 ? '+' : '' }}{{ bilan(f) | number:'1.0-2'}}
+                </td>
+              </tr>
               }
             </tbody>
           </table>
-        }
-
-        <!-- Onglet PAR MODULE -->
-        @if (ongletRapport() === 'modules') {
-          @for (m of rapportModules(); track m.id) {
-            <div class="fin-cycle-module" [class.ouvert]="moduleOuvert() === m.id">
-              <div class="fin-cycle-module-entete" (click)="toggleModule(m.id)">
-                <span>{{ moduleOuvert() === m.id ? '▾' : '▸' }} {{ m.label }}</span>
-                <span>
-                  👨‍🚀 {{ m.astronautes.length }}
-                  <span [class.positif]="bilanModule(m) >= 0" [class.negatif]="bilanModule(m) < 0">
-                    ({{ bilanModule(m) >= 0 ? '+' : '' }}{{ bilanModule(m) }})
-                  </span>
-                </span>
-              </div>
-
-              @if (moduleOuvert() === m.id) {
-                <div class="fin-cycle-module-detail">
-                  <div class="fin-cycle-astronautes">
-                    @for (a of m.astronautes; track $index) {
-                      <span class="chip">{{ a }}</span>
-                    } @empty {
-                      <span class="aucun">Aucun astronaute</span>
-                    }
-                  </div>
-
-                  @if (m.astronautes.length > 0) {
-                    <p class="aucun">
-                      Inclut la consommation des astronautes : 3 nourriture, 3 eau et 2 oxygène chacun
-                    </p>
-                  }
-
-                  @if (m.flux.length > 0) {
-                    <table class="fin-cycle-table petite">
-                      <thead>
-                        <tr><th>Ressource</th><th>Consommée</th><th>Produite</th><th>Bilan</th></tr>
-                      </thead>
-                      <tbody>
-                        @for (f of m.flux; track f.ressource) {
-                          <tr>
-                            <td class="fin-cycle-ressource">
-                              <img [src]="icones[f.ressource]" [alt]="f.ressource" /> {{ f.ressource }}
-                            </td>
-                            <td class="conso">-{{ f.consommee | number:'1.0-2'}}</td>
-                            <td class="prod">+{{ f.produite | number:'1.0-2'}}</td>
-                            <td [class.positif]="bilan(f) >= 0" [class.negatif]="bilan(f) < 0">
-                              {{ bilan(f) >= 0 ? '+' : '' }}{{ bilan(f) | number:'1.0-2'}}
-                            </td>
-                          </tr>
-                        }
-                      </tbody>
-                    </table>
-                  } @else {
-                    <span class="aucun">Aucune ressource consommée ou produite (module sans astronaute)</span>
-                  }
-                </div>
-              }
-            </div>
+          } @else {
+          <span class="aucun">Aucune ressource consommée ou produite (module sans astronaute)</span>
           }
+        </div>
         }
       </div>
+      }
+      }
+    </div>
 
-      <div class="fin-cycle-boutons">
-        @if (partiePerdue()) {
-          <button class="fin-cycle-btn evacuation" (click)="terminerPartie()">
-            Évacuation
-          </button>
+    <div class="fin-cycle-boutons">
+      @if (partiePerdue()) {
+      <button class="fin-cycle-btn evacuation" (click)="terminerPartie()">
+        Évacuation
+      </button>
 
-        } @else if (partieGagnee()) {
-          <button class="fin-cycle-btn victoire" (click)="terminerPartie()">
-            Terminer la mission
-          </button>
-        } @else {
-          <button class="fin-cycle-btn secondaire" (click)="sauvegarderEtQuitter()">Sauvegarder et quitter</button>
-          <button class="fin-cycle-btn principal" (click)="continuerCycle()">Cycle suivant</button>
-        }
-      </div>
+      } @else if (partieGagnee()) {
+      <button class="fin-cycle-btn victoire" (click)="terminerPartie()">
+        Terminer la mission
+      </button>
+      } @else {
+      <button class="fin-cycle-btn secondaire" (click)="sauvegarderEtQuitter()">Sauvegarder et quitter</button>
+      <button class="fin-cycle-btn principal" (click)="continuerCycle()">Cycle suivant</button>
+      }
     </div>
   </div>
+</div>
 }
-
