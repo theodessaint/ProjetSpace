@@ -22,6 +22,7 @@ import station.enumerator.ModuleEnum;
 import station.enumerator.RessourceEnum;
 import station.enumerator.StatutPartieEnum;
 import station.exception.CompteNotFoundException;
+import station.exception.PartieTermineeException;
 import station.exception.PositionNotFoundException;
 import station.exception.StationSpatialeNotFoundException;
 import station.model.Compte;
@@ -319,6 +320,9 @@ public class StationSpatialeService {
     public StationSpatiale cycleSuivant(Integer id, String login, CycleRequest request) {
         
         StationSpatiale station = this.findByIdEtJoueur(id, login); // vérifie aussi que la station appartient au joueur
+
+        // Vérification partie en cours, sinon exception
+        this.verifierPartieEnCours(station);
         
         if (this.moduleService.deblocageObligatoireEnAttente(station)) {
             throw new ResponseStatusException(
@@ -360,6 +364,11 @@ public class StationSpatialeService {
         return this.repository.save(station);
     }
     
-    
+    public void verifierPartieEnCours(StationSpatiale station) {
+        
+        if (!station.estEnCours()) {
+            throw new PartieTermineeException();
+        }
+    }
     
 }

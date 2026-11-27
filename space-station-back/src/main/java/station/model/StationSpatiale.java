@@ -26,7 +26,7 @@ import station.exception.RessourceNotFoundException;
 @Table(name = "stations")
 public class StationSpatiale {
     
-   @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
@@ -162,6 +162,10 @@ public class StationSpatiale {
     
     public void executerCycle() {
         this.cycle++;
+    }
+    
+    public boolean estEnCours() {
+        return this.statut == StatutPartieEnum.EN_COURS;
     }
     
     public void ajouterModule(Module module){
