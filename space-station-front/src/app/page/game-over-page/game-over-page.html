@@ -1,39 +1,36 @@
-<main class="fin fin--victoire">
+<main class="fin fin--defaite">
   <img class="station" src="/Assets/Images/station_broken.png" alt="" aria-hidden="true" />
-
-  @if (erreur) {
+  @if (erreur()) {
     <section class="cadre">
       <h1 class="titre">Station introuvable</h1>
       <p class="message">Impossible de charger cette partie.</p>
-      <a class="bouton" routerLink="/">Retour au menu</a>
+      <a class="bouton" routerLink="/home-page-joueur">Retour au menu</a>
     </section>
-  } @else if (station) {
+  } @else if (station(); as s) {
     <section class="cadre">
-      <p class="sur-titre">Mission échouée</p>
+      <p class="sur-titre">Perte du signal</p>
       <h1 class="titre">Défaite</h1>
       <p class="message">
-        La station <strong>{{ station.nom }}</strong> a tenu bon jusqu'au cycle
-        <strong>{{ station.cycle }}</strong>. Voulez-vous retentez ?
+        La station <strong>{{ s.nom }}</strong> n'a pas survécu : elle a été perdue au cycle
+        <strong>{{ s.cycle }}</strong>. Voulez-vous retenter ?
       </p>
 
       <div class="stats">
         <div class="stat">
-          <span class="stat-valeur">{{ station.cycle }}</span>
-          <span class="stat-label">Cycles survécus</span>
+          <span class="stat-valeur">{{ s.cycle }}</span>
+          <span class="stat-label">Cycles atteints</span>
         </div>
         <div class="stat">
-          <span class="stat-valeur">{{ station.modules.length }}</span>
+          <span class="stat-valeur">{{ s.modules?.length ?? 0 }}</span>
           <span class="stat-label">Modules construits</span>
         </div>
       </div>
 
       <div class="actions">
-        <a class="bouton bouton--principal" routerLink="/">Rejouer</a>
         <a class="bouton" routerLink="/home-page-joueur">Retour au menu</a>
       </div>
     </section>
   } @else {
-    <p class="chargement">Chargement du rapport de mission...</p>
+    <p class="chargement">Analyse des dernières transmissions...</p>
   }
 </main>
-

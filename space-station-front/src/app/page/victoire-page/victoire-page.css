@@ -1,39 +1,43 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
 .fin {
-  --fond: #070b1a;
-  --fond-cadre: rgba(10, 16, 40, 0.72);
-  --texte: #e8ecff;
-  --texte-discret: #b3bde3;
-  --accent: #38e8a8;
-  --accent-doux: rgba(56, 232, 168, 0.25);
+  --fond: #000511;
+  --fond-cadre: rgba(6, 14, 34, 0.72);
+  --texte: #e8f1ff;
+  --texte-discret: #a9b9dc;
+  --accent: #5ee6c4;
+  --accent-doux: rgba(94, 230, 196, 0.28);
+  --bleu: #4cc9ff;
   --police: 'Segoe UI', system-ui, sans-serif;
 
   position: relative;
   overflow: hidden;
+  width: 100%;
   min-height: 100vh;
+  margin: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center;       /* fenêtre centrée verticalement */
+  justify-content: center;   /* ... et horizontalement */
   padding: 24px;
   box-sizing: border-box;
   color: var(--texte);
   font-family: var(--police);
 
-  /* voile sombre léger pour garder le texte lisible, puis l'image de fond */
-  background:
-    linear-gradient(rgba(7, 11, 26, 0.35), rgba(7, 11, 26, 0.6)),
-    url('/Assets/Images/fond-end-page.png') center / cover no-repeat,
-    var(--fond);
+  /* Fond d'espace, sans la station */
+  background: var(--fond) url('/Assets/Images/fond-end-page.png') right bottom / cover no-repeat;
 }
 
-/* La station, posée au fond de la page, derrière la fenêtre */
+/* La station : petite, en haut à gauche */
 .station {
   position: absolute;
-  right: -4%;
-  bottom: -6%;
-  width: min(62vw, 760px);
+  top: 15px;
+  left: 175px;
+  width: clamp(150px, 40vw, 800px);
   height: auto;
-  opacity: 0.92;
-  filter: drop-shadow(0 0 40px var(--accent-doux));
+  filter: drop-shadow(0 0 24px rgba(76, 201, 255, 0.4));
   pointer-events: none;
   z-index: 0;
   animation: flotte 9s ease-in-out infinite;
@@ -41,38 +45,121 @@
 
 @keyframes flotte {
   0%, 100% { transform: translateY(0) rotate(0deg); }
-  50%      { transform: translateY(-14px) rotate(1deg); }
+  50%      { transform: translateY(-8px) rotate(1deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .station { animation: none; }
 }
 
-/* La fenêtre de victoire, au premier plan */
+/* La fenêtre de victoire */
 .cadre {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 560px;
-  padding: 40px 32px;
+  max-width: 500px;
+  padding: 38px 32px;
   text-align: center;
   background: var(--fond-cadre);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--accent);
   border-radius: 16px;
-  box-shadow: 0 0 40px var(--accent-doux);
+  box-shadow: 0 0 40px var(--accent-doux), inset 0 0 30px rgba(76, 201, 255, 0.06);
+}
+
+.sur-titre {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--bleu);
+}
+
+.titre {
+  margin: 0 0 16px;
+  font-size: 2.8rem;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  text-shadow: 0 0 20px var(--accent-doux);
+}
+
+.message {
+  margin: 0 0 26px;
+  line-height: 1.6;
+  color: var(--texte-discret);
+}
+
+.message strong { color: var(--texte); }
+
+.stats {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 30px;
+}
+
+.stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 8px;
+  border: 1px solid rgba(76, 201, 255, 0.28);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.stat-valeur {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--texte);
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texte-discret);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.bouton {
+  padding: 12px 26px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--fond);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.bouton:hover { background: var(--accent-doux); }
+
+.bouton--principal:hover {
+  background: var(--accent);
+  box-shadow: 0 0 22px var(--accent-doux);
 }
 
 .chargement {
   position: relative;
   z-index: 1;
+  color: var(--texte-discret);
+  letter-spacing: 0.1em;
 }
 
-@media (max-width: 700px) {
-  .station {
-    width: 120vw;
-    right: -30%;
-    bottom: -4%;
-    opacity: 0.6;
-  }
+/* Tablette / mobile */
+@media (max-width: 900px) {
+  .fin { padding: 16px; }
+  .station { top: 12px; left: 12px; width: clamp(100px, 24vw, 160px); }
+  .cadre { padding: 26px 18px; }
+  .titre { font-size: 2.1rem; }
+  .stat { padding: 12px 6px; }
+  .stat-valeur { font-size: 1.6rem; }
 }
