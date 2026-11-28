@@ -69,7 +69,8 @@ pipeline {
         stage('Docker Compose') {
             steps {
                 dir('Docker') {
-                    sh 'docker compose up -d --build springboot angular'
+                    sh 'docker compose up -d --build --force-recreate springboot'
+                    sh 'docker restart space-station-front'
                     sh 'docker compose ps'
                 }
             }

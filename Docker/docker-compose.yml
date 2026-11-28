@@ -55,6 +55,9 @@ services:
     build: ../space-station-back
     container_name: space-station-back
 
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+
     environment:
      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3336/space_station?createDatabaseIfNotExist=TRUE
      - SPRING_DATASOURCE_USERNAME=root
