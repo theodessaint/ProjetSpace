@@ -29,7 +29,7 @@ public class SecurityService {
     private final AuthenticationManager authenticationManager;
     private final JwtEncoder jwtEncoder;
 
-    @Value("{${spring.application.name}}")
+    @Value("${spring.application.name}")
     private String appName;
 
     public SecurityService(AuthenticationManager authenticationManager, JwtEncoder jwtEncoder) {
