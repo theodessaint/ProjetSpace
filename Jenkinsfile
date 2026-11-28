@@ -33,6 +33,14 @@ pipeline {
             }
         }
 
+        stage('Backend - Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('Frontend - Angular') {
             agent {
                 docker {
@@ -49,14 +57,6 @@ pipeline {
                 dir('space-station-front') {
                     sh 'npm ci'
                     sh 'npm run build'
-                }
-            }
-        }
-
-        stage('Backend - Quality Gate') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
                 }
             }
         }
