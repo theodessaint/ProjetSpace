@@ -1,18 +1,13 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Diagnostic Docker - AVANT') {
-            steps {
-                sh '''
-                    echo "=== Conteneurs existants ==="
-                    docker ps -a
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
 
-                    echo "=== Projets Docker Compose ==="
-                    docker compose ls
-                '''
-            }
-        }
+    stages {
+
         stage('Backend - Maven & SonarQube') {
             agent {
                 docker {
@@ -30,18 +25,10 @@ pipeline {
                     withSonarQubeEnv('sonar') {
                         sh '''
                             mvn -B clean verify \
-                                org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                                org.sonarsource.scanner.maven:sonar-maven-plugin:5.9.0.7382:sonar \
                                 -Dsonar.projectKey=space-station
                         '''
                     }
-                }
-            }
-        }
-
-        stage('Backend - Quality Gate') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
                 }
             }
         }
@@ -65,6 +52,15 @@ pipeline {
                 }
             }
         }
+
+        stage('Backend - Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('Provision JWT Secret') {
             steps {
                 withCredentials([file(
@@ -73,6 +69,8 @@ pipeline {
                 )]) {
                     sh '''
                         set +x
+
+                        test -s "$JWT_CREDENTIAL"
 
                         docker volume create space-station-secrets
 
@@ -91,7 +89,12 @@ pipeline {
                                     mv /secrets/jwt.key.tmp /secrets/jwt.key
                                     echo "Clé JWT provisionnée"
                                 fi
+
+                                chmod 600 /secrets/jwt.key
+                                test -s /secrets/jwt.key
                             ' < "$JWT_CREDENTIAL"
+
+                        docker volume inspect space-station-secrets
                     '''
                 }
             }
@@ -99,38 +102,45 @@ pipeline {
 
         stage('Docker Compose') {
             steps {
-                dir('Docker') {
-                    sh 'docker compose up -d --build --force-recreate springboot'
-                    sh 'docker restart space-station-front'
-                    sh 'docker compose ps'
+                withCredentials([usernamePassword(
+                    credentialsId: 'mysql-g3-credentials',
+                    usernameVariable: 'MYSQL_USER',
+                    passwordVariable: 'MYSQL_PASSWORD'
+                )]) {
+                    dir('Docker') {
+                        sh '''
+                            docker volume inspect space-station-secrets
+                            docker compose config --quiet
+
+                            docker compose up -d --build \
+                                --force-recreate springboot angular
+
+                            docker compose ps
+                        '''
+                    }
                 }
             }
         }
 
-        stage('Diagnostic frontend') {
+        stage('Vérification du backend') {
             steps {
-                sh '''
-                    echo "=== Sources Angular ==="
-                    grep -rnF 'localhost:8080' space-station-front/src/ || true
-
-                    echo "=== Compilation Angular ==="
-                    grep -rlF 'localhost:8080' space-station-front/dist/ || true
-
-                    echo "=== Frontend déployé ==="
-                    docker exec space-station-front \
-                        grep -rlF 'localhost:8080' /usr/share/nginx/html || true
-                '''
-            }
-        }
-        stage('Diagnostic Docker - APRES') {
-            steps {
-                sh '''
-                    echo "=== Conteneurs existants ==="
-                    docker ps -a
-
-                    echo "=== Projets Docker Compose ==="
-                    docker compose ls
-                '''
+                timeout(time: 3, unit: 'MINUTES') {
+                    sh '''
+                        docker run --rm \
+                            --network space-station-network \
+                            curlimages/curl \
+                            --silent \
+                            --show-error \
+                            --output /dev/null \
+                            --retry 20 \
+                            --retry-delay 5 \
+                            --retry-connrefused \
+                            --connect-timeout 3 \
+                            --max-time 5 \
+                            --write-out 'HTTP %{http_code}\\n' \
+                            http://springboot:8080/
+                    '''
+                }
             }
         }
     }
@@ -142,6 +152,17 @@ pipeline {
 
         failure {
             echo 'Space Station : échec du pipeline.'
+
+            sh '''
+                echo "=== État des conteneurs ==="
+                docker ps -a --filter name=space-station
+
+                echo "=== Logs Spring Boot ==="
+                docker logs --tail 100 space-station-back || true
+
+                echo "=== Logs Nginx ==="
+                docker logs --tail 50 space-station-front || true
+            '''
         }
     }
 }

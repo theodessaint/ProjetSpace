@@ -60,8 +60,8 @@ services:
 
     environment:
      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3336/space_station?createDatabaseIfNotExist=TRUE
-     - SPRING_DATASOURCE_USERNAME=root
-     - SPRING_DATASOURCE_PASSWORD=HSTbigk5Og1ROqUJO+L+SrlzAyyTXJQ6
+     - SPRING_DATASOURCE_USERNAME=${MYSQL_USER:?Utilisateur MySQL manquant}
+     - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:?Mot de passe MySQL manquant}
      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
      - JWT_SECRET_PATH=/secrets/jwt.key
 
