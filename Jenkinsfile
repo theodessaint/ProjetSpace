@@ -132,7 +132,7 @@ pipeline {
                             --silent \
                             --show-error \
                             --output /dev/null \
-                            --retry 20 \
+                            --retry 5 \
                             --retry-delay 5 \
                             --retry-connrefused \
                             --connect-timeout 3 \
