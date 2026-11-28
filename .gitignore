@@ -8,3 +8,4 @@ target/
 application-dev.properties
 secrets/
 Jenkinsfile-clean-docker
+Jenkinsfile-check-health
