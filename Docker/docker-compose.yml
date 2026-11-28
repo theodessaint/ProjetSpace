@@ -66,7 +66,7 @@ services:
      - JWT_SECRET_PATH=/secrets/jwt.key
 
     volumes:
-     - ../secrets/jwt.key:/secrets/jwt.key
+     - space-station-secrets:/secrets:ro
 
     # ports:
     #  - 7002:8080 # Pas besoin d'être accessible en dehors du réseau Docker par les utilisateurs
@@ -102,3 +102,6 @@ networks:
 volumes:
   space-station-data:
     name: space-station-data
+  space-station-secrets:
+    external: true
+    name: space-station-secrets

@@ -65,6 +65,37 @@ pipeline {
                 }
             }
         }
+        stage('Provision JWT Secret') {
+            steps {
+                withCredentials([file(
+                    credentialsId: 'space-station-jwt',
+                    variable: 'JWT_CREDENTIAL'
+                )]) {
+                    sh '''
+                        set +x
+
+                        docker volume create space-station-secrets
+
+                        docker run --rm -i \
+                            -v space-station-secrets:/secrets \
+                            alpine:3.22 \
+                            sh -ec '
+                                umask 077
+
+                                cat > /secrets/jwt.key.tmp
+
+                                if cmp -s /secrets/jwt.key.tmp /secrets/jwt.key; then
+                                    rm /secrets/jwt.key.tmp
+                                    echo "Clé JWT inchangée"
+                                else
+                                    mv /secrets/jwt.key.tmp /secrets/jwt.key
+                                    echo "Clé JWT provisionnée"
+                                fi
+                            ' < "$JWT_CREDENTIAL"
+                    '''
+                }
+            }
+        }
 
         stage('Docker Compose') {
             steps {
